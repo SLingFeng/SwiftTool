@@ -11,7 +11,7 @@ import SnapKit
 
 class LFBaseTableViewController: LFBaseViewController, UITableViewDelegate, UITableViewDataSource {
 
-    var tableView: MyTableView?
+    var tableView: MyTableView!
     
     
     override func viewDidLoad() {
@@ -24,17 +24,17 @@ class LFBaseTableViewController: LFBaseViewController, UITableViewDelegate, UITa
     
     func needTableView(style: UITableView.Style) {
         self.tableView = MyTableView(frame: .zero, style: .plain)
-        self.tableView?.dataSource = self
-        self.tableView?.delegate = self
-        self.tableView?.tableHeaderView = UIView(frame: .zero)
-        self.tableView?.tState = MyTableViewStateNormal
-        
+        self.tableView.dataSource = self
+        self.tableView.delegate = self
+        self.tableView.tableHeaderView = UIView(frame: .zero)
+        self.tableView.tState = MyTableViewStateNormal
+        self.view.addSubview(self.tableView)
         if  #available(iOS 11.0, *) {
-            self.tableView?.estimatedSectionHeaderHeight = 0.01
-            self.tableView?.estimatedSectionFooterHeight = 0.01
+            self.tableView.estimatedSectionHeaderHeight = 0.01
+            self.tableView.estimatedSectionFooterHeight = 0.01
         }
         
-        self.tableView?.snp.makeConstraints({ (make) in
+        self.tableView.snp.makeConstraints({ (make) in
             make.edges.equalTo(self.view).inset(UIEdgeInsets.zero)
         })
     }

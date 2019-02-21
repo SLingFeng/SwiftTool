@@ -21,7 +21,8 @@ extension UILabel {
             self.textColor = color
         }
 //        numberOfLines = 0
-        self.font = SLFCommonTools.pxFont(fontSize) //[UIFont systemFontOfSize:kAH(fontSize)];
+        self.font = UIFont.systemFont(ofSize: fontSize)
+//        self.font = SLFCommonTools.pxFont(fontSize) //[UIFont systemFontOfSize:kAH(fontSize)];
         self.text = text
     }
 }

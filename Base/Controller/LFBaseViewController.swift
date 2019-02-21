@@ -7,11 +7,14 @@
 //
 
 import UIKit
+import RxCocoa
+import RxSwift
 
 class LFBaseViewController: UIViewController {
 
     var obj: Any?
     
+    public let dig = DisposeBag()
     
     override func viewDidLoad() {
         super.viewDidLoad()
