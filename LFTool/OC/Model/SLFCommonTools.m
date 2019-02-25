@@ -16,7 +16,7 @@
 ([[UIScreen mainScreen] respondsToSelector:@selector(nativeBounds)] ? [UIScreen mainScreen].nativeBounds.size.height/[UIScreen mainScreen].nativeScale : [UIScreen mainScreen].bounds.size.height)
 #define IS_IOS11 [[[UIDevice currentDevice] systemVersion] floatValue] >= 11.0
 
-
+#define JGG_Y(yl,height,h,i,count) yl+(height+h)*(i/(count))
 //#import "LA_MineViewController.h"
 
 static SLFCommonTools * tools = nil;
@@ -40,87 +40,8 @@ static SLFCommonTools * tools = nil;
     return self;
 }
 
-#pragma mark - tabbar
-
-+(void)setupTabbarViewControllers:(UIWindow *)window {
-//    [UIView transitionWithView:[UIApplication sharedApplication].keyWindow duration:0.5f options:UIViewAnimationOptionTransitionFlipFromLeft animations:^{
-//        BOOL oldState = [UIView areAnimationsEnabled];
-//        [UIView setAnimationsEnabled:NO];
-//        [UIApplication sharedApplication].keyWindow.rootViewController = [[YL_MainNavgationController alloc] initWithRootViewController:[[FY_HomeViewController alloc] init]];
-//        [UIView setAnimationsEnabled:oldState];
-//    } completion:^(BOOL finished) {
-//    }];
-//    LA_HomeViewController * home = [[LA_HomeViewController alloc] init];
-//    UINavigationController * homeNav = [[UINavigationController alloc] initWithRootViewController:home];
-//
-//    LA_ActivityViewController * per = [[LA_ActivityViewController alloc] init];
-//    UINavigationController * perNav = [[UINavigationController alloc] initWithRootViewController:per];
-//
-////    MineViewController * cel = [[MineViewController alloc] init];
-////    UINavigationController * celNav = [[UINavigationController alloc] initWithRootViewController:cel];
-////
-//    LA_MineViewController * mine = [[LA_MineViewController alloc] init];
-//    UINavigationController * mineNav = [[UINavigationController alloc] initWithRootViewController:mine];
-//
-//    CYLTabBarController * tabbarController = [[CYLTabBarController alloc] init];
-//
-//    NSDictionary * homeDic = @{CYLTabBarItemTitle : @"首页",
-//                               CYLTabBarItemImage : @"home_unclicked_icon",
-//                               CYLTabBarItemSelectedImage : @"home_clicked_icon",
-//                               };
-//
-//    NSDictionary * pvcDic = @{CYLTabBarItemTitle : @"活动",
-//                              CYLTabBarItemImage : @"gift_unclicked_icon",
-//                              CYLTabBarItemSelectedImage : @"gift_clicked_icon",
-//                              };
-//
-////    NSDictionary * infoDic = @{CYLTabBarItemTitle : @"消息",
-////                               CYLTabBarItemImage : @"首页——信息",
-////                               CYLTabBarItemSelectedImage : @"首页——",
-////                               };
-//
-//    NSDictionary * mineDic = @{CYLTabBarItemTitle : @"我的",
-//                               CYLTabBarItemImage : @"mine_unclicked_icon",
-//                               CYLTabBarItemSelectedImage : @"mine_clicked_icon",
-//                               };
-//
-//    NSArray * tabbarItems = @[homeDic,
-//                              pvcDic,
-////                              infoDic,
-//                              mineDic];
-//
-//    tabbarController.tabBarItemsAttributes = tabbarItems;
-//
-//    tabbarController.tabBar.tintColor = [SLFCommonTools getNavBarColor];
-//    tabbarController.tabBar.barTintColor = [UIColor whiteColor];
-//
-//    NSArray * vcs = @[homeNav,
-//                      perNav,
-////                      celNav,
-//                      mineNav];
-//    [tabbarController setViewControllers:vcs];
-    if (nil == window) {
-        window = [UIApplication sharedApplication].keyWindow;
-//        window.rootViewController = [YL_MainTabBarConfig getMainTabBarViewController];
-    }else {
-//        window.rootViewController = [YL_MainTabBarConfig getMainTabBarViewController];
-    }
-//
-}
-
-+ (void)toLogin {
-//    [UIView transitionWithView:[UIApplication sharedApplication].keyWindow duration:1.0f options:UIViewAnimationOptionTransitionFlipFromRight animations:^{
-//        BOOL oldState = [UIView areAnimationsEnabled];
-//        [UIView setAnimationsEnabled:NO];
-//        [UIApplication sharedApplication].keyWindow.rootViewController = [[UINavigationController alloc] initWithRootViewController:[[GX_LoginPhoneViewController alloc] init]];
-//        [UIView setAnimationsEnabled:oldState];
-//    } completion:^(BOOL finished) {
-//    }];
-}
-
-+ (void)showLoginVC:(UIViewController *)vc {
-//    [vc presentViewController:[[UINavigationController alloc] initWithRootViewController:[[GX_LoginPhoneViewController alloc] initWithObj:@"1"]] animated:1 completion:nil];
-    
++ (CGFloat)jgg_Y:(CGFloat)yl height:(CGFloat)height h:(CGFloat)h i:(CGFloat)i count:(CGFloat)count {
+    return yl+(height+h)*(i/(count));
 }
 
 //查找当前vc

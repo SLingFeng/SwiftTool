@@ -12,16 +12,8 @@
 @interface SLFCommonTools : NSObject
 
 +(SLFCommonTools *)shareTools;
-/**
- *  @author LingFeng, 2016-06-08 11:06:07
- *
- *  设置tabbar
- */
-+(void)setupTabbarViewControllers:(UIWindow *)window;
 
-+ (void)toLogin;
-
-+ (void)showLoginVC:(UIViewController *)vc;
++ (CGFloat)jgg_Y:(CGFloat)yl height:(CGFloat)height h:(CGFloat)h i:(CGFloat)i count:(CGFloat)count;
 /**
  查找当前vc
  
