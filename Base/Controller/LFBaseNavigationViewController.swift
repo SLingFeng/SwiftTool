@@ -12,7 +12,15 @@ class LFBaseNavigationViewController: UINavigationController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+//        self.navigationBar.setBackgroundImage(UIImage(), for: UIBarPosition.any, barMetrics: .default)
+        
+        self.navigationController?.navigationBar.shadowImage = UIImage()
 
+        self.navigationController?.navigationBar.isTranslucent = true
+        
+        self.navigationBar.tintColor = k666666
+        self.navigationBar.barTintColor = .white
     }
     
     override func pushViewController(_ viewController: UIViewController, animated: Bool) {

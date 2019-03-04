@@ -230,11 +230,23 @@
 //來源：简书
 //简书著作权归作者所有，任何形式的转载都请联系作者获得授权并注明出处。
 
-- (void)enterSpace:(CGFloat)left {
-    self.leftView = [[UIView alloc]initWithFrame:CGRectMake(0, 0, left, 0)];
-    //设置显示模式为永远显示(默认不显示)
-    self.leftViewMode = UITextFieldViewModeAlways;
+//UITextField 文字与输入框的距离
+- (CGRect)textRectForBounds:(CGRect)bounds{
+    
+    return CGRectInset(bounds, self.enterSpace + self.leftViewX, 0);
+    
 }
+
+//控制文本的位置
+- (CGRect)editingRectForBounds:(CGRect)bounds{
+    
+    return CGRectInset(bounds, self.enterSpace + self.leftViewX, 0);
+}
+//- (void)enterSpace:(CGFloat)left {
+//    self.leftView = [[UIView alloc]initWithFrame:CGRectMake(0, 0, left, 0)];
+//    //设置显示模式为永远显示(默认不显示)
+//    self.leftViewMode = UITextFieldViewModeAlways;
+//}
 
 - (void)setupPlaceholderColor:(UIColor *)placeholderColor {
     self.attributedPlaceholder = [[NSAttributedString alloc] initWithString:self.placeholder attributes:@{NSForegroundColorAttributeName : placeholderColor}];

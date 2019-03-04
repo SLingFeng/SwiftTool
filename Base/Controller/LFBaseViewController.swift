@@ -19,11 +19,31 @@ class LFBaseViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        self.view.backgroundColor = .white
+        self.view.backgroundColor = kF8F8F8
         
+        self.navigationController?.navigationBar.isTranslucent = true
+        self.navigationController?.navigationBar.shadowImage = UIImage()
+
+    }
+
+    override func loadView() {
+        super.loadView()
+    
+        if  #available(iOS 11.0, *) {
+            let item = UIBarButtonItem(title: "", style: .plain, target: nil, action: #selector(self.backTap))
+            self.navigationController!.navigationBar.backIndicatorImage = UIImage(named: "ic_fanhui")
+            self.navigationController!.navigationBar.backIndicatorTransitionMaskImage = UIImage(named: "ic_fanhui")
+            self.navigationItem.backBarButtonItem = item
+
+        }
+
     }
     
-    public func setNavTitle(text: String) {
+    @objc func backTap() {
+        self.navigationController!.popViewController(animated: true)
+    }
+    
+    public func setNavTitle(_ text: String) {
         self.navigationItem.title = text
     }
     

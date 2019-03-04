@@ -14,16 +14,8 @@ class LFBaseTableViewController: LFBaseViewController, UITableViewDelegate, UITa
     var tableView: MyTableView!
     
     
-    override func viewDidLoad() {
-        super.viewDidLoad()
-        
-        
-        
-        // Do any additional setup after loading the view.
-    }
-    
     func needTableView(style: UITableView.Style) {
-        self.tableView = MyTableView(frame: .zero, style: .plain)
+        self.tableView = MyTableView(frame: .zero, style: style)
         self.tableView.dataSource = self
         self.tableView.delegate = self
         self.tableView.tableHeaderView = UIView(frame: .zero)
@@ -33,7 +25,8 @@ class LFBaseTableViewController: LFBaseViewController, UITableViewDelegate, UITa
             self.tableView.estimatedSectionHeaderHeight = 0.01
             self.tableView.estimatedSectionFooterHeight = 0.01
         }
-        
+        self.tableView.separatorInset = UIEdgeInsets(top: 0, left: 10, bottom: 0, right: 10)
+
         self.tableView.snp.makeConstraints({ (make) in
             make.edges.equalTo(self.view).inset(UIEdgeInsets.zero)
         })

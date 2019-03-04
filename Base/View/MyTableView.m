@@ -9,7 +9,7 @@
 
 
 @interface MyTableView ()<DZNEmptyDataSetDelegate, DZNEmptyDataSetSource> {
-    NSDictionary *_attributes;
+    NSMutableDictionary *_attributes;
 }
 
 @end
@@ -33,7 +33,7 @@
     self.emptyDataSetSource = self;
     self.tableFooterView = [[UIView alloc] init];
     //状态颜色字体
-    _attributes = @{NSFontAttributeName : [SLFCommonTools pxFont:34], NSForegroundColorAttributeName : [SLFCommonTools colorHex:@"333333"]};
+    _attributes = [NSMutableDictionary dictionaryWithDictionary:@{NSFontAttributeName : [UIFont systemFontOfSize:17], NSForegroundColorAttributeName : [SLFCommonTools colorHex:@"#333333"]}];
 
     
 //    MJRefreshAutoNormalFooter *footer = [MJRefreshAutoNormalFooter footerWithRefreshingTarget:self refreshingAction:@selector(footerR)];
@@ -59,7 +59,7 @@
 -(MJRefreshAutoNormalFooter *)footerSetup {
     MJRefreshAutoNormalFooter *footer = [MJRefreshAutoNormalFooter footerWithRefreshingTarget:self refreshingAction:@selector(footerR)];
     footer.automaticallyChangeAlpha = YES;
-    footer.automaticallyHidden = YES;
+//    footer.automaticallyHidden = YES;
     [footer setTitle:@"点击或上拉加载更多" forState:MJRefreshStateIdle];
     [footer setTitle:@"正在加载更多的数据" forState:MJRefreshStateRefreshing];
     [footer setTitle:@"没有更多数据" forState:MJRefreshStateNoMoreData];
@@ -118,6 +118,9 @@
     if (kStringIsEmpty(text)) {
         return nil;
     }
+    
+    if (self.loadTitleFontColor) [_attributes setObject:self.loadTitleFontColor forKey:NSForegroundColorAttributeName];
+    
     return [[NSMutableAttributedString alloc] initWithString:text attributes:_attributes];
 }
 //正文内容
@@ -190,7 +193,8 @@
             text = @"点击刷新";
         }
             break;
-        case MyTableViewStateCustomize: {
+        case MyTableViewStateCustomize:
+        case MyTableViewStateImage: {
             if (kStringIsEmpty(_loadButtonTitle)) {
 //                text = @"点击刷新";
             }else {
@@ -249,9 +253,9 @@
     }
 }
 
-//- (CGFloat)verticalOffsetForEmptyDataSet:(UIScrollView *)scrollView {
-//    return -150;
-//}
+- (CGFloat)verticalOffsetForEmptyDataSet:(UIScrollView *)scrollView {
+    return -150;
+}
 //-(CGFloat)spaceHeightForEmptyDataSet:(UIScrollView *)scrollView {
 //    return -300;
 //}

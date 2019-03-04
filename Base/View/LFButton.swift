@@ -33,7 +33,7 @@ extension UIButton {
         self.init()
         
         self.setTitleColor(fontColor, for: .normal)
-        self.titleLabel!.font = SLFCommonTools.pxFont(fontSize)
+        self.titleLabel!.font = UIFont.systemFont(ofSize: fontSize)
         self.setTitle(text, for: .normal)
     }
     
@@ -44,7 +44,7 @@ extension UIButton {
     class func button(with buttonType: UIButton.ButtonType, fontSize: CGFloat, fontColor color: UIColor?, fontText text: String?, backg: UIColor?, radius: CGFloat, borderColor: UIColor?, borderWidth: CGFloat) -> UIButton {
         let btn: UIButton = UIButton.init(type: buttonType)
         btn.setTitleColor(color, for: .normal)
-        btn.titleLabel!.font = SLFCommonTools.pxFont(fontSize)
+        btn.titleLabel!.font = UIFont.systemFont(ofSize: fontSize)
         btn.setTitle(text, for: .normal)
         
         btn.backgroundColor = backg

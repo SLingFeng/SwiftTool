@@ -12,6 +12,8 @@ public let kScreenW = UIScreen.main.responds(to: #selector(getter: UIScreen.nati
 
 public let kScreenH = UIScreen.main.responds(to: #selector(getter: UIScreen.nativeBounds)) ? UIScreen.main.nativeBounds.size.height / UIScreen.main.nativeScale : UIScreen.main.bounds.size.height
 
+let kScreen = UIScreen.main.bounds
+
 class LFTool: NSObject {
 
     public class func LF_isIPHONEXLAST () -> Bool {

@@ -39,7 +39,7 @@ typedef enum : NSUInteger {
  btn 自定义加载的文字
  */
 @property (copy, nonatomic) NSString * loadButtonTitle;
-
+@property (retain, nonatomic) UIColor * loadTitleFontColor;
 @property (retain, nonatomic) UIColor * loadButtonFontColorNormal;
 @property (retain, nonatomic) UIColor * loadButtonFontColorHighlight;
 

@@ -29,12 +29,14 @@ typedef enum : NSUInteger {
 @property (retain, nonatomic) UITextField * returnNext;
 ///设置leftview x轴距
 @property (assign, nonatomic) NSInteger leftViewX;
+//设置开始输入间距
+@property (assign, nonatomic) NSInteger enterSpace;
 /**
  输入改变时
  */
 //@property (copy, nonatomic) void(^textFieldChange)(NSString *);
 
-@property (copy, nonatomic) void(^textFieldBegin)();
+@property (copy, nonatomic) void(^textFieldBegin)(void);
 
 @property (nonatomic, copy) void(^returnKeyClick)(BaseTextField *tf);
 
@@ -43,6 +45,5 @@ typedef enum : NSUInteger {
 //Placeholder文字颜色
 - (void)setupPlaceholderColor:(UIColor *)placeholderColor;
 
-//设置开始输入间距
-- (void)enterSpace:(CGFloat)left;
+
 @end
