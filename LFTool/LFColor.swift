@@ -1,9 +1,9 @@
 //
 //  LFColor.swift
-//  gct
+//  SADF
 //
-//  Created by big on 2019/2/21.
-//  Copyright © 2019 big. All rights reserved.
+//  Created by SADF on 2019/2/21.
+//  Copyright © 2019 SADF. All rights reserved.
 //
 
 import UIKit
@@ -16,7 +16,7 @@ let k999999 = SLFCommonTools.colorHex("#999999")
 let kF8F8F8 = SLFCommonTools.colorHex("#F8F8F8")
 
 let kEEEEEE = SLFCommonTools.colorHex("#EEEEEE")
-
+let kDDDDDD = SLFCommonTools.colorHex("#DDDDDD")
 let k0076FF = UIColor("#0076FF")
 
 let kF62028 = UIColor("#F62028")

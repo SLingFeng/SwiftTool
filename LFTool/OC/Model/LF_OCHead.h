@@ -1,9 +1,9 @@
 //
 //  LF_OCHead.h
-//  gct
+//  SADF
 //
-//  Created by big on 2019/2/18.
-//  Copyright © 2019 big. All rights reserved.
+//  Created by SADF on 2019/2/18.
+//  Copyright © 2019 SADF. All rights reserved.
 //
 
 #ifndef LF_OCHead_h
