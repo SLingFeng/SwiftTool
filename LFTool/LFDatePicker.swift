@@ -37,7 +37,7 @@ class LFDatePicker: UIView, UIPickerViewDelegate, UIPickerViewDataSource {
 //            return components[row]}
 //    )
     
-    var selectHeight = LFTool.LF_isIPHONEXLAST() ? 299 : 260
+    var selectHeight = LFTool.isIPHONEXLAST() ? 299 : 260
     
     var type = LFDatePickerType.yearMonthDay
     
@@ -123,14 +123,18 @@ class LFDatePicker: UIView, UIPickerViewDelegate, UIPickerViewDataSource {
         })
         
         doneBtn.rx.tap.subscribe({ [weak self] _ in
-            if self?.type == .yearMonthDay {
-                self?.doneSub.onNext(self!.dateFormatter.string(from: self!.datePicker.date))
+            if let strongSelf = self {
+                if strongSelf.type == .yearMonthDay {
+                    strongSelf.doneSub.onNext(strongSelf.dateFormatter.string(from: strongSelf.datePicker.date))
+                }
+                self?.cancelView()
             }
-            self?.cancelView()
         }).disposed(by: disposeBag)
         
         cancelBtn.rx.tap.subscribe({ [weak self] _ in
-            self?.cancelView()
+            if let strongSelf = self {
+                strongSelf.cancelView()
+            }
         }).disposed(by: disposeBag)
     }
     

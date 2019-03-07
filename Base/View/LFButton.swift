@@ -37,6 +37,18 @@ extension UIButton {
         self.setTitle(text, for: .normal)
     }
     
+    public convenience init(fontSize: CGFloat, fontColor: UIColor?, text: String?, backg: UIColor?, radius: CGFloat, borderColor: UIColor?, borderWidth: CGFloat) {
+        self.init()
+        
+        self.setTitleColor(fontColor, for: .normal)
+        self.titleLabel!.font = UIFont.systemFont(ofSize: fontSize)
+        self.setTitle(text, for: .normal)
+        self.backgroundColor = backg
+        self.layer.cornerRadius = radius
+        self.layer.borderColor = borderColor?.cgColor
+        self.layer.borderWidth = borderWidth
+    }
+    
     class func button(with buttonType: UIButton.ButtonType, fontSize: CGFloat, fontColor color: UIColor?, fontText text: String?) -> UIButton {
         return UIButton.button(with: buttonType, fontSize: fontSize, fontColor: color, fontText: text, backg: UIColor.clear, radius: 0, borderColor: UIColor.clear, borderWidth: 0)
     }

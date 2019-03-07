@@ -40,13 +40,32 @@ class LFColor: NSObject {
     class func k999999() -> UIColor {
         return SLFCommonTools.colorHex("#999999")
     }
+    //渐变
+    class func jianbian(gradientColors: Array<CGColor>, frame: CGRect) -> CAGradientLayer {
+        //定义每种颜色所在的位置
+        let gradientLocations:[NSNumber] = [0.0, 1.0]
+        
+        //创建CAGradientLayer对象并设置参数
+        let gradientLayer = CAGradientLayer()
+        gradientLayer.colors = gradientColors
+        gradientLayer.locations = gradientLocations
+        
+        //设置渲染的起始结束位置（横向渐变）
+        gradientLayer.startPoint = CGPoint(x: 0, y: 0)
+        gradientLayer.endPoint = CGPoint(x: 1, y: 0)
+        
+        //设置其CAGradientLayer对象的frame，并插入view的layer
+        gradientLayer.frame = frame
+//        self.view.layer.insertSublayer(gradientLayer, at: 0)
+        return gradientLayer
+    }
     
 }
 
 
 extension UIColor {
     
-    func hex(hex: String) -> UIColor {
+    class func hex(hex: String) -> UIColor {
         
         var red:   CGFloat = 0.0
         var green: CGFloat = 0.0
@@ -90,7 +109,7 @@ extension UIColor {
         return UIColor.init(red:red, green:green, blue:blue, alpha:alpha)
     }
     
-    func hexAlpha(hex: String, talpha: CGFloat) -> UIColor {
+    class func hexAlpha(hex: String, talpha: CGFloat) -> UIColor {
         
         var red:   CGFloat = 0.0
         var green: CGFloat = 0.0

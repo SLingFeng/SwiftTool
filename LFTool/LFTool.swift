@@ -16,7 +16,7 @@ let kScreen = UIScreen.main.bounds
 
 class LFTool: NSObject {
 
-    public class func LF_isIPHONEXLAST () -> Bool {
+    public class func isIPHONEXLAST() -> Bool {
         var isX = false
     
         //判断iPHoneXr
@@ -35,6 +35,17 @@ class LFTool: NSObject {
         return isX
     }
     
+    public class func Height_StatusBar() -> CGFloat {
+        return LFTool.isIPHONEXLAST() ? 44.0 : 20.0
+    }
+    
+    public class func Height_NavBar() -> CGFloat {
+        return LFTool.isIPHONEXLAST() ? 88.0 : 60.0
+    }
+    
+    public class func Height_TabBar() -> CGFloat {
+        return LFTool.isIPHONEXLAST() ? 83.0 : 49.0
+    }
     
     public class func Log<T>(m: T,
                      file: String = #file,
@@ -101,8 +112,10 @@ class LFTool: NSObject {
         m.path = left.cgPath
         layer.addSublayer(m)
     }
-    
-    
+    ///宽除高得出比例
+    class func heightScaleTo(scale: CGFloat, width: CGFloat) -> CGFloat {
+        return width/scale
+    }
 }
 
 //var str = "hangge.com"
