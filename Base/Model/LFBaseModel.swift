@@ -33,6 +33,8 @@ class LFResponseModel: NSObject, HandyJSON {
      */
     var msg = ""
     
+    var data = [AnyHashable : Any]()
+    
     var success: Bool = false
 
     required override init() {
@@ -56,8 +58,13 @@ class LFResponseModel: NSObject, HandyJSON {
 //    }
 //}
 
-//扩展Moya支持HandyJSON的解析
+public protocol LFBaseVMType {
+//    var inputs: LFBaseVMInputs { get }
+//    var outputs: LFBaseVMOutputs { get }
+}
+
 extension ObservableType where E == Response {
+    ///扩展Moya支持HandyJSON的解析
     public func mapModel<T: HandyJSON>(_ type: T.Type) -> Observable<T> {
         return flatMap { response -> Observable<T> in
             return Observable.just(response.mapModel(T.self))
@@ -75,3 +82,30 @@ extension Response {
 }
 //链接：https://www.jianshu.com/p/97a476c71678
 
+
+//对MJRefreshComponent增加rx扩展
+extension Reactive where Base: MJRefreshComponent {
+    
+    //正在刷新事件
+    var refreshing: ControlEvent<Void> {
+        let source: Observable<Void> = Observable.create {
+            [weak control = self.base] observer  in
+            if let control = control {
+                control.refreshingBlock = {
+                    observer.on(.next(()))
+                }
+            }
+            return Disposables.create()
+        }
+        return ControlEvent(events: source)
+    }
+    
+    //停止刷新
+    var endRefreshing: Binder<Bool> {
+        return Binder(base) { refresh, isEnd in
+            if isEnd {
+                refresh.endRefreshing()
+            }
+        }
+    }
+}

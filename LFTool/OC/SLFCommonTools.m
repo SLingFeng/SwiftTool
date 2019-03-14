@@ -1059,7 +1059,7 @@ static SLFCommonTools * tools = nil;
 
 +(NSString *)isUserCode:(NSString *)text {
     if ([text isEqualToString:@""]) {
-        return @"请输入验证码";
+        return @"请输入手机验证码";
     }
     return @"go";
 }
@@ -1629,7 +1629,7 @@ static SLFCommonTools * tools = nil;
 
 //密码
 + (BOOL)validatePassword:(NSString *)passWord {
-    NSString *passWordRegex = @"^[a-zA-Z0-9]{8,20}+$";
+    NSString *passWordRegex = @"^[a-zA-Z0-9]{6,22}+$";
     NSPredicate *passWordPredicate = [NSPredicate predicateWithFormat:@"SELF MATCHES %@",passWordRegex];
     return [passWordPredicate evaluateWithObject:passWord];
 }
@@ -1697,6 +1697,35 @@ static SLFCommonTools * tools = nil;
     }
     
     return 0;
+}
+
++(NSString *)getNewBankNumWitOldBankNum:(NSString *)bankNum
+{
+    NSMutableString *mutableStr;
+    if (bankNum.length) {
+        mutableStr = [NSMutableString stringWithString:bankNum];
+        for (int i = 0 ; i < mutableStr.length; i ++) {
+            if (i>2&&i<mutableStr.length - 3) {
+                [mutableStr replaceCharactersInRange:NSMakeRange(i, 1) withString:@"*"];
+            }
+        }
+        NSString *text = mutableStr;
+        NSCharacterSet *characterSet = [NSCharacterSet characterSetWithCharactersInString:@"0123456789\b"];
+        text = [text stringByReplacingOccurrencesOfString:@" " withString:@""];
+        NSString *newString = @"";
+        while (text.length > 0) {
+            NSString *subString = [text substringToIndex:MIN(text.length, 4)];
+            newString = [newString stringByAppendingString:subString];
+            if (subString.length == 4) {
+                newString = [newString stringByAppendingString:@" "];
+            }
+            text = [text substringFromIndex:MIN(text.length, 4)];
+        }
+        newString = [newString stringByTrimmingCharactersInSet:[characterSet invertedSet]];
+        return newString;
+    }
+    return bankNum;
+    
 }
 
 @end

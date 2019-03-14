@@ -533,6 +533,7 @@
  */
 + (NSInteger)compareVersion:(NSString *)v1 to:(NSString *)v2;
 
++(NSString *)getNewBankNumWitOldBankNum:(NSString *)bankNum;
 @end
 
 

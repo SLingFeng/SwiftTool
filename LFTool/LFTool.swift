@@ -47,7 +47,7 @@ class LFTool: NSObject {
         return LFTool.isIPHONEXLAST() ? 83.0 : 49.0
     }
     
-    public class func Log<T>(m: T,
+    public class func Log<T>(_ m: T,
                      file: String = #file,
                      method: String = #function,
                      line: Int = #line) {

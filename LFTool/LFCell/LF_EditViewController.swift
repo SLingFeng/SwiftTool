@@ -13,11 +13,15 @@ class LF_EditViewController: LFBaseTableViewController {
     var cellArr: [[LF_EditModel]]? {
         didSet {
             self.tableView.reloadData()
+            self.setCellModelContent()
         }
     }
     
     let doBtn = UIButton(fontSize: 19, fontColor: .white, text: "确定", backg: kMainColor, radius: 5, borderColor: .clear, borderWidth: 0)
 
+    func setCellModelContent() {
+        
+    }
     
     override func viewDidLoad() {
         super.viewDidLoad()

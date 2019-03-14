@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import RxSwift
 
 class LF_EditTableViewCell: UITableViewCell {
 
@@ -15,6 +16,7 @@ class LF_EditTableViewCell: UITableViewCell {
     var rightLabel: UILabel?
 //    var rightIV = UIImageView(image: UIImage(named: "ic_set_mor"))
     var rightBtn: UIButton?
+    var dig = DisposeBag()
     var custom : UIView? {
         didSet {
             if custom != nil {
@@ -56,7 +58,9 @@ class LF_EditTableViewCell: UITableViewCell {
             
             titleLabel.attributedText = model!.title.attributedString(withStyleBook: style)
             
-            titleLabel.text = model!.title;
+            titleLabel.text = model!.title
+            
+            tf.text = model!.userEnterText
             tf.textFieldChange = model!.textFieldChange
             if (model!.keyboardType != nil) {
                 tf.keyboardType = model!.keyboardType!
@@ -66,13 +70,24 @@ class LF_EditTableViewCell: UITableViewCell {
             }
             tf.enterNumber = model!.enterNumber
             
-            if model!.type == 0 {
+            tf.backgroundColor = .clear
+            if model!.type == 0 || model!.type == 21 {
                 tf.isUserInteractionEnabled = false
-            } else if model!.type == 1 {
+                if model!.type == 21 {
+                    tf.backgroundColor = kF8F8F8!
+                }
+            } else {
                 tf.isUserInteractionEnabled = true
             }
-            
+            if model!.tfText != nil {
+                tf.rx.text.bind(to: model!.tfText!).disposed(by: dig)
+            }
+            model!.tf = tf
+            if model!.tfSet != nil {
+                model!.tfSet!(tf)
+            }
             self.custom = model!.custom
+            tf.isSecureTextEntry = model!.isSecureTextEntry
 //            if model!.type == 10 || model!.type == 0 {
 //                rightIV.hidden = false
 //            } else {
@@ -101,12 +116,12 @@ class LF_EditTableViewCell: UITableViewCell {
             make.width.equalTo(70)
         })
         
-        tf.snp.makeConstraints({ (make) in
-            make.centerY.equalTo(self)
-            make.right.equalTo(-10)
-            make.left.equalTo(titleLabel.snp.right).offset(10)
-            make.height.equalTo(32)
-        })
+//        tf.snp.makeConstraints({ (make) in
+//            make.centerY.equalTo(self)
+//            make.right.equalTo(-10)
+//            make.left.equalTo(titleLabel.snp.right).offset(10)
+//            make.height.equalTo(32)
+//        })
         
 //        rightIV.snp.makeConstraints({ (make) in
 //            make.size.equalTo(CGSize(width: 8, height: 14))

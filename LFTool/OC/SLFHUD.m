@@ -62,8 +62,10 @@ static SLFHUD * _HUD = nil;
 + (void)showHudInView:(UIView *)view hint:(NSString *)hint {
     MBProgressHUD *HUD = [[MBProgressHUD alloc] initWithView:view];
     HUD.label.text = hint;
+    HUD.mode = MBProgressHUDModeText;
     [view addSubview:HUD];
     [HUD showAnimated:YES];
+    [HUD hideAnimated:YES afterDelay:2];
     [[SLFHUD share] setHUD:HUD];
 }
 
@@ -72,6 +74,7 @@ static SLFHUD * _HUD = nil;
     MBProgressHUD * hud = [MBProgressHUD showHUDAddedTo:view animated:YES];
     hud.label.text = hint;
     [hud showAnimated:YES];
+    [hud hideAnimated:YES afterDelay:15];
     [[SLFHUD share] setHUD:hud];
 }
 
@@ -79,6 +82,7 @@ static SLFHUD * _HUD = nil;
     UIView *view = [[UIApplication sharedApplication].delegate window];
     MBProgressHUD * hud = [MBProgressHUD showHUDAddedTo:view animated:YES];
     [hud showAnimated:YES];
+    [hud hideAnimated:YES afterDelay:15];
     [[SLFHUD share] setHUD:hud];
 }
 
@@ -89,6 +93,7 @@ static SLFHUD * _HUD = nil;
     // Configure for text only and offset down
     hud.mode = MBProgressHUDModeText;
     hud.label.text = hint;
+    hud.label.numberOfLines = 0;
 //    hud.margin = 10.f;
 //    hud.yOffset = 180;
     hud.removeFromSuperViewOnHide = YES;

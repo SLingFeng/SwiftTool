@@ -7,12 +7,14 @@
 //
 
 import UIKit
-import RxCocoa
 import RxSwift
+import RxCocoa
 
 class LFBaseViewController: UIViewController {
 
     var obj: Any?
+    
+    var index = 1
     
     public let dig = DisposeBag()
     
@@ -48,7 +50,7 @@ class LFBaseViewController: UIViewController {
     }
     
     deinit {
-        LFTool.Log(m: #function)
+        LFTool.Log(#function)
     }
     
     /*
@@ -64,4 +66,39 @@ class LFBaseViewController: UIViewController {
     
 }
 
-
+//扩展view 显示Hud
+extension Reactive where Base: UIViewController {
+    //让验证结果（ValidationResult类型）可以绑定到label上
+    var validationResult: Binder<ValidationResult> {
+        return Binder(base) { label, result in
+            switch result {
+            case .ok(let m),
+                 .failed(let m):
+                SLFHUD.show(in: label.view, hint: m)
+            case .empty: break
+            case .validating: break
+//            case .failed(let message):
+//                SLFHUD.show(in: label.view, hint: message)
+            }
+            
+//            label.textColor = result.textColor
+//            label.text = result.description
+        }
+    }
+}
+public enum ValidationResult {
+    case ok(_ message: String)
+    case empty
+    case validating
+    case failed(_ message: String)
+}
+extension ValidationResult {
+    var isValid: Bool {
+        switch self {
+        case .ok:
+            return true
+        default:
+            return false
+        }
+    }
+}
