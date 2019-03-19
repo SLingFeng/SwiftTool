@@ -18,6 +18,8 @@ class LFBaseViewController: UIViewController {
     
     public let dig = DisposeBag()
     
+    lazy var webView = UIWebView(frame: CGRect.zero)
+    
     override func viewDidLoad() {
         super.viewDidLoad()
 

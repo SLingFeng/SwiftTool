@@ -86,27 +86,27 @@
     NSString *text;
 
     switch (self.tState) {
-        case MyTableViewStateNormal:
+        case MyTableViewStatusNormal:
             return nil;
             break;
-        case MyTableViewStateNoData: {
+        case MyTableViewStatusNoData: {
             text = @"暂无数据";
         }
             break;
-        case MyTableViewStateFailedLoad: {
+        case MyTableViewStatusFailedLoad: {
             text = @"加载失败";
         }
             break;
-        case MyTableViewStateError: {
+        case MyTableViewStatusError: {
             text = @"加载出错";
         }
             break;
-        case MyTableViewStateUnknownError: {
+        case MyTableViewStatusUnknownError: {
             text = @"未知错误";
         }
             break;
-        case MyTableViewStateCustomize:
-        case MyTableViewStateImage: {
+        case MyTableViewStatusCustomize:
+        case MyTableViewStatusImage: {
             text = _loadTitle;
         }
             break;
@@ -129,27 +129,27 @@
     NSString *text = nil;
     
     switch (self.tState) {
-        case MyTableViewStateNormal:
+        case MyTableViewStatusNormal:
             return nil;
             break;
-        case MyTableViewStateNoData: {
+        case MyTableViewStatusNoData: {
 //            text = @"暂无数据";
         }
             break;
-        case MyTableViewStateFailedLoad: {
+        case MyTableViewStatusFailedLoad: {
 //            text = @"加载失败";
         }
             break;
-        case MyTableViewStateError: {
+        case MyTableViewStatusError: {
 //            text = @"加载出错";
         }
             break;
-        case MyTableViewStateUnknownError: {
+        case MyTableViewStatusUnknownError: {
             text = @"未知错误";
         }
             break;
-        case MyTableViewStateCustomize:
-        case MyTableViewStateImage: {
+        case MyTableViewStatusCustomize:
+        case MyTableViewStatusImage: {
             if (!kStringIsEmpty(_loadDescription)) {
                 text = _loadDescription;
             }
@@ -174,27 +174,33 @@
     UIColor *textColor = [SLFCommonTools colorHex:@"666666"];
     
     switch (self.tState) {
-        case MyTableViewStateNormal:
+        case MyTableViewStatusNormal:
+//            return nil;
+//            break;
+        case MyTableViewStatusNoData:
+//        {
+//            text = @"点击刷新";
+//        }
+//            break;
+        case MyTableViewStatusFailedLoad:
+//        {
+//            text = @"点击刷新";
+//        }
+//            break;
+        case MyTableViewStatusError:
+//        {
+//            text = @"点击刷新";
+//        }
+//            break;
+        case MyTableViewStatusUnknownError:
+//        {
+//            text = @"点击刷新";
+//        }
+//            break;
             return nil;
             break;
-        case MyTableViewStateNoData: {
-            text = @"点击刷新";
-        }
-            break;
-        case MyTableViewStateFailedLoad: {
-            text = @"点击刷新";
-        }
-            break;
-        case MyTableViewStateError: {
-            text = @"点击刷新";
-        }
-            break;
-        case MyTableViewStateUnknownError: {
-            text = @"点击刷新";
-        }
-            break;
-        case MyTableViewStateCustomize:
-        case MyTableViewStateImage: {
+        case MyTableViewStatusCustomize:
+        case MyTableViewStatusImage: {
             if (kStringIsEmpty(_loadButtonTitle)) {
 //                text = @"点击刷新";
             }else {
@@ -242,8 +248,8 @@
 
 - (UIImage *)imageForEmptyDataSet:(UIScrollView *)scrollView {
     switch (self.tState) {
-        case MyTableViewStateCustomize:
-        case MyTableViewStateImage:
+        case MyTableViewStatusCustomize:
+        case MyTableViewStatusImage:
             return self.loadImage;
             break;
             
@@ -280,7 +286,7 @@
     return YES;
 }
 
-- (void)setTState:(MyTableViewState)tState {
+- (void)setTState:(MyTableViewStatus)tState {
     _tState = tState;
     [self reloadEmptyDataSet];
     [self reloadData];

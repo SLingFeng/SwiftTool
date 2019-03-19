@@ -13,12 +13,14 @@ NS_ASSUME_NONNULL_BEGIN
 @interface GVUserDefaults (CT_UserInfo)
 @property (nonatomic, copy) NSString *balance;
 
-@property (nonatomic, copy) NSString *auditStatus;
-@property (nonatomic, assign) NSInteger status;
+@property (nonatomic, copy) NSString *auditStatusStr;
+@property (nonatomic, assign) NSInteger auditStatus;
 ///0未提交 
 @property (nonatomic, assign) NSInteger bankCardStatus;
 ///0设置了
 @property (nonatomic, assign) NSInteger pwdStatus;
+
+@property (nonatomic, copy) NSString *service_qq;
 
 @end
 

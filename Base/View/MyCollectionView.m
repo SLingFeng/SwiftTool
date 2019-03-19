@@ -77,26 +77,26 @@
     NSString *text;
     
     switch (self.cState) {
-            case MyTableViewStateNormal:
+            case MyTableViewStatusNormal:
             return nil;
             break;
-            case MyTableViewStateNoData: {
+            case MyTableViewStatusNoData: {
                 text = @"暂无数据";
             }
             break;
-            case MyTableViewStateFailedLoad: {
+            case MyTableViewStatusFailedLoad: {
                 text = @"加载失败";
             }
             break;
-            case MyTableViewStateError: {
+            case MyTableViewStatusError: {
                 text = @"加载出错";
             }
             break;
-            case MyTableViewStateUnknownError: {
+            case MyTableViewStatusUnknownError: {
                 text = @"未知错误";
             }
             break;
-            case MyTableViewStateCustomize:
+            case MyTableViewStatusCustomize:
             case MyCollectionViewStateImage: {
                 text = _loadTitle;
             }
@@ -117,26 +117,26 @@
     NSString *text = nil;
     
     switch (self.cState) {
-            case MyTableViewStateNormal:
+            case MyTableViewStatusNormal:
             return nil;
             break;
-            case MyTableViewStateNoData: {
+            case MyTableViewStatusNoData: {
                 //            text = @"暂无数据";
             }
             break;
-            case MyTableViewStateFailedLoad: {
+            case MyTableViewStatusFailedLoad: {
                 //            text = @"加载失败";
             }
             break;
-            case MyTableViewStateError: {
+            case MyTableViewStatusError: {
                 //            text = @"加载出错";
             }
             break;
-            case MyTableViewStateUnknownError: {
+            case MyTableViewStatusUnknownError: {
                 text = @"未知错误";
             }
             break;
-            case MyTableViewStateCustomize: {
+            case MyTableViewStatusCustomize: {
                 if (!kStringIsEmpty(_loadDescription)) {
                     text = _loadDescription;
                 }
@@ -158,27 +158,27 @@
 - (NSAttributedString *)buttonTitleForEmptyDataSet:(UIScrollView *)scrollView forState:(UIControlState)state {
     NSString *text = nil;
     switch (self.cState) {
-            case MyTableViewStateNormal:
+            case MyTableViewStatusNormal:
             return nil;
             break;
-            case MyTableViewStateNoData: {
+            case MyTableViewStatusNoData: {
                 text = @"点击刷新";
             }
             break;
-            case MyTableViewStateFailedLoad: {
+            case MyTableViewStatusFailedLoad: {
                 text = @"点击刷新";
             }
             break;
-            case MyTableViewStateError: {
+            case MyTableViewStatusError: {
                 text = @"点击刷新";
             }
             break;
-            case MyTableViewStateUnknownError: {
+            case MyTableViewStatusUnknownError: {
                 text = @"点击刷新";
             }
             break;
-            case MyTableViewStateCustomize:
-            case MyTableViewStateImage: {
+            case MyTableViewStatusCustomize:
+            case MyTableViewStatusImage: {
                 if (kStringIsEmpty(_loadButtonTitle)) {
                     //                text = @"点击刷新";
                 }else {
@@ -242,7 +242,7 @@
     return YES;
 }
 
-- (void)setCState:(MyTableViewState)cState {
+- (void)setCState:(MyTableViewStatus)cState {
     _cState = cState;
     [self reloadEmptyDataSet];
     [self reloadData];

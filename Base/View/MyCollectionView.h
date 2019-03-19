@@ -49,7 +49,7 @@ typedef enum : NSUInteger {
  */
 @property (copy, nonatomic) void(^stateOnClickBlock)(void);
 
-@property (assign, nonatomic) MyTableViewState cState;
+@property (assign, nonatomic) MyTableViewStatus cState;
 #pragma mark -
 /**
  设置头刷新（必须先调用

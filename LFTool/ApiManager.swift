@@ -29,7 +29,7 @@ enum Api {
     case common_sendCode([String : String])
     case user_rePwd([String : String])
     case article_getArticleInfo([String : String])
-    case user_showBalance([String : String])
+    case user_showBalance
     case user_uploadImg([Data])
     case user_realNameAuth([String : String])
     case user_getRealNameStatus
@@ -38,21 +38,23 @@ enum Api {
     case user_setWDPwd([String : String])
     case user_issetWDPwd
     case user_resetPhone([String : String])
-    
+    case user_getUserCapital([String : String])
+    case user_getWithdrawList([String : String])
+    case pay_userPay([String : String])
+    case user_getDepositList([String : String])
+    case config_getConfigData
 }
 
 extension Api: TargetType {
     var baseURL: URL {
-//        switch self {
-//        case .getList:
-//            return URL(string: "https://itunes.apple.com/")!
-//        case .postData:
-            return URL(string: "http://pzy.stocklu.com/")!
-//        }
+        return URL(string: "http://pz.xycs789.com/")!
     }
     
     var path: String {
         switch self {
+            ///配置
+        case .config_getConfigData:
+            return "api/config/getConfigData"
             //登录图形验证码
         case .commonverify:
             return "api/common/verify"
@@ -68,39 +70,67 @@ extension Api: TargetType {
             //短信验证码
         case .common_sendCode:
             return "api/common/sendCode"
+            ///重制密码
         case .user_rePwd(_):
             return "api/user/rePwd"
+            ///资讯 共用
         case .article_getArticleInfo(_):
             return "api/article/getArticleInfo"
-        case .user_showBalance(_):
+            ///显示余额
+        case .user_showBalance:
             return "api/user/showBalance"
+            ///上传身份证
         case .user_uploadImg(_):
             return "api/user/uploadImg"
+            ///实名认证
         case .user_realNameAuth(_):
             return "api/user/realNameAuth"
+            ///实名认证状态
         case .user_getRealNameStatus:
             return "api/user/getRealNameStatus"
+            ///设置银行卡
         case .user_setBankCard:
             return "api/user/setBankCard"
+            ///检查银行卡
         case .user_bankCardInfo:
             return "api/user/bankCardInfo"
+            ///设置密码
         case .user_setWDPwd:
             return "api/user/setWDPwd"
         case .user_issetWDPwd:
             return "api/user/issetWDPwd"
+            ///重新设置手机号
         case .user_resetPhone:
             return "api/user/resetPhone"
+            ///用户资金流水接口
+        case .user_getUserCapital:
+            return "api/user/getUserCapital"
+            ///提现记录
+        case .user_getWithdrawList:
+            return "api/user/getWithdrawList"
+            ///支付
+        case .pay_userPay:
+            return "api/pay/userPay"
+            ///充值记录
+        case .user_getDepositList:
+            return "api/user/getDepositList"
+            
+            
+            
+            
+            
+            
         }
     }
     
     var method: Moya.Method {
-        switch self {
-        case .commonverify:
+//        switch self {
+//        case .commonverify:
+//            return .post
+//
+//        default:
             return .post
-            
-        default:
-            return .post
-        }
+//        }
     }
     
     var sampleData: Data {
@@ -116,11 +146,14 @@ extension Api: TargetType {
              var .common_sendCode(par),
              var .user_rePwd(par),
              var .article_getArticleInfo(par),
-             var .user_showBalance(par),
              var .user_setBankCard(par),
              var .user_realNameAuth(par),
              var .user_resetPhone(par),
-             var .user_setWDPwd(par):
+             var .user_setWDPwd(par),
+             var .user_getUserCapital(par),
+             var .user_getWithdrawList(par),
+             var .pay_userPay(par),
+             var .user_getDepositList(par):
             
             
             par["token"] = Environment().token ?? ""
@@ -172,7 +205,7 @@ class WebService {
     static func manager() -> Alamofire.SessionManager {
         let configuration = URLSessionConfiguration.default
         configuration.httpAdditionalHeaders = Alamofire.SessionManager.defaultHTTPHeaders
-        configuration.timeoutIntervalForRequest = 30 // timeout
+        configuration.timeoutIntervalForRequest = 10 // timeout
         let manager = Alamofire.SessionManager(configuration: configuration)
 //        manager.adapter = CustomRequestAdapter()
         return manager

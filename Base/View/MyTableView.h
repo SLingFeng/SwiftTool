@@ -8,20 +8,20 @@
 #import "LF_OCHead.h"
 
 typedef enum : NSUInteger {
-    MyTableViewStateNormal,//正常状态
-    MyTableViewStateNoData,//没有数据
-    MyTableViewStateFailedLoad,//加载失败
-    MyTableViewStateError,//加载错误
-    MyTableViewStateUnknownError,//未知错误
+    MyTableViewStatusNormal,//正常状态
+    MyTableViewStatusNoData,//没有数据
+    MyTableViewStatusFailedLoad,//加载失败
+    MyTableViewStatusError,//加载错误
+    MyTableViewStatusUnknownError,//未知错误
     /**
      自定义的状态
      需要设置 
      必须：loadTitle
      可选：loadButtonTitle loadDescription
      */
-    MyTableViewStateCustomize,
-    MyTableViewStateImage,//图片显示
-} MyTableViewState;
+    MyTableViewStatusCustomize,
+    MyTableViewStatusImage,//图片显示
+} MyTableViewStatus;
 
 @interface MyTableView : UITableView
 
@@ -57,7 +57,7 @@ typedef enum : NSUInteger {
  */
 @property (copy, nonatomic) void(^stateOnClickBlock)(void);
 
-@property (assign, nonatomic) MyTableViewState tState;
+@property (assign, nonatomic) MyTableViewStatus tState;
 #pragma mark -
 /**
  设置头刷新（必须先调用

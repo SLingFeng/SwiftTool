@@ -18,7 +18,7 @@ struct Environment {
     
     var token: String? {
         get {
-            return try! keychainService.get(forKey: KeychainKeys.Token.rawValue)
+            return try? keychainService.get(forKey: KeychainKeys.Token.rawValue) ?? ""
         }
         
         set {
@@ -60,10 +60,14 @@ struct Environment {
     }
     
     var tokenExists: Bool {
-        guard let _ = token else {
+        if token!.isEmpty {
             return false
         }
         return true
+//        guard let _ = token else {
+//            return false
+//        }
+//        return true
     }
 
     func isLogin() -> Observable<Bool>  {

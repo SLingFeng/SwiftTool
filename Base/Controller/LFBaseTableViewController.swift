@@ -8,6 +8,8 @@
 
 import UIKit
 import SnapKit
+import RxCocoa
+import RxSwift
 
 class LFBaseTableViewController: LFBaseViewController, UITableViewDelegate, UITableViewDataSource {
 
@@ -19,7 +21,7 @@ class LFBaseTableViewController: LFBaseViewController, UITableViewDelegate, UITa
         self.tableView.dataSource = self
         self.tableView.delegate = self
         self.tableView.tableHeaderView = UIView(frame: .zero)
-        self.tableView.tState = MyTableViewStateNormal
+        self.tableView.tState = MyTableViewStatusNormal
         self.view.addSubview(self.tableView)
         if  #available(iOS 11.0, *) {
             self.tableView.estimatedSectionHeaderHeight = 0.01
@@ -69,7 +71,7 @@ class LFRxBaseTableViewController: LFBaseViewController, UITableViewDelegate {
 //        self.tableView.delegate = self
         self.tableView.backgroundColor = kF8F8F8
         self.tableView.tableHeaderView = UIView(frame: .zero)
-        self.tableView.tState = MyTableViewStateNormal
+        self.tableView.tState = MyTableViewStatusNormal
         self.view.addSubview(self.tableView)
         if  #available(iOS 11.0, *) {
             self.tableView.estimatedSectionHeaderHeight = 0.01
@@ -80,6 +82,9 @@ class LFRxBaseTableViewController: LFBaseViewController, UITableViewDelegate {
         self.tableView.snp.makeConstraints({ (make) in
             make.edges.equalTo(self.view).inset(UIEdgeInsets.zero)
         })
+        
+        self.tableView.headerSetup()
+        self.tableView.footerSetup()
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
@@ -106,4 +111,60 @@ class LFRxBaseTableViewController: LFBaseViewController, UITableViewDelegate {
         self.view.endEditing(true)
     }
     
+}
+
+//对MyTableView增加rx扩展
+extension Reactive where Base: MyTableView {
+    
+//    状态
+    var toState: Binder<MyTableViewStatus> {
+        return Binder(base) { tableView, state in
+            tableView.tState = state
+        }
+    }
+    var toFooterState: Binder<Int> {
+        return Binder(base) { tableView, index in
+            if index == 0 {
+                tableView.mj_footer.resetNoMoreData()
+            }else {
+                tableView.mj_footer.endRefreshingWithNoMoreData()
+            }
+        }
+    }
+}
+//对MJRefreshComponent增加rx扩展
+extension Reactive where Base: MJRefreshComponent {
+    
+    //正在刷新事件
+    var refreshing: ControlEvent<Void> {
+        let source: Observable<Void> = Observable.create {
+            [weak control = self.base] observer  in
+            if let control = control {
+                control.refreshingBlock = {
+                    observer.on(.next(()))
+                }
+            }
+            return Disposables.create()
+        }
+        return ControlEvent(events: source)
+    }
+    
+    //停止刷新
+    var endRefreshing: Binder<Bool> {
+        return Binder(base) { refresh, isEnd in
+            if isEnd {
+                refresh.endRefreshing()
+            }
+        }
+    }
+    
+    //停止刷新
+//    var endRefreshingStatus: Binder<Int> {
+//        return Binder(base) { refresh, status in
+//            if status == 0 {
+//                refresh.state = MJRefreshState(rawValue: 5)!
+//            }
+//            refresh.endRefreshing()
+//        }
+//    }
 }
