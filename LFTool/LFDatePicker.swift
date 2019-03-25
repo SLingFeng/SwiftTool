@@ -93,7 +93,10 @@ class LFDatePicker: UIView, UIPickerViewDelegate, UIPickerViewDataSource {
                 make.bottom.equalTo(-39)
             })
             datePicker.rx.date.subscribe(onNext: {[weak self] x in
-                self?.doneSub.onNext(self!.dateFormatter.string(from: x))
+                if let strongSelf = self {
+                     strongSelf.doneSub.onNext(strongSelf.dateFormatter.string(from: x))
+                }
+               
             }).disposed(by: disposeBag)
         case .text:
             self.data = data

@@ -10,6 +10,8 @@
 
 @implementation GVUserDefaults (CT_UserInfo)
 
-
+- (NSString *)chaopanyuer {
+    return [NSString stringWithFormat:@"%.2f", self.margin.doubleValue - self.tradeMoney.doubleValue];
+}
 
 @end

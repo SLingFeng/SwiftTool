@@ -20,7 +20,7 @@ class LFBaseTableViewController: LFBaseViewController, UITableViewDelegate, UITa
         self.tableView = MyTableView(frame: .zero, style: style)
         self.tableView.dataSource = self
         self.tableView.delegate = self
-        self.tableView.tableHeaderView = UIView(frame: .zero)
+        self.tableView.tableHeaderView = UIView(frame: .init(x: 0, y: 0, width: 0, height: CGFloat.leastNormalMagnitude))
         self.tableView.tState = MyTableViewStatusNormal
         self.view.addSubview(self.tableView)
         if  #available(iOS 11.0, *) {

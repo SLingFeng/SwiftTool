@@ -620,19 +620,30 @@ static SLFCommonTools * tools = nil;
 
 #pragma mark - 清除缓存
 +(NSString *)clearMsg {
-    float tmpSize = 0;// [[SDImageCache sharedImageCache] getSize];
+    float tmpSize = [[SDImageCache sharedImageCache] getSize];
     return [NSString stringWithFormat:@"%@", tmpSize >= 1 ? [NSString stringWithFormat:@"%.1fM",tmpSize/1024.0/1024.0] : [NSString stringWithFormat:@"%.1fK",tmpSize/1024.0/1024.0/1024.0]];
 }
 
-+(void)clearAll:(UIViewController *)vc {
++(void)clearAll:(UIViewController *)vc block:(void(^)(BOOL a))block {
     NSString * tt = [NSString stringWithFormat:@"%@%@", @"确定要清除缓存?\n当前有", [SLFCommonTools clearMsg]];
-    [SLFCommonTools showAlertViewTo:vc title:@"清除缓存" text:tt cancel:1];
-    [SLFCommonTools shareTools].alertClick = ^() {
-        //所有缓存 包括过期的
-//        [[SDImageCache sharedImageCache] clearDisk];
-//        [[SDImageCache sharedImageCache] clearMemory];
-//        [[SDImageCache sharedImageCache] cleanDisk];
-    };
+
+    [SLFAlert showSystemAlertWithTitle:@"清除缓存" text:tt determineTitle:@"清除" cancelTitle:@"取消" alertClick:^(BOOL rightClick) {
+        if (rightClick) {
+            [SLFHUD showLoadingHint:@"清除中..."];
+            //所有缓存 包括过期的
+            [[SDImageCache sharedImageCache] clearDiskOnCompletion:^{
+                [SLFHUD hideHud];
+                [SLFHUD showHint:@"清除成功"];
+                block(YES);
+            }];
+            [[SDImageCache sharedImageCache] clearMemory];
+        }
+    }];
+//    [SLFCommonTools showAlertViewTo:vc title:@"清除缓存" text:tt cancel:1];
+//    [SLFCommonTools shareTools].alertClick = ^() {
+//
+////        [[SDImageCache sharedImageCache] cle];
+//    };
     
 }
 
@@ -1726,6 +1737,17 @@ static SLFCommonTools * tools = nil;
     }
     return bankNum;
     
+}
+
++ (NSString *)chang:(NSMutableString *)responseString {
+    NSString *character = nil;
+    for (int i = 0; i < responseString.length; i ++) {
+        character = [responseString substringWithRange:NSMakeRange(i, 1)];
+        if ([character isEqualToString:@"\\"])
+            [responseString deleteCharactersInRange:NSMakeRange(i, 1)];
+    }
+//    NSLog(@"%@",responseString);
+    return responseString;
 }
 
 @end

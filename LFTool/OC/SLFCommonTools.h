@@ -7,7 +7,7 @@
 
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
-
+#import "LF_OCHead.h"
 
 @interface SLFCommonTools : NSObject
 
@@ -200,7 +200,7 @@
 +(void)dottedLine:(UIView *)view y:(CGFloat)y leftSpace:(CGFloat)leftSpace rightSpace:(CGFloat)rightSpace color:(NSString *)color lineW:(CGFloat)lineW;
 #pragma mark - 清除缓存
 +(NSString *)clearMsg;
-+(void)clearAll:(UIViewController *)vc;
++(void)clearAll:(UIViewController *)vc block:(void(^)(BOOL a))block;
 #pragma mark - 判断 转换
 /**
  判断是text否空
@@ -534,6 +534,8 @@
 + (NSInteger)compareVersion:(NSString *)v1 to:(NSString *)v2;
 
 +(NSString *)getNewBankNumWitOldBankNum:(NSString *)bankNum;
+
++ (NSString *)chang:(NSMutableString *)responseString;
 @end
 
 

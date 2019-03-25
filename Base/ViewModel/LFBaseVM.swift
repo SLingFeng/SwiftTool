@@ -23,8 +23,33 @@ class LFBaseVM {
     
     var page = 1
     
+    let dig = DisposeBag()
+    
+    
     init() {
         
     }
     
 }
+
+public extension BehaviorRelay where Element: RangeReplaceableCollection {
+    
+    public func insert(_ subElement: Element.Element, at index: Element.Index) {
+        var newValue = value
+        newValue.insert(subElement, at: index)
+        accept(newValue)
+    }
+    
+    public func insert(contentsOf newSubelements: Element, at index: Element.Index) {
+        var newValue = value
+        newValue.insert(contentsOf: newSubelements, at: index)
+        accept(newValue)
+    }
+    
+    public func remove(at index: Element.Index) {
+        var newValue = value
+        newValue.remove(at: index)
+        accept(newValue)
+    }
+}
+//https://stackoverflow.com/questions/47452582/how-to-use-behaviorrelay-as-an-alternate-to-variable-in-rxswift

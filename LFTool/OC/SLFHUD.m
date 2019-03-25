@@ -66,6 +66,7 @@ static SLFHUD * _HUD = nil;
     [view addSubview:HUD];
     [HUD showAnimated:YES];
     [HUD hideAnimated:YES afterDelay:2];
+    HUD.label.numberOfLines = 0;
     [[SLFHUD share] setHUD:HUD];
 }
 
@@ -73,14 +74,18 @@ static SLFHUD * _HUD = nil;
     UIView *view = [[UIApplication sharedApplication].delegate window];
     MBProgressHUD * hud = [MBProgressHUD showHUDAddedTo:view animated:YES];
     hud.label.text = hint;
+    hud.label.numberOfLines = 0;
     [hud showAnimated:YES];
     [hud hideAnimated:YES afterDelay:15];
     [[SLFHUD share] setHUD:hud];
 }
 
 + (void)showLoading {
-    UIView *view = [[UIApplication sharedApplication].delegate window];
-    MBProgressHUD * hud = [MBProgressHUD showHUDAddedTo:view animated:YES];
+    MBProgressHUD * hud = [SLFHUD Hud];
+    if (hud == nil) {
+        UIView *view = [[UIApplication sharedApplication].delegate window];
+        hud = [MBProgressHUD showHUDAddedTo:view animated:YES];
+    }
     [hud showAnimated:YES];
     [hud hideAnimated:YES afterDelay:15];
     [[SLFHUD share] setHUD:hud];
@@ -108,6 +113,7 @@ static SLFHUD * _HUD = nil;
     // Configure for text only and offset down
     hud.mode = MBProgressHUDModeText;
     hud.label.text = hint;
+    hud.label.numberOfLines = 0;
     hud.margin = 10.f;
     //    hud.yOffset = 180;
     hud.removeFromSuperViewOnHide = YES;
@@ -121,6 +127,7 @@ static SLFHUD * _HUD = nil;
     // Configure for text only and offset down
     hud.mode = MBProgressHUDModeText;
     hud.label.text = hint;
+    hud.label.numberOfLines = 0;
     hud.margin = 10.f;
 //    hud.yOffset = 180;
 //    hud.yOffset += yOffset;
@@ -140,6 +147,7 @@ static SLFHUD * _HUD = nil;
     hud.delegate = [SLFHUD share];
     hud.mode = MBProgressHUDModeText;
     hud.label.text = hint;
+    hud.label.numberOfLines = 0;
     [hud hideAnimated:YES afterDelay:delay];
     [SLFHUD share].completion = ^() {
         hud.delegate = nil;
@@ -160,6 +168,7 @@ static SLFHUD * _HUD = nil;
     MBProgressHUD *hud = [MBProgressHUD showHUDAddedTo:view animated:YES];
     hud.mode = MBProgressHUDModeAnnularDeterminate;
     hud.label.text = hint;
+    hud.label.numberOfLines = 0;
     [[SLFHUD share] setHUD:hud];
     return hud;
 }
@@ -174,6 +183,7 @@ static SLFHUD * _HUD = nil;
     HUDInView.center=CGPointMake(view.center.x, view.center.y - view.frame.origin.y);
     HUDInView.removeFromSuperViewOnHide = YES;
     HUDInView.label.text = hint;
+    HUDInView.label.numberOfLines = 0;
     HUDInView.square = YES;
     HUDInView.mode = MBProgressHUDModeCustomView;
     HUDInView.layer.cornerRadius=4.0f;

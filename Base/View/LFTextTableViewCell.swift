@@ -7,9 +7,11 @@
 //
 
 import UIKit
+import RxCocoa
+import RxSwift
 
-class LFTextTableViewCell: UITableViewCell {
-
+class LFTextTableViewCell: LFBaseTableViewCell {
+    
     var titleLabel = UILabel(fontSize: 16, fontColor: k333333, text: "标题")
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {

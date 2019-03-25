@@ -7,6 +7,7 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "LF_OCHead.h"
 
 typedef enum : NSUInteger {
     BaseTextFieldEnterAll,

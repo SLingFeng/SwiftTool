@@ -14,6 +14,18 @@ public let kScreenH = UIScreen.main.responds(to: #selector(getter: UIScreen.nati
 
 let kScreen = UIScreen.main.bounds
 
+public func LFLog<T>(_ m: T,
+                         file: String = #file,
+                         method: String = #function,
+                         line: Int = #line) {
+    //新版本的 LLVM 编译器在遇到这个空方法时，甚至会直接将这个方法整个去掉，完全不去调用它，从而实现零成本。 https://swifter.tips/log/
+    #if DEBUG
+    print("\((file as NSString).lastPathComponent)[\(line)], \(method): \(m)")
+    #endif
+}
+
+let kPlImage = UIImage(named: "png_home_no")
+
 class LFTool: NSObject {
 
     public class func isIPHONEXLAST() -> Bool {
@@ -47,15 +59,7 @@ class LFTool: NSObject {
         return LFTool.isIPHONEXLAST() ? 83.0 : 49.0
     }
     
-    public class func Log<T>(_ m: T,
-                     file: String = #file,
-                     method: String = #function,
-                     line: Int = #line) {
-        //新版本的 LLVM 编译器在遇到这个空方法时，甚至会直接将这个方法整个去掉，完全不去调用它，从而实现零成本。 https://swifter.tips/log/
-        #if DEBUG
-        print("\((file as NSString).lastPathComponent)[\(line)], \(method): \(m)")
-        #endif
-    }
+    
     // MARK: - 九宫格
     public class func JGG_X(_ xl: CGFloat, _ width: CGFloat, _ w: CGFloat, _ i: CGFloat, _ count: CGFloat) -> CGFloat {
         return xl + (width + w) * (i.truncatingRemainder(dividingBy: count))
@@ -116,6 +120,57 @@ class LFTool: NSObject {
     class func heightScaleTo(scale: CGFloat, width: CGFloat) -> CGFloat {
         return width/scale
     }
+    ///缩写万元
+    class func toWanYi(money: String) -> String {
+        if money.count > 8 {
+            let t = Double(money)! / 10000 / 10000
+            return String(format: "%.2f亿", t)
+        }else if money.count > 4 {
+            let t = Double(money)! / 10000
+            return String(format: "%.2f万", t)
+        }
+        return money + "元"
+    }
+    class func toWanShou(money: String) -> String {
+        if money.count >= 5 {
+            let t = Double(money)! / 10000
+            
+            return String(format: "%.2f万手", t)
+        }
+        return money + "手"
+    }
+    //股票代码 1:上证 2深证
+    class func marketJudgment(code: String) -> String {
+        if (code.isEmpty == false && code.count > 3) {
+            let topThree = (code as NSString).substring(to: 3)//code.slice(0, 3);
+            switch (topThree) {
+            case "110",
+             "120",
+             "129",
+             "100",
+             "201",
+             "310",
+             "500",
+             "550",
+             "600",
+             "700",
+             "710",
+             "701",
+             "720",
+             "730",
+             "735",
+             "737",
+             "900",
+             "601",
+             "603":
+                return "1"
+            default:
+            return "2"
+            }
+        }
+        return ""
+    }
+    
 }
 
 //var str = "hangge.com"

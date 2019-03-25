@@ -88,6 +88,12 @@ class LF_EditTableViewCell: UITableViewCell {
             }
             self.custom = model!.custom
             tf.isSecureTextEntry = model!.isSecureTextEntry
+            
+//            if #available(iOS 10.0, *) {
+//                tf.textContentType = nil
+//            } else {
+//                // Fallback on earlier versions
+//            }
 //            if model!.type == 10 || model!.type == 0 {
 //                rightIV.hidden = false
 //            } else {

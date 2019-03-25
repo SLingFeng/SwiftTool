@@ -16,7 +16,7 @@ class LFAlert: NSObject {
     
    
     
-    class func initAlert(title: String, leftTitle: String, rightTitle: String, change: Bool, contentView: UIView) -> Single<Int> {
+    class func initAlert(title: String, leftTitle: String, rightTitle: String, change: Bool, contentView: UIView?) -> Single<Int> {
 //        let dig = DisposeBag()
 
         return Single<Int>.create { single in
@@ -50,26 +50,44 @@ class LFAlert: NSObject {
             rightBtn.backgroundColor = kMainColor
             rightBtn.layer.cornerRadius = 5
             
-            //        if contentView != nil {
-            alertView.addSubview(contentView)
-            //        }
-            
             alertView.snp.makeConstraints({ (make) in
                 make.left.equalTo(10)
                 make.right.equalTo(-10)
-                make.center.equalTo(_backgroundView)
-                make.height.equalTo(150 + contentView.frame.size.height)
+                make.centerX.equalTo(_backgroundView)
+                make.centerY.equalTo(_backgroundView).offset(-50)
+                if (contentView != nil) {
+                    make.height.equalTo(150 + contentView!.frame.size.height)
+                }else {
+                    make.height.equalTo(150)
+                }
             })
+            if (contentView != nil) {
+                alertView.addSubview(contentView!)
+                
+                contentView!.snp.makeConstraints({ (make) in
+                    make.left.right.equalTo(0)
+                    make.top.equalTo(titleLabel.snp.bottom).offset(20)
+                    make.height.equalTo(contentView!.frame.height)
+                })
+            }
             
             _ = leftBtn.rx.tap.subscribe({_ in
-                LFAlert.removeView()
-                //                    block(0)
+//                LFAlert.removeView()
+                UIView.animate(withDuration: 0.3, animations: {
+                    _backgroundView.alpha = 0
+                }) { (_) in
+                    _backgroundView.removeFromSuperview()
+                }
                 single(.success(0))
             })
             
             _ = rightBtn.rx.tap.subscribe({_ in
-                LFAlert.removeView()
-                //                    block(1)
+//                LFAlert.removeView()
+                UIView.animate(withDuration: 0.3, animations: {
+                    _backgroundView.alpha = 0
+                }) { (_) in
+                    _backgroundView.removeFromSuperview()
+                }
                 single(.success(1))
             })
             
@@ -93,11 +111,7 @@ class LFAlert: NSObject {
                 make.width.equalTo(rightBtn).priority(999)
             })
             
-            contentView.snp.makeConstraints({ (make) in
-                make.left.right.equalTo(0)
-                make.top.equalTo(titleLabel.snp.bottom).offset(20)
-                make.height.equalTo(contentView.frame.height)
-            })
+            
             
             return Disposables.create()
         }

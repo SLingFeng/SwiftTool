@@ -27,7 +27,7 @@ class LFResponseModel: NSObject, HandyJSON {
     /**
      状态码
      */
-    var code: NSInteger = 0
+    var code: NSInteger = 1
     /**
      信息
      */

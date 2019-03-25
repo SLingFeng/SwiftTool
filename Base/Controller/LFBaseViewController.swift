@@ -35,8 +35,8 @@ class LFBaseViewController: UIViewController {
     
         if  #available(iOS 11.0, *) {
             let item = UIBarButtonItem(title: "", style: .plain, target: nil, action: #selector(self.backTap))
-            self.navigationController!.navigationBar.backIndicatorImage = UIImage(named: "ic_fanhui")
-            self.navigationController!.navigationBar.backIndicatorTransitionMaskImage = UIImage(named: "ic_fanhui")
+            self.navigationController?.navigationBar.backIndicatorImage = UIImage(named: "ic_fanhui")
+            self.navigationController?.navigationBar.backIndicatorTransitionMaskImage = UIImage(named: "ic_fanhui")
             self.navigationItem.backBarButtonItem = item
 
         }
@@ -52,7 +52,7 @@ class LFBaseViewController: UIViewController {
     }
     
     deinit {
-        LFTool.Log(#function)
+        LFLog("\(self.self)")
     }
     
     /*
