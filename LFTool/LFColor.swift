@@ -100,11 +100,11 @@ extension UIColor {
                 green = CGFloat((hexValue & 0x00FF0000) >> 16) / 255.0
                 blue  = CGFloat((hexValue & 0x0000FF00) >> 8)  / 255.0
                 alpha = CGFloat(hexValue & 0x000000FF)         / 255.0
-            default:
-                print("Invalid RGB string, number of characters after '#' should be either 3, 4, 6 or 8", terminator: "")
+            default: break
+//                print("Invalid RGB string, number of characters after '#' should be either 3, 4, 6 or 8", terminator: "")
             }
         } else {
-            print("Scan hex error")
+//            print("Scan hex error")
         }
         return UIColor.init(red:red, green:green, blue:blue, alpha:alpha)
     }
@@ -144,11 +144,11 @@ extension UIColor {
                 green = CGFloat((hexValue & 0x00FF0000) >> 16) / 255.0
                 blue  = CGFloat((hexValue & 0x0000FF00) >> 8)  / 255.0
                 alpha = CGFloat(hexValue & 0x000000FF)         / 255.0
-            default:
-                print("Invalid RGB string, number of characters after '#' should be either 3, 4, 6 or 8", terminator: "")
+            default: break
+//                print("Invalid RGB string, number of characters after '#' should be either 3, 4, 6 or 8", terminator: "")
             }
         } else {
-            print("Scan hex error")
+//            print("Scan hex error")
         }
         return UIColor.init(red:red, green:green, blue:blue, alpha:alpha)
     }

@@ -536,6 +536,9 @@
 +(NSString *)getNewBankNumWitOldBankNum:(NSString *)bankNum;
 
 + (NSString *)chang:(NSMutableString *)responseString;
+///判断当前时间是否在某个时间段if ([self isBetweenFromHour:9 toHour:10]) {}
++ (BOOL)isBetweenFromHour:(NSInteger)fromHour toHour:(NSInteger)toHour;
+
 @end
 
 

@@ -20,7 +20,8 @@ public func LFLog<T>(_ m: T,
                          line: Int = #line) {
     //新版本的 LLVM 编译器在遇到这个空方法时，甚至会直接将这个方法整个去掉，完全不去调用它，从而实现零成本。 https://swifter.tips/log/
     #if DEBUG
-    print("\((file as NSString).lastPathComponent)[\(line)], \(method): \(m)")
+    NSLog("%@", "\((file as NSString).lastPathComponent)[\(line)], \(method): \(m)")
+//    print("\((file as NSString).lastPathComponent)[\(line)], \(method): \(m)")
     #endif
 }
 
@@ -170,6 +171,44 @@ class LFTool: NSObject {
         }
         return ""
     }
+    //MARK: - 判断当前时间是否在fromHour和toHour之间。如，fromHour=8，toHour=23时，即为判断当前时间是否在8:00-23:00之间
+    class func isBetween(fromHour: Int, toHour: Int) -> Bool {
+        
+        let dateFrom = LFTool.getCustomDate(withHour: fromHour)
+        let dateTo = LFTool.getCustomDate(withHour: toHour)
+        
+        let currentDate = Date()
+        if currentDate.compare(dateFrom!) == .orderedDescending && currentDate.compare(dateTo!) == .orderedAscending {
+            return true
+        }
+        return false
+    }
+    /// 生成当天的某个点（返回的是伦敦时间，可直接与当前时间[NSDate date]比较）
+    ///
+    /// - Parameter hour: 如hour为“8”，就是上午8:00（本地时间）
+    /// - Returns:
+    class func getCustomDate(withHour hour: Int) -> Date? {
+        //获取当前时间
+        let currentDate = Date()
+        let currentCalendar = Calendar(identifier: .gregorian)
+        var currentComps = DateComponents()
+        
+        let unitFlags = Set<Calendar.Component>([.year, .month, .day, .weekday, .hour, .minute, .second])
+        
+        currentComps = currentCalendar.dateComponents(unitFlags, from: currentDate)
+        
+        //设置当天的某个点
+        var resultComps = DateComponents()
+        resultComps.year = currentComps.year
+        resultComps.month = currentComps.month
+        resultComps.day = currentComps.day
+        resultComps.hour = hour
+        
+        let resultCalendar = Calendar(identifier: .gregorian)
+        return resultCalendar.date(from: resultComps)
+    }
+    
+    
     
 }
 

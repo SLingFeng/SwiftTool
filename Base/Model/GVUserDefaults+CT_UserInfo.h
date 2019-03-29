@@ -59,6 +59,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, copy) NSString *fin_fee_pic;
 ///操盘余额 /配资账户余额=操盘金额-保证金余额
 - (NSString *)chaopanyuer;
+- (void)removeUserInfo;
 
 @end
 

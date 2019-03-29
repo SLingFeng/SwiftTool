@@ -25,8 +25,8 @@ struct Environment {
             do {
                 try keychainService.set(key: KeychainKeys.Token.rawValue, value: newValue!)
             }
-            catch let error {
-                print(error)
+            catch _ {
+//                print(error)
             }
         }
     }
@@ -39,8 +39,8 @@ struct Environment {
             do {
                 try keychainService.set(key: KeychainKeys.Uername.rawValue, value: newValue!)
             }
-            catch let error {
-                print(error)
+            catch _ {
+//                print(error)
             }
         }
     }
@@ -53,8 +53,8 @@ struct Environment {
             do {
                 try keychainService.set(key: KeychainKeys.Phone.rawValue, value: newValue!)
             }
-            catch let error {
-                print(error)
+            catch _ {
+//                print(error)
             }
         }
     }
@@ -107,8 +107,8 @@ class KeychainService {
         do {
             try keychain.set(value, key: key)
         }
-        catch let error {
-            print(error)
+        catch _ {
+//            print(error)
         }
     }
     func get(forKey: String) throws -> String? {

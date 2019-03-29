@@ -19,8 +19,11 @@ import MBProgressHUD
 //let token = Environment().token
 //let authPlugin = AccessTokenPlugin { token ?? "" }
 
-let apiProvider = MoyaProvider<Api>(manager: WebService.manager(), plugins: [RequestLoadingPlugin(), AuthPlugin()])
-let apiProviderNo = MoyaProvider<Api>(manager: WebService.manager(),plugins: [AuthPlugin()])
+//let apiProvider = MoyaProvider<Api>(manager: WebService.manager(), plugins: [RequestLoadingPlugin(), AuthPlugin()])
+//let apiProviderNo = MoyaProvider<Api>(manager: WebService.manager(), plugins: [AuthPlugin()])
+
+let apiProvider = MoyaProvider<Api>(plugins: [RequestLoadingPlugin(), AuthPlugin()])
+let apiProviderNo = MoyaProvider<Api>(plugins: [AuthPlugin()])
 
 
 enum Api {
@@ -321,7 +324,7 @@ class WebService {
     static func manager() -> Alamofire.SessionManager {
         let configuration = URLSessionConfiguration.default
         configuration.httpAdditionalHeaders = Alamofire.SessionManager.defaultHTTPHeaders
-        configuration.timeoutIntervalForRequest = 10 // timeout
+        configuration.timeoutIntervalForRequest = 30 // timeout
         let manager = Alamofire.SessionManager(configuration: configuration)
 //        manager.adapter = CustomRequestAdapter()
         return manager
@@ -373,7 +376,7 @@ public final class RequestLoadingPlugin:PluginType{
 func apiRequset(_ token: Any) -> Single<LFResponseModel> {
     
     return Single<LFResponseModel>.create(subscribe: { (se) -> Disposable in
-        let api = apiProvider.rx.request(token as! Api).asObservable().mapModel(LFResponseModel.self).subscribe(onNext: { (model) in
+        let api = apiProvider.rx.request(token as! Api).retry(1).asObservable().mapModel(LFResponseModel.self).subscribe(onNext: { (model) in
             if model.code == 0 {
                 se(.success(model))
             }else if model.code == 2 {
@@ -436,7 +439,7 @@ func apiRequset(_ token: Any) -> Single<LFResponseModel> {
 
 func apiRequsetNo(_ token: Any) -> Single<LFResponseModel> {
     return Single<LFResponseModel>.create(subscribe: { (se) -> Disposable in
-        let api = apiProviderNo.rx.request(token as! Api).asObservable().mapModel(LFResponseModel.self).subscribe(onNext: { (model) in
+        let api = apiProviderNo.rx.request(token as! Api).retry(1).asObservable().mapModel(LFResponseModel.self).subscribe(onNext: { (model) in
             if model.code == 0 {
                 se(.success(model))
             }else if model.code == 2 {

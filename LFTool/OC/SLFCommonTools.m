@@ -137,11 +137,11 @@ static SLFCommonTools * tools = nil;
     for (int i = 0; i < count; i ++) {
         int index = arc4random() % (count - i);
         [resultArray addObject:[tempArray objectAtIndex:index]];
-        NSLog(@"index:%d,xx:%@",index,[tempArray objectAtIndex:index]);
+//        NSLog(@"index:%d,xx:%@",index,[tempArray objectAtIndex:index]);
         [tempArray removeObjectAtIndex:index];
         
     }
-    NSLog(@"resultArray is %@",resultArray);
+//    NSLog(@"resultArray is %@",resultArray);
     return resultArray;
 }
 
@@ -1330,7 +1330,7 @@ static SLFCommonTools * tools = nil;
         } else if ([regextestcu evaluateWithObject:mobileNum] == YES) {
             //            NSLog(@"China Unicom");
         } else {
-            NSLog(@"号码错误");
+//            NSLog(@"号码错误");
         }
         return YES;
     }else {
@@ -1500,7 +1500,7 @@ static SLFCommonTools * tools = nil;
                                     }
                                 }
                             }];
-    NSLog(@"%d",returnValue);
+//    NSLog(@"%d",returnValue);
     if (returnValue == YES) {
 //        [SLFHUD showHint:@"请不要输入表情"];
     }
@@ -1749,5 +1749,50 @@ static SLFCommonTools * tools = nil;
 //    NSLog(@"%@",responseString);
     return responseString;
 }
+//判断当前时间是否在某个时间段if ([self isBetweenFromHour:9 toHour:10]) {} 原文：https://blog.csdn.net/dylan_lwb_/article/details/49510293
+/**
+ * @brief 判断当前时间是否在fromHour和toHour之间。如，fromHour=8，toHour=23时，即为判断当前时间是否在8:00-23:00之间
+ */
++ (BOOL)isBetweenFromHour:(NSInteger)fromHour toHour:(NSInteger)toHour {
+    
+    NSDate *dateFrom = [SLFCommonTools getCustomDateWithHour:fromHour];
+    NSDate *dateTo = [SLFCommonTools getCustomDateWithHour:toHour];
+    
+    NSDate *currentDate = [NSDate date];
+    if ([currentDate compare:dateFrom]==NSOrderedDescending && [currentDate compare:dateTo]==NSOrderedAscending) {
+        // 当前时间在9点和10点之间
+        return YES;
+    }
+    return NO;
+}
+
+/**
+ * @brief 生成当天的某个点（返回的是伦敦时间，可直接与当前时间[NSDate date]比较）
+ * @param hour 如hour为“8”，就是上午8:00（本地时间）
+ */
++ (NSDate *)getCustomDateWithHour:(NSInteger)hour {
+    //获取当前时间
+    NSDate *currentDate = [NSDate date];
+    NSCalendar *currentCalendar = [[NSCalendar alloc] initWithCalendarIdentifier:NSCalendarIdentifierGregorian];
+    NSDateComponents *currentComps = [[NSDateComponents alloc] init];
+    
+    NSInteger unitFlags = NSCalendarUnitYear | NSCalendarUnitMonth | NSCalendarUnitDay | NSCalendarUnitWeekday | NSCalendarUnitHour | NSCalendarUnitMinute | NSCalendarUnitSecond;
+    
+    currentComps = [currentCalendar components:unitFlags fromDate:currentDate];
+    
+    //设置当天的某个点
+    NSDateComponents *resultComps = [[NSDateComponents alloc] init];
+    [resultComps setYear:[currentComps year]];
+    [resultComps setMonth:[currentComps month]];
+    [resultComps setDay:[currentComps day]];
+    [resultComps setHour:hour];
+    
+    NSCalendar *resultCalendar = [[NSCalendar alloc] initWithCalendarIdentifier:NSCalendarIdentifierGregorian];
+    return [resultCalendar dateFromComponents:resultComps];
+}
+
+
+
+
 
 @end

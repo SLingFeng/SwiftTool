@@ -14,4 +14,14 @@
     return [NSString stringWithFormat:@"%.2f", self.margin.doubleValue - self.tradeMoney.doubleValue];
 }
 
+- (void)removeUserInfo {
+    self.balance = @"0";
+    self.tradeMoney = @"0";
+    self.margin = @"0";
+    self.auditStatusStr = @"0";
+    self.auditStatus = 0;
+    self.bankCardStatus = 0;
+    self.pwdStatus = 0;
+}
+
 @end

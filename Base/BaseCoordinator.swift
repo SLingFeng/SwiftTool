@@ -15,9 +15,16 @@ import RxSwift
 class BaseCoordinator<ResultType> {
     
     var window: UIWindow
+    var vc: UIViewController
     
     public init(window: UIWindow) {
         self.window = window
+        self.vc = UIViewController()
+    }
+    
+    public init(vc: UIViewController) {
+        self.vc = vc
+        self.window = UIApplication.shared.keyWindow!
     }
     
     /// Typealias which will allows to access a ResultType of the Coordainator by `CoordinatorName.CoordinationResult`.
