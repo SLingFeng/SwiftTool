@@ -22,6 +22,8 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, assign) NSInteger auditStatus;
 ///0未提交 
 @property (nonatomic, assign) NSInteger bankCardStatus;
+@property (nonatomic, copy) NSString *bankCardNumUser;
+@property (nonatomic, copy) NSString *bankNameUser;
 //是否设置：0、已设置 1、未设置
 @property (nonatomic, assign) NSInteger pwdStatus;
 
@@ -57,8 +59,11 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, copy) NSString *fin_week_pic;
 @property (nonatomic, copy) NSString *fin_month_pic;
 @property (nonatomic, copy) NSString *fin_fee_pic;
-///操盘余额 /配资账户余额=操盘金额-保证金余额
+///操盘余额
 - (NSString *)chaopanyuer;
+///配资账户余额=操盘金额-保证金余额
+- (NSString *)peziyuer;
+
 - (void)removeUserInfo;
 
 @end

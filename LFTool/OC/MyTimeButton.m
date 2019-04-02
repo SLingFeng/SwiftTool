@@ -81,12 +81,13 @@
         [self setTitle:_oldText forState:(UIControlStateNormal)];
 //        self.status = MyStatusSuccess;
 //        [self setBackgroundColor:self.oldColor];
-        self.enabled = YES;
+        [self setStatus:0];
         return;
     }
     NSInteger temp = _timeNum--;
     self.titleLabel.text = [NSString stringWithFormat:@"%ldS", (long)temp];
     [self setTitle:[NSString stringWithFormat:@"%ldS", (long)temp] forState:(UIControlStateNormal)];
+    [self setStatus:1];
 }
 
 - (void)reStartTime {

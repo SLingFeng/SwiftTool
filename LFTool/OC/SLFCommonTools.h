@@ -37,12 +37,12 @@
  *  根据宽度获取label文字 高度
  *
  *  @param text     文字
- *  @param fontSize 字体大小
+ *  @param font 字体大小
  *  @param width   根据高宽度
  *
  *  @return 高度
  */
-+(CGFloat)textHight:(NSString *)text font:(CGFloat)fontSize width:(CGFloat)width;
++(CGFloat)textHight:(NSString *)text font:(UIFont *)font width:(CGFloat)width;
 +(CGSize)textSize:(NSString *)text font:(UIFont *)font;
 ///对比版本号
 +(BOOL)isCurrentVersionChange;
@@ -264,17 +264,6 @@
  * @param bai <#bai description#>
  */
 +(void)setupSatuts:(UIViewController *)weak bai:(BOOL)bai;
-/**
- * @author LingFeng, 2016-06-24 09:06:34
- *
- * 设置分享按钮
- *
- * @param weakSelf 当前视图控制器->设置分享按钮
- * @param state 判断是否左边还是右边 YES为左边
- * @param img 传入图片
- * @param title 传入文本
- */
-- (void)setupNavRightAndLeftBtn:(UIViewController *)weakSelf leftOrRight:(BOOL)state imageName:(NSString*)img titleName:(NSString*)title setWidth:(NSInteger)width;
 /**
  * @author LingFeng, 2016-06-24 09:06:34
  *

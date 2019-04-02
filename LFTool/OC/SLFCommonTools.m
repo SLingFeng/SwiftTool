@@ -115,7 +115,7 @@ static SLFCommonTools * tools = nil;
     // 上一次的使用版本（存储在沙盒中的版本号）
 //    NSString *lastVersion = [[NSUserDefaults standardUserDefaults] objectForKey:kIsOne];
     // 当前软件的版本号（从Info.plist中获得）
-    NSString *currentVersion = [NSBundle mainBundle].infoDictionary[@"CFBundleShortVersionString"];
+//    NSString *currentVersion = [NSBundle mainBundle].infoDictionary[@"CFBundleShortVersionString"];
     
 //    if (![currentVersion isEqualToString:lastVersion]) {
 ////        [[NSUserDefaults standardUserDefaults] setObject:currentVersion forKey:kIsOne];
@@ -151,10 +151,10 @@ static SLFCommonTools * tools = nil;
 }
 
 #pragma mark - 行高
-+(CGFloat)textHight:(NSString *)text font:(CGFloat)fontSize width:(CGFloat)width {
++(CGFloat)textHight:(NSString *)text font:(UIFont *)font width:(CGFloat)width {
     NSStringDrawingOptions option = NSStringDrawingUsesLineFragmentOrigin | NSStringDrawingUsesFontLeading;
 //NSStringDrawingTruncatesLastVisibleLine如果文本内容超出指定的矩形限制，文本将被截去并在最后一个字符后加上省略号。 如果指定了NSStringDrawingUsesLineFragmentOrigin选项，则该选项被忽略 NSStringDrawingUsesFontLeading计算行高时使用行间距。（译者注：字体大小+行间距=行高）
-    UIFont * font = [SLFCommonTools pxFont:fontSize];
+//    UIFont * font = [SLFCommonTools pxFont:fontSize];
     NSDictionary * dic = @{NSFontAttributeName: font};
     CGSize size = [text boundingRectWithSize :CGSizeMake(width, MAXFLOAT)
                                       options:option
@@ -926,28 +926,7 @@ static SLFCommonTools * tools = nil;
 //    weak.hbd_barShadowHidden = YES;
 //    weak.navigationController.navigationBar.translucent = NO;
 }
-- (void)setupNavRightAndLeftBtn:(UIViewController *)weakSelf leftOrRight:(BOOL)state imageName:(NSString*)img titleName:(NSString*)title setWidth:(NSInteger)width{
 
-    UIButton *settingButton = [UIButton buttonWithType:UIButtonTypeCustom];
-    //修改按钮向右偏移10 point
-    [settingButton setFrame:CGRectMake(10.0, 0.0, width, 44.0)];
-    [settingButton addTarget:self action:@selector(NavRightShareClick) forControlEvents:UIControlEventTouchUpInside];
-    if (img == nil) {
-        [settingButton setTitle:title forState:UIControlStateNormal];
-    }{
-    [settingButton setImage:[UIImage imageNamed:img] forState:UIControlStateNormal];
-    }
-    //修改方法
-    UIView *view = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, width, 44.0)];
-    [view addSubview:settingButton];
-    UIBarButtonItem *item = [[UIBarButtonItem alloc] initWithCustomView:view];
-    if (state == YES) {
-        weakSelf.navigationItem.leftBarButtonItem = item;
-    }else{
-        weakSelf.navigationItem.rightBarButtonItem = item;
-    }
-    
-}
 -(void)setupNavRightShareBtn:(UIViewController *)weakSelf bai:(BOOL)bai {
     UIButton * btn = [[UIButton alloc] initWithFrame:CGRectMake(kScreenW, 0, 30, 30)];
     if (bai) {
@@ -1203,7 +1182,7 @@ static SLFCommonTools * tools = nil;
 }
 //时间 转 时间戳
 + (NSTimeInterval)timeDataToStamp:(NSString *)time {
-    NSTimeZone* timeZone = [NSTimeZone timeZoneWithName:@"Asia/Shanghai"];
+//    NSTimeZone* timeZone = [NSTimeZone timeZoneWithName:@"Asia/Shanghai"];
     NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
     [formatter setDateFormat:@"yyyy-MM-dd HH:mm:ss"];
     

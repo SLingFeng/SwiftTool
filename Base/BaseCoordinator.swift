@@ -22,9 +22,11 @@ class BaseCoordinator<ResultType> {
         self.vc = UIViewController()
     }
     
-    public init(vc: UIViewController) {
-        self.vc = vc
+    public init(vc: UIViewController?) {
         self.window = UIApplication.shared.keyWindow!
+        let x = self.window.rootViewController as! UITabBarController
+        let c = x.viewControllers?.first as! UINavigationController
+        self.vc = vc == nil ? c.viewControllers.last! : vc!
     }
     
     /// Typealias which will allows to access a ResultType of the Coordainator by `CoordinatorName.CoordinationResult`.

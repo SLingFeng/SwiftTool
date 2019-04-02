@@ -79,13 +79,13 @@ class LF_EditTableViewCell: UITableViewCell {
             } else {
                 tf.isUserInteractionEnabled = true
             }
-            if model!.tfText != nil {
-                tf.rx.text.bind(to: model!.tfText!).disposed(by: dig)
-            }
-            model!.tf = tf
-            if model!.tfSet != nil {
-                model!.tfSet!(tf)
-            }
+//            if model!.tfText != nil {
+//                tf.rx.text.bind(to: model!.tfText!).disposed(by: dig)
+//            }
+//            model!.tf = tf
+//            if model!.tfSet != nil {
+//                model!.tfSet!(tf)
+//            }
             self.custom = model!.custom
             tf.isSecureTextEntry = model!.isSecureTextEntry
             
@@ -115,7 +115,10 @@ class LF_EditTableViewCell: UITableViewCell {
         tf.borderStyle = .roundedRect
         tf.enterSpace = 10
         tf.font = UIFont.systemFont(ofSize: 16)
-        
+        if #available(iOS 10.0, *) {
+            tf.textContentType = nil
+        }
+            
         titleLabel.snp.makeConstraints({ (make) in
             make.centerY.equalTo(self)
             make.left.equalTo(10)

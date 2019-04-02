@@ -32,8 +32,8 @@ class LF_EditModel: NSObject {
      */
     var type: Int = 0
     
-    var tf : BaseTextField?
-    var tfText : PublishSubject<String?>?
+//    var tf : BaseTextField?
+//    var tfText : PublishSubject<String?>?
     
     
     var title = ""
@@ -42,7 +42,7 @@ class LF_EditModel: NSObject {
     var rightText = ""
     var cellDidClick: ((_ cell: LF_EditTableViewCell?) -> Void)?
     var textFieldChange: ((_ tf: BaseTextField?) -> Void)?
-    var tfSet: ((_ tf: BaseTextField?) -> Void)?
+//    var tfSet: ((_ tf: BaseTextField?) -> Void)?
 //    var fsTextViewHandler: ((_ textView: FSTextView?) -> Void)?
 //    var selectIDBlock: ((_ ids: String?) -> Void)?
 //    var onClickBlock: ((_ sender: MyButton?) -> Void)?

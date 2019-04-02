@@ -39,7 +39,7 @@ enum Api {
     case user_rePwd([String : String])
     case article_getArticleInfo([String : String])
     case user_showBalance
-    case user_uploadImg([Data])
+    case user_uploadImg(img: Data, name: String)
     case user_realNameAuth([String : String])
     case user_getRealNameStatus
     case user_setBankCard([String : String])
@@ -54,7 +54,7 @@ enum Api {
     case config_getConfigData
     case trade_searchTradeOrder([String : String])
     case trade_submitTrade([String : String])
-    case pay_baifuWithdraw([String : String])
+    case pay_userWithdraw([String : String])
     case fin_getFinOrderList([String : String])
     case fin_applySettlement([String : String])
     case fin_addMoney([String : String])
@@ -74,7 +74,7 @@ enum Api {
     
     
 }
-let ApiUrl = "http://pz.fishfly666.com"
+let ApiUrl = "http://cs.flyy789.com"
 let WsUrl = "wss://w.sinajs.cn/wskt"
 
 extension Api: TargetType {
@@ -161,8 +161,8 @@ extension Api: TargetType {
         case .trade_submitTrade:
             return "/api/trade/submitTrade"
             ///申请提现
-        case .pay_baifuWithdraw:
-            return "/api/pay/baifuWithdraw"
+        case .pay_userWithdraw:
+            return "/api/pay/userWithdraw"
             ///合约
         case .fin_getFinOrderList:
             return "/api/fin/getFinOrderList"
@@ -255,7 +255,7 @@ extension Api: TargetType {
              var .pay_userPay(par),
              var .user_getDepositList(par),
              var .trade_submitTrade(par),
-             var .pay_baifuWithdraw(par),
+             var .pay_userWithdraw(par),
              var .fin_getFinOrderList(par),
              var .fin_applySettlement(par),
              var .fin_addMoney(par),
@@ -273,12 +273,12 @@ extension Api: TargetType {
             par["token"] = Environment().token ?? ""
             return .requestParameters(parameters: par, encoding: URLEncoding.queryString)
             
-        case let .user_uploadImg(par):
-            let a = MultipartFormData(provider: .data(par.first!), name: "imageFront", fileName: "imageFront.png", mimeType: "image/png")
-            let b = MultipartFormData(provider: .data(par.last!), name: "imageReverse", fileName: "imageReverse.png", mimeType: "image/png")
-            let s = Environment().token!.data(using: String.Encoding.utf8)
-            let c = MultipartFormData(provider: .data(s!), name: "token")
-            return .uploadMultipart([a, b, c])
+        case let .user_uploadImg(img, name):
+            let a = MultipartFormData(provider: .data(img), name: name, fileName: "imageFront.png", mimeType: "image/png")
+//            let b = MultipartFormData(provider: .data(par.last!), name: "imageReverse", fileName: "imageReverse.png", mimeType: "image/png")//imageFront
+            let s = Environment().token!
+//            let c = MultipartFormData(provider: .data(s!), name: "token")
+            return .uploadCompositeMultipart([a], urlParameters: ["token" : s])
             
         case let .fenshi(par),
              let .sinaInfo(par):
@@ -376,16 +376,18 @@ public final class RequestLoadingPlugin:PluginType{
 func apiRequset(_ token: Any) -> Single<LFResponseModel> {
     
     return Single<LFResponseModel>.create(subscribe: { (se) -> Disposable in
-        let api = apiProvider.rx.request(token as! Api).retry(1).asObservable().mapModel(LFResponseModel.self).subscribe(onNext: { (model) in
+        let api = apiProvider.rx.request(token as! Api).asObservable().share(replay: 1, scope: .forever).mapModel(LFResponseModel.self).subscribe(onNext: { (model) in
             if model.code == 0 {
                 se(.success(model))
             }else if model.code == 2 {
                 Environment().remove()
-                let appCoordinator = AppCoordinator(window: UIApplication.shared.keyWindow!)
-                _ = appCoordinator.start()
-                    .subscribe()
+                GVUserDefaults.standard().removeUserInfo()
+                _ = LoginCoordinator(vc: nil).start().subscribe()
+//                let appCoordinator = AppCoordinator(window: UIApplication.shared.keyWindow!)
+//                _ = appCoordinator.start()
+//                    .subscribe()
                 SLFHUD.showHint(model.msg)
-//                se(.error(NSError(domain: model.msg, code: model.code, userInfo: nil)))
+                se(.error(NSError(domain: model.msg, code: model.code, userInfo: nil)))
             }else {
                 se(.success(model))
             }
@@ -439,14 +441,13 @@ func apiRequset(_ token: Any) -> Single<LFResponseModel> {
 
 func apiRequsetNo(_ token: Any) -> Single<LFResponseModel> {
     return Single<LFResponseModel>.create(subscribe: { (se) -> Disposable in
-        let api = apiProviderNo.rx.request(token as! Api).retry(1).asObservable().mapModel(LFResponseModel.self).subscribe(onNext: { (model) in
+        let api = apiProviderNo.rx.request(token as! Api).asObservable().share(replay: 1, scope: .forever).mapModel(LFResponseModel.self).subscribe(onNext: { (model) in
             if model.code == 0 {
                 se(.success(model))
             }else if model.code == 2 {
                 Environment().remove()
-                let appCoordinator = AppCoordinator(window: UIApplication.shared.keyWindow!)
-                _ = appCoordinator.start()
-                    .subscribe()
+                GVUserDefaults.standard().removeUserInfo()
+                _ = LoginCoordinator(vc: nil).start().subscribe()
                 SLFHUD.showHint(model.msg)
                 se(.error(NSError(domain: model.msg, code: model.code, userInfo: nil)))
             }else {

@@ -55,6 +55,14 @@ class LFBaseViewController: UIViewController {
         LFLog("\(self.self)")
     }
     
+    func showLoginVC() {
+        SLFHUD.showHint("请先登录后在操作", delay: 2) {[weak self] in
+            if let strongSelf = self {
+                LoginCoordinator(vc: strongSelf).start().subscribe().disposed(by: strongSelf.dig)
+            }
+        }
+    }
+    
     /*
     // MARK: - Navigation
 

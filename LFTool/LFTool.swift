@@ -123,10 +123,11 @@ class LFTool: NSObject {
     }
     ///缩写万元
     class func toWanYi(money: String) -> String {
-        if money.count > 8 {
-            let t = Double(money)! / 10000 / 10000
-            return String(format: "%.2f亿", t)
-        }else if money.count > 4 {
+//        if money.count >= 9 {
+//            let t = Double(money)! / 10000 / 10000
+//            return String(format: "%.2f亿", t)
+//        }else
+            if money.count >= 5 {
             let t = Double(money)! / 10000
             return String(format: "%.2f万", t)
         }

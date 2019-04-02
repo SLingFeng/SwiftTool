@@ -13,25 +13,25 @@ class LF_EditViewController: LFBaseTableViewController {
     var cellArr: [[LF_EditModel]]? {
         didSet {
             self.tableView.reloadData()
-            self.setCellModelContent()
+//            self.setCellModelContent()
         }
     }
     
     let doBtn = UIButton(fontSize: 19, fontColor: .white, text: "确定", backg: kMainColor, radius: 5, borderColor: .clear, borderWidth: 0)
 
-    func setCellModelContent() {
-        
-    }
+//    func setCellModelContent() {
+//        
+//    }
     
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        self.needTableView(style: .plain)
+        self.needTableView(style: .grouped)
         self.tableView.register(LF_EditTableViewCell.self, forCellReuseIdentifier: "LF_EditTableViewCell")
         
         self.tableView.separatorInset = UIEdgeInsets.init(top: 0, left: kScreenW, bottom: 0, right: 0)
         self.tableView.backgroundColor = kF8F8F8
-
+        self.tableView.separatorStyle = .none
     }
     
     func numberOfSections(in tableView: UITableView) -> Int {
