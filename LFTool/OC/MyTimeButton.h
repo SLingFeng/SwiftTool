@@ -13,6 +13,8 @@
  禁用时间
  */
 @property (assign, nonatomic) NSInteger timeNum;
+///大于禁用时间为发送过 必须先设置
+@property (assign, nonatomic) NSInteger oldTime;
 
 @property (assign, nonatomic) NSInteger status;
 /**

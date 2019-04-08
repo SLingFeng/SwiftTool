@@ -29,7 +29,7 @@ class LF_EditTableViewCell: UITableViewCell {
                 })
                 
                 custom!.snp.makeConstraints({ (make) in
-                    make.size.equalTo(CGSize(width: 82, height: 30))
+                    make.size.equalTo(CGSize(width: custom!.width, height: 30))
                     make.right.equalTo(-10)
                     make.left.equalTo(tf.snp.right).offset(5)
                     make.centerY.equalTo(self)
@@ -53,7 +53,7 @@ class LF_EditTableViewCell: UITableViewCell {
                 "color": UIColor.gray,
 //                "color2": k232931,
 //                "color3": HEXCOLOR(0xff0000)
-            ] as [AnyHashable : Any]
+            ] as [String : Any]
             tf.attributedPlaceholder = model!.placeholder.attributedString(withStyleBook: style)
             
             titleLabel.attributedText = model!.title.attributedString(withStyleBook: style)
@@ -76,7 +76,7 @@ class LF_EditTableViewCell: UITableViewCell {
                 if model!.type == 21 {
                     tf.backgroundColor = kF8F8F8!
                 }
-            } else {
+            }else {
                 tf.isUserInteractionEnabled = true
             }
 //            if model!.tfText != nil {

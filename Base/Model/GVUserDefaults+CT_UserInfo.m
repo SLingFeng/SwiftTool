@@ -22,10 +22,15 @@
     self.balance = @"0";
     self.tradeMoney = @"0";
     self.margin = @"0";
-    self.auditStatusStr = @"认证失败";
+    self.auditStatusStr = @"未认证";
+    self.qqStatusStr = @"未绑定";
+    self.weichatStatusStr = @"未绑定";
     self.auditStatus = 0;
     self.bankCardStatus = 0;
     self.pwdStatus = 1;
+    self.user_phone = @"";
+    self.username = @"";
+    self.user_auth = @"";
 }
 
 @end

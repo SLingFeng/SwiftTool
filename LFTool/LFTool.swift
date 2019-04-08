@@ -208,6 +208,56 @@ class LFTool: NSObject {
         let resultCalendar = Calendar(identifier: .gregorian)
         return resultCalendar.date(from: resultComps)
     }
+    /**
+     * 将字符串每隔数位用分割符隔开
+     *
+     * @param source 目标字符串
+     * @param gap    相隔位数，默认为3
+     * @param gap    分割符，默认为逗号
+     * @return       用指定分隔符每隔指定位数隔开的字符串
+     * 原文：https://blog.csdn.net/FTD_SL/article/details/85130774
+     */
+    func showInComma(source: String, gap: Int=3, seperator: Character=",") -> String {
+        var temp = source
+        /* 获取目标字符串的长度 */
+        let count = temp.count
+        /* 计算需要插入的【分割符】数 */
+        let sepNum = count / gap
+        /* 若计算得出的【分割符】数小于1，则无需插入 */
+        guard sepNum >= 1 else {
+            return temp
+        }
+        /* 插入【分割符】 */
+        for i in 1...sepNum {
+            /* 计算【分割符】插入的位置 */
+            let index = count - gap * i
+            /* 若计算得出的【分隔符】的位置等于0，则说明目标字符串的长度为【分割位】的整数倍，如将【123456】分割成【123,456】，此时如果再插入【分割符】，则会变成【,123,456】 */
+            guard index != 0 else {
+                break
+            }
+            /* 执行插入【分割符】 */
+            temp.insert(seperator, at: temp.index(temp.startIndex, offsetBy: index))
+        }
+        return temp
+        
+        //测试调用
+        //    print(showInComma(source: "1234567")) //输出1,234,567
+        //    print(showInComma(source: "1234567", gap: 4, seperator: "#")) //输出123#4567
+    }
+    
+    class func clearAllSD() {
+        _ = LFAlert.initAlert(title: "你确定要清除缓存?", leftTitle: "取消", rightTitle: "确定", change: false, contentView: nil).subscribe(onSuccess: { (i) in
+            if i == 1 {
+                SLFHUD.showLoadingHint("清除中...")
+                SDImageCache.shared().clearMemory()
+                SDImageCache.shared().clearDisk(onCompletion: {
+                    SLFHUD.hide()
+                    SLFHUD.showHint("清除成功")
+                })
+            }
+        })
+    }
+    
     
     
     

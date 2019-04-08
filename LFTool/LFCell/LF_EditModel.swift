@@ -20,9 +20,6 @@ class LF_EditModel: NSObject {
      21:不能点击tf
      
      ----
-     10: 输入 带箭头
-     11: 输入 带文本
-     12: 点击 带文本
      2：FY_HousePhotoAddTableViewCell
      3: FY_HouseEnterTextViewTableViewCell
      40: FY_MultipleTableViewCell 第一个和其他不能全选

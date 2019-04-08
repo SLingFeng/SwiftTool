@@ -23,6 +23,7 @@ class LFAlert: NSObject {
             
             let _backgroundView = UIView(frame: kScreen)
             _backgroundView.tag = 67893
+            _backgroundView.alpha = 0.2
             UIApplication.shared.keyWindow?.addSubview(_backgroundView)
             
             let b = UIView(frame: kScreen)
@@ -111,7 +112,9 @@ class LFAlert: NSObject {
                 make.width.equalTo(rightBtn).priority(999)
             })
             
-            
+            UIView.animate(withDuration: 0.33, animations: {
+                _backgroundView.alpha = 1
+            })
             
             return Disposables.create()
         }

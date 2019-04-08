@@ -18,7 +18,9 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, copy) NSString *margin;
 
 @property (nonatomic, copy) NSString *auditStatusStr;
-//0:未认证, 1:审核中，2:已认证，3:认证失败
+@property (nonatomic, copy) NSString *qqStatusStr;
+@property (nonatomic, copy) NSString *weichatStatusStr;
+///0:未认证, 1:审核中，2:已认证，3:认证失败
 @property (nonatomic, assign) NSInteger auditStatus;
 ///0未提交 
 @property (nonatomic, assign) NSInteger bankCardStatus;
@@ -27,6 +29,11 @@ NS_ASSUME_NONNULL_BEGIN
 //是否设置：0、已设置 1、未设置
 @property (nonatomic, assign) NSInteger pwdStatus;
 
+    @property (nonatomic, copy) NSString *user_phone;
+@property (nonatomic, copy) NSString *user_auth;
+    @property (nonatomic, copy) NSString *username;
+    
+    
 
 @property (nonatomic, copy) NSString *web_title;
 @property (nonatomic, copy) NSString *service_hotline;

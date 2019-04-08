@@ -19,11 +19,11 @@ import MBProgressHUD
 //let token = Environment().token
 //let authPlugin = AccessTokenPlugin { token ?? "" }
 
-//let apiProvider = MoyaProvider<Api>(manager: WebService.manager(), plugins: [RequestLoadingPlugin(), AuthPlugin()])
-//let apiProviderNo = MoyaProvider<Api>(manager: WebService.manager(), plugins: [AuthPlugin()])
+let apiProvider = MoyaProvider<Api>(manager: WebService.manager(), plugins: [RequestLoadingPlugin(), AuthPlugin()])
+let apiProviderNo = MoyaProvider<Api>(manager: WebService.manager(), plugins: [AuthPlugin()])
 
-let apiProvider = MoyaProvider<Api>(plugins: [RequestLoadingPlugin(), AuthPlugin()])
-let apiProviderNo = MoyaProvider<Api>(plugins: [AuthPlugin()])
+//let apiProvider = MoyaProvider<Api>(plugins: [RequestLoadingPlugin(), AuthPlugin()])
+//let apiProviderNo = MoyaProvider<Api>(plugins: [AuthPlugin()])
 
 
 enum Api {
@@ -74,7 +74,8 @@ enum Api {
     
     
 }
-let ApiUrl = "http://cs.flyy789.com"
+//cs.flyy789.com
+let ApiUrl = "http://cs.flyv888.com"
 let WsUrl = "wss://w.sinajs.cn/wskt"
 
 extension Api: TargetType {
@@ -324,7 +325,7 @@ class WebService {
     static func manager() -> Alamofire.SessionManager {
         let configuration = URLSessionConfiguration.default
         configuration.httpAdditionalHeaders = Alamofire.SessionManager.defaultHTTPHeaders
-        configuration.timeoutIntervalForRequest = 30 // timeout
+        configuration.timeoutIntervalForRequest = 5 // timeout
         let manager = Alamofire.SessionManager(configuration: configuration)
 //        manager.adapter = CustomRequestAdapter()
         return manager
@@ -364,39 +365,48 @@ struct AuthPlugin: PluginType {
 public final class RequestLoadingPlugin:PluginType{
     
     public func willSend(_ request: RequestType, target: TargetType) {
+        LFLog("will+\(target)")
         SLFHUD.showLoading()
     }
     
     public func didReceive(_ result: Result<Moya.Response, MoyaError>, target: TargetType) {
+//        LFLog("didReceive+\(target)")
         SLFHUD.hide()
     }
 }
 
 
-func apiRequset(_ token: Any) -> Single<LFResponseModel> {
+func apiRequset(_ a: Any) -> Single<LFResponseModel> {
     
     return Single<LFResponseModel>.create(subscribe: { (se) -> Disposable in
-        let api = apiProvider.rx.request(token as! Api).asObservable().share(replay: 1, scope: .forever).mapModel(LFResponseModel.self).subscribe(onNext: { (model) in
+        let api = apiProvider.rx.request(a as! Api).asObservable().share(replay: 1, scope: .forever).mapModel(LFResponseModel.self).subscribe(onNext: { (model) in
             if model.code == 0 {
                 se(.success(model))
             }else if model.code == 2 {
+                SLFHUD.hide()
+                SLFHUD.showHint(model.msg)
                 Environment().remove()
                 GVUserDefaults.standard().removeUserInfo()
                 _ = LoginCoordinator(vc: nil).start().subscribe()
 //                let appCoordinator = AppCoordinator(window: UIApplication.shared.keyWindow!)
 //                _ = appCoordinator.start()
 //                    .subscribe()
-                SLFHUD.showHint(model.msg)
                 se(.error(NSError(domain: model.msg, code: model.code, userInfo: nil)))
+//                SLFHUD.hide()
             }else {
                 se(.success(model))
             }
         }, onError: { (e) in
+            let ne = e as NSError
             SLFHUD.hide()
             se(.error(e))
-            SLFHUD.showHint(e.localizedDescription)
+            var str = e.localizedDescription
+            if ne.code == 6 {
+                str = "请检查您的网络设置"
+            }
+            SLFHUD.showHint(str)
         }, onCompleted: {
-            
+//            SLFHUD.hide()
         }) {
             
         }
@@ -439,26 +449,33 @@ func apiRequset(_ token: Any) -> Single<LFResponseModel> {
 ////    })
 //}
 
-func apiRequsetNo(_ token: Any) -> Single<LFResponseModel> {
+func apiRequsetNo(_ a: Any) -> Single<LFResponseModel> {
     return Single<LFResponseModel>.create(subscribe: { (se) -> Disposable in
-        let api = apiProviderNo.rx.request(token as! Api).asObservable().share(replay: 1, scope: .forever).mapModel(LFResponseModel.self).subscribe(onNext: { (model) in
+        let api = apiProviderNo.rx.request(a as! Api).asObservable().share(replay: 1, scope: .forever).mapModel(LFResponseModel.self).subscribe(onNext: { (model) in
             if model.code == 0 {
                 se(.success(model))
             }else if model.code == 2 {
+                SLFHUD.hide()
+                SLFHUD.showHint(model.msg)
                 Environment().remove()
                 GVUserDefaults.standard().removeUserInfo()
                 _ = LoginCoordinator(vc: nil).start().subscribe()
-                SLFHUD.showHint(model.msg)
                 se(.error(NSError(domain: model.msg, code: model.code, userInfo: nil)))
+
             }else {
                 se(.error(NSError(domain: model.msg, code: model.code, userInfo: nil)))
             }
         }, onError: { (e) in
+            let ne = e as NSError
             SLFHUD.hide()
             se(.error(e))
-            SLFHUD.showHint(e.localizedDescription)
+            var str = e.localizedDescription
+            if ne.code == 6 {
+                str = "请检查您的网络设置"
+            }
+            SLFHUD.showHint(str)
         }, onCompleted: {
-            
+//            SLFHUD.hide()
         }) {
             
         }

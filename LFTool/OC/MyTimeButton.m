@@ -8,7 +8,7 @@
 
 @interface MyTimeButton ()
 {
-    NSInteger _oldTime;
+    
 }
 //    上一次的文本
 @property (copy, nonatomic) NSString *oldText;
@@ -48,9 +48,9 @@
 }
 
 -(void)setupTime {
-    _oldText = @"验证码";
+    _oldText = @"获取验证码";
 //    [self addTarget:self action:@selector(onClick) forControlEvents:(UIControlEventTouchUpInside)];
-    [self setTitle:@"验证码" forState:(UIControlStateNormal)];
+    [self setTitle:@"获取验证码" forState:(UIControlStateNormal)];
      kWeakSelf(weakSelf);
     self.onClickStartTiming = ^() {
         weakSelf.timer = [NSTimer scheduledTimerWithTimeInterval:1 target:weakSelf selector:@selector(timeChange:) userInfo:nil repeats:YES];
@@ -91,7 +91,7 @@
 }
 
 - (void)reStartTime {
-    if (self.timer == nil && _timeNum < 60) {
+    if (self.timer == nil) {
         self.onClickStartTiming();
     }
 }
@@ -124,7 +124,10 @@
 -(void)setTimeNum:(NSInteger)timeNum {
     if (_timeNum  != timeNum) {
         _timeNum = timeNum;
-        _oldTime = timeNum;
+        if (_timeNum < _oldTime) {
+            [self setStatus:1];
+            self.onClickStartTiming();
+        }
     }
 }
 

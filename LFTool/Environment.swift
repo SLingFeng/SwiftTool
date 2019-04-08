@@ -30,34 +30,6 @@ struct Environment {
             }
         }
     }
-    var username: String? {
-        get {
-            return try! keychainService.get(forKey: KeychainKeys.Uername.rawValue)
-        }
-        
-        set {
-            do {
-                try keychainService.set(key: KeychainKeys.Uername.rawValue, value: newValue!)
-            }
-            catch _ {
-//                print(error)
-            }
-        }
-    }
-    var phone: String? {
-        get {
-            return try! keychainService.get(forKey: KeychainKeys.Phone.rawValue)
-        }
-        
-        set {
-            do {
-                try keychainService.set(key: KeychainKeys.Phone.rawValue, value: newValue!)
-            }
-            catch _ {
-//                print(error)
-            }
-        }
-    }
     
     var tokenExists: Bool {
         if token!.isEmpty {
@@ -90,9 +62,9 @@ struct Environment {
     
     private enum KeychainKeys: String {
         case Token = "user_auth_token"
-        case Uername = "username"
-        case Phone = "user_phone"
-        case Authorization = "user_auth"
+//        case Uername = "username"
+//        case Phone = "user_phone"
+//        case Authorization = "user_auth"
     }
     
 }
@@ -115,7 +87,7 @@ class KeychainService {
         
         let value = try? keychain.get(forKey)
         
-        return value!
+        return value ?? ""
     }
     
     func remove() {

@@ -18,6 +18,10 @@
 #import <SDWebImageManager.h>
 #import <SDImageCache.h>
 #import "SLFAlert.h"
+// U-Share核心SDK
+#import <UMShare/UMShare.h>
+// U-Share分享面板SDK，未添加分享面板SDK可将此行去掉
+#import <UShareUI/UShareUI.h>
 
 #pragma mark - 宽高
 #define kScreenW \

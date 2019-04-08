@@ -87,7 +87,7 @@ static SLFHUD * _HUD = nil;
         hud = [MBProgressHUD showHUDAddedTo:view animated:YES];
     }
     [hud showAnimated:YES];
-    [hud hideAnimated:YES afterDelay:15];
+    [hud hideAnimated:YES afterDelay:10];
     [[SLFHUD share] setHUD:hud];
 }
 
