@@ -22,6 +22,8 @@ class LFDatePicker: UIView, UIPickerViewDelegate, UIPickerViewDataSource {
     
     var doneSub = PublishSubject<String>()
     
+    var str = ""
+    
     var data = Array<String>()
     
     
@@ -72,6 +74,11 @@ class LFDatePicker: UIView, UIPickerViewDelegate, UIPickerViewDataSource {
         
         UIApplication.shared.keyWindow?.addSubview(self)
         self.backgroundColor = SLFCommonTools.colorHex(0x000000, alpha: 0.5)
+        self.alpha = 0.3
+        
+        UIView.animate(withDuration: 0.1) {
+            self.alpha = 1
+        }
         
         self.addSubview(backView)
         backView.backgroundColor = .white
@@ -129,6 +136,12 @@ class LFDatePicker: UIView, UIPickerViewDelegate, UIPickerViewDataSource {
             if let strongSelf = self {
                 if strongSelf.type == .yearMonthDay {
                     strongSelf.doneSub.onNext(strongSelf.dateFormatter.string(from: strongSelf.datePicker.date))
+                }else {
+                    if strongSelf.str.isEmpty {
+                        strongSelf.doneSub.onNext(data.first ?? "")
+                    }else {
+                        strongSelf.doneSub.onNext(strongSelf.str)
+                    }
                 }
                 self?.cancelView()
             }
@@ -167,6 +180,7 @@ class LFDatePicker: UIView, UIPickerViewDelegate, UIPickerViewDataSource {
     }
     
     func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
-        doneSub.onNext(data[row])
+//        doneSub.onNext(data[row])
+        str = data[row]
     }
 }

@@ -106,6 +106,20 @@ static SLFHUD * _HUD = nil;
     [hud hideAnimated:YES afterDelay:2];
 }
 
+//+ (void)showHint:(NSString *)hint mode:(MBProgressHUDMode)mode {
+//    UIView *view = [[UIApplication sharedApplication].delegate window];
+//    MBProgressHUD * hud = [MBProgressHUD showHUDAddedTo:view animated:YES];
+//    hud.userInteractionEnabled = NO;
+//    hud.mode = MBProgressHUDModeCustomView;
+//    UIImage *image = [[UIImage imageNamed:@"Checkmark"] imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+//    hud.customView = [[UIImageView alloc] initWithImage:image];
+//    hud.label.text = hint;
+//    hud.label.numberOfLines = 0;
+//    hud.removeFromSuperViewOnHide = YES;
+//    hud.square = YES;
+//    [hud hideAnimated:YES afterDelay:3];
+//}
+
 + (void)showHint:(NSString *)hint delay:(NSTimeInterval)delay {
     UIView *view = [[UIApplication sharedApplication].delegate window];
     MBProgressHUD * hud = [MBProgressHUD showHUDAddedTo:view animated:YES];

@@ -47,6 +47,7 @@ enum Api {
     case user_setWDPwd([String : String])
     case user_issetWDPwd
     case user_resetPhone([String : String])
+    case user_checkOldPhone([String : String])
     case user_getUserCapital([String : String])
     case user_getWithdrawList([String : String])
     case pay_userPay([String : String])
@@ -71,8 +72,10 @@ enum Api {
     case trade_getPromptOrder([String : String])
     case fin_addMargin([String : String])
     case trade_delTradeOrder([String : String])
-    
-    
+    case fin_fOList
+    case trade_countCommissCharge([String : String])
+    case config_getConfigValue([String : String])
+    case article_getArticleDetail([String : String])
 }
 //cs.flyy789.com
 let ApiUrl = "http://cs.flyv888.com"
@@ -143,6 +146,9 @@ extension Api: TargetType {
             ///重新设置手机号
         case .user_resetPhone:
             return "/api/user/resetPhone"
+        case .user_checkOldPhone:
+            return "/api/user/checkOldPhone"
+            
             ///用户资金流水接口
         case .user_getUserCapital:
             return "/api/user/getUserCapital"
@@ -214,9 +220,18 @@ extension Api: TargetType {
             ///删除交易订单
         case .trade_delTradeOrder:
             return "/api/trade/delTradeOrder"
-        
-        
-            
+        ///合约列表
+        case .fin_fOList:
+            return "/api/fin/fOList"
+        ///计算股票交易手续费
+        case .trade_countCommissCharge:
+            return "/api/trade/countCommissCharge"
+            ///重要通知
+        case .config_getConfigValue:
+            return "/api/config/getConfigValue"
+            ///文章详情
+        case .article_getArticleDetail:
+            return "/api/article/getArticleDetail"
             
 //        case .fenshi:
 //            return ""
@@ -268,8 +283,12 @@ extension Api: TargetType {
              var .ws_getKlineHistory(par),
              var .trade_getPromptOrder(par),
              var .fin_addMargin(par),
-             var .trade_delTradeOrder(par):
-            
+             var .trade_delTradeOrder(par),
+             var .user_checkOldPhone(par),
+             var .trade_searchTradeOrder(par),
+             var .trade_countCommissCharge(par),
+             var .config_getConfigValue(par),
+             var .article_getArticleDetail(par):
             
             par["token"] = Environment().token ?? ""
             return .requestParameters(parameters: par, encoding: URLEncoding.queryString)
@@ -366,12 +385,19 @@ public final class RequestLoadingPlugin:PluginType{
     
     public func willSend(_ request: RequestType, target: TargetType) {
         LFLog("will+\(target)")
-        SLFHUD.showLoading()
+        if Environment().tokenExists {
+            SLFHUD.showLoading()
+        }
     }
     
     public func didReceive(_ result: Result<Moya.Response, MoyaError>, target: TargetType) {
 //        LFLog("didReceive+\(target)")
         SLFHUD.hide()
+    }
+    
+    public func process(_ result: Result<Moya.Response, MoyaError>, target: TargetType) -> Result<Moya.Response, MoyaError> {
+        SLFHUD.hide()
+        return result
     }
 }
 
@@ -383,7 +409,6 @@ func apiRequset(_ a: Any) -> Single<LFResponseModel> {
             if model.code == 0 {
                 se(.success(model))
             }else if model.code == 2 {
-                SLFHUD.hide()
                 SLFHUD.showHint(model.msg)
                 Environment().remove()
                 GVUserDefaults.standard().removeUserInfo()
@@ -416,46 +441,12 @@ func apiRequset(_ a: Any) -> Single<LFResponseModel> {
     })
 }
 
-//func apiRequset<T: HandyJSON>(_ token: Any, type: T.Type) -> Single<T.Type> {
-//
-////    return Single<type>.create(subscribe: { (se) -> Disposable in
-//        let api = apiProvider.rx.request(token as! Api).asObservable().mapModel(type)
-//    return api.asSingle()
-//            
-////            .subscribe(onNext: { (model) in
-////            if model.code == 0 {
-////                se(.success(model))
-////            }else if model.code == 2 {
-////                Environment().remove()
-////                let appCoordinator = AppCoordinator(window: UIApplication.shared.keyWindow!)
-////                _ = appCoordinator.start()
-////                    .subscribe()
-////                SLFHUD.showHint(model.msg)
-////                se(.error(NSError(domain: model.msg, code: model.code, userInfo: nil)))
-////            }else {
-////                se(.success(model))
-////            }
-////        }, onError: { (e) in
-////            se(.error(e))
-////            SLFHUD.showHint(e.localizedDescription)
-////        }, onCompleted: {
-////
-////        }) {
-////
-////        }
-////        return Disposables.create{
-////            api.dispose()
-////        }
-////    })
-//}
-
 func apiRequsetNo(_ a: Any) -> Single<LFResponseModel> {
     return Single<LFResponseModel>.create(subscribe: { (se) -> Disposable in
         let api = apiProviderNo.rx.request(a as! Api).asObservable().share(replay: 1, scope: .forever).mapModel(LFResponseModel.self).subscribe(onNext: { (model) in
             if model.code == 0 {
                 se(.success(model))
             }else if model.code == 2 {
-                SLFHUD.hide()
                 SLFHUD.showHint(model.msg)
                 Environment().remove()
                 GVUserDefaults.standard().removeUserInfo()

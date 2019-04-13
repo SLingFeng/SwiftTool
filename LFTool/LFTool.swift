@@ -60,6 +60,9 @@ class LFTool: NSObject {
         return LFTool.isIPHONEXLAST() ? 83.0 : 49.0
     }
     
+    public class func Height_HomeBar() -> CGFloat {
+        return LFTool.isIPHONEXLAST() ? 34.0 : 0
+    }
     
     // MARK: - 九宫格
     public class func JGG_X(_ xl: CGFloat, _ width: CGFloat, _ w: CGFloat, _ i: CGFloat, _ count: CGFloat) -> CGFloat {
@@ -257,9 +260,73 @@ class LFTool: NSObject {
             }
         })
     }
-    
-    
-    
+    ///某几条边框
+    class func setBorderWithView(_ view:UIView, top:Bool, left:Bool, bottom:Bool, right:Bool, lineW:CGFloat, color:UIColor) {
+        
+        if top {
+            
+            let layer = CALayer()
+            
+            layer.frame = CGRect(x: 0, y: 0, width: view.frame.size.width, height: lineW)
+            
+            layer.backgroundColor = color.cgColor
+            
+            view.layer.addSublayer(layer)
+            
+        }
+        
+        if left {
+            
+            let layer = CALayer()
+            
+            layer.frame = CGRect(x: 0, y: 0, width: lineW, height: view.frame.size.height)
+            
+            layer.backgroundColor = color.cgColor
+            
+            view.layer.addSublayer(layer)
+            
+        }
+        
+        if bottom {
+            
+            let layer = CALayer()
+            
+            layer.frame = CGRect(x: 0, y: view.frame.size.height - lineW, width: view.frame.size.width, height: lineW)
+            
+            layer.backgroundColor = color.cgColor
+            
+            view.layer.addSublayer(layer)
+            
+        }
+        
+        if right {
+            
+            let layer = CALayer()
+            
+            layer.frame = CGRect(x: view.frame.size.width - lineW, y: 0, width: lineW, height: view.frame.size.height)
+            
+            layer.backgroundColor = color.cgColor
+            
+            view.layer.addSublayer(layer)
+        }
+    }
+    ///设置圆角
+    class func setMutiBorderRoundingCorners(_ view:UIView,corner:CGFloat, roundingCorners: UIRectCorner) {
+        
+        let maskPath = UIBezierPath.init(roundedRect: view.bounds,
+                                         
+                                         byRoundingCorners: roundingCorners,
+                                         cornerRadii: CGSize(width: corner, height: corner))
+        
+        let maskLayer = CAShapeLayer()
+        
+        maskLayer.frame = view.bounds
+        
+        maskLayer.path = maskPath.cgPath
+        
+        view.layer.mask = maskLayer
+        
+    }
     
 }
 

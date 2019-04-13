@@ -44,6 +44,7 @@ typedef void (^completionBlock)(void);
  @param hint 文字
  */
 + (void)showHint:(NSString *)hint;
+//+ (void)showHint:(NSString *)hint mode:(MBProgressHUDMode)mode;
 /**
  带文字的hud
  

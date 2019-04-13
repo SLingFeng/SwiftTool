@@ -48,6 +48,7 @@
 }
 
 -(void)setupTime {
+    self.titleLabel.font = [UIFont systemFontOfSize:13];
     _oldText = @"获取验证码";
 //    [self addTarget:self action:@selector(onClick) forControlEvents:(UIControlEventTouchUpInside)];
     [self setTitle:@"获取验证码" forState:(UIControlStateNormal)];

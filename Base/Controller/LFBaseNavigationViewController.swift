@@ -41,3 +41,20 @@ class LFBaseNavigationViewController: UINavigationController {
     */
 
 }
+
+extension UINavigationController {
+    
+    func lfPopToVC(vcc : AnyClass) {
+        
+        let vc = SLFCommonTools.currentViewController()
+        
+//        let nav = vc?.navigationController
+        
+        for v in vc!.navigationController!.viewControllers {
+            if v.isKind(of: vcc) {
+                vc?.navigationController?.popToViewController(v, animated: true)
+            }
+        }
+    }
+    
+}

@@ -523,6 +523,7 @@
 + (NSInteger)compareVersion:(NSString *)v1 to:(NSString *)v2;
 
 +(NSString *)getNewBankNumWitOldBankNum:(NSString *)bankNum;
++(NSString *)getNewBankSpace:(NSString *)bankNum;
 
 + (NSString *)chang:(NSMutableString *)responseString;
 ///判断当前时间是否在某个时间段if ([self isBetweenFromHour:9 toHour:10]) {}

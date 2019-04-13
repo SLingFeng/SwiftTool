@@ -23,7 +23,7 @@ class LFTimer: NSObject {
                 timerDib?.dispose()
                 num = 60
             }
-            LFLog(num)
+//            LFLog(num)
         }
     }
     
@@ -41,6 +41,9 @@ class LFTimer: NSObject {
             if let strongSelf = self {
                 strongSelf.num -= 1
             }
+        }, onError: { (e) in
+        }, onCompleted: {
+        }, onDisposed: {
         })
     }
     

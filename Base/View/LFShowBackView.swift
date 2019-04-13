@@ -30,13 +30,13 @@ class LFShowBackView: UIView {
     }
     
     func show() {
-        UIView.animate(withDuration: 0.33) {
+        UIView.animate(withDuration: 0.1) {
             self.backgroundView.alpha = 1;
         }
     }
     
     func hide() {
-        UIView.animate(withDuration: 0.33) {
+        UIView.animate(withDuration: 0.1) {
             self.backgroundView.removeFromSuperview()
             self.removeFromSuperview()
         }

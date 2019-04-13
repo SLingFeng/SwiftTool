@@ -15,7 +15,7 @@ class LFShare: NSObject {
         UMSocialShareUIConfig.shareInstance()?.sharePageScrollViewConfig.shareScrollViewPageMaxColumnCountForPortraitAndBottom = 2
         UMSocialShareUIConfig.shareInstance()?.sharePageScrollViewConfig.shareScrollViewPageMaxItemWidth = 60
         UMSocialShareUIConfig.shareInstance()?.sharePageScrollViewConfig.shareScrollViewPageMaxItemHeight = 60
-//        UMSocialShareUIConfig.shareInstance()?.sharePageScrollViewConfig.shareScrollViewPageColumnSpace = 60
+        UMSocialShareUIConfig.shareInstance()?.shareContainerConfig.shareContainerMarginBottom = LFTool.Height_HomeBar()
          UMSocialShareUIConfig.shareInstance()?.sharePlatformItemViewConfig.sharePlatformItemViewBGRadiusColor = .clear
         
         UMSocialUIManager.setPreDefinePlatforms([NSNumber(integerLiteral:UMSocialPlatformType.QQ.rawValue),
