@@ -13,6 +13,7 @@ typedef enum : NSUInteger {
     BaseTextFieldEnterAll,
     BaseTextFieldEnterNumber,
     BaseTextFieldEnterCNEN,
+    BaseTextFieldEnterCN,
     BaseTextFieldEnterNumberAndCN,
     BaseTextFieldEnterNumberAndEN,
     BaseTextFieldEnterNumberD5,

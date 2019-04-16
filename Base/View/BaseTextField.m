@@ -48,6 +48,7 @@
 
 //    [self addTarget:self action:@selector(editingDidEnd) forControlEvents:(UIControlEventEditingDidEnd)];
 //    self addTarget:self action:@selector(shouldRrturnKeyClick:) forControlEvents:(UIControlEvent)
+    
 }
 
 //- (void)editingDidEnd {
@@ -122,6 +123,11 @@
             return [SLFCommonTools matchStringFormat:string];
         }
             break;
+//        case BaseTextFieldEnterCN:{
+//            return [SLFCommonTools matchStringFormatCN:string];
+//        }
+//            break;
+            
         case BaseTextFieldEnterNumberAndCN:{
             return [SLFCommonTools matchStringNumberAndCN:string];
         }
@@ -212,11 +218,60 @@
         }else {
             self.keyboardType = _oldKeyboardType;
         }
+        if (enterType == BaseTextFieldEnterCN) {
+            [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(greetingTextFieldChanged:) name:@"UITextFieldTextDidChangeNotification" object:self];
+        }
     }
-    
-    
-    
 }
+//textField内容改变通知响应
+- (void)greetingTextFieldChanged:(NSNotification *)not {
+
+    UITextRange *selectedRange = self.markedTextRange;
+    UITextPosition *position = [self positionFromPosition:selectedRange.start offset:0];
+    
+    if (!position) { //// 没有高亮选择的字
+        //过滤非汉字字符
+        self.text = [self filterCharactor:self.text withRegex:@"[^\u4e00-\u9fa5]"];
+        
+        if (self.text.length >= 4) {
+            self.text = [self.text substringToIndex:4];
+        }
+    }else { //有高亮文字
+        //do nothing
+    }
+}
+
+//根据正则，过滤特殊字符
+- (NSString *)filterCharactor:(NSString *)string withRegex:(NSString *)regexStr{
+    NSString *searchText = string;
+    NSError *error = NULL;
+    NSRegularExpression *regex = [NSRegularExpression regularExpressionWithPattern:regexStr options:NSRegularExpressionCaseInsensitive error:&error];
+    NSString *result = [regex stringByReplacingMatchesInString:searchText options:NSMatchingReportCompletion range:NSMakeRange(0, searchText.length) withTemplate:@""];
+    return result;
+}
+//    if (self.markedTextRange != nil) {
+//        NSInteger cursorPostion = [self offsetFromPosition:self.endOfDocument toPosition:self.selectedTextRange.end];
+//        NSString * pattern = @"[^\\u4E00-\\u9FA5]";
+//
+//        NSString * str = [self pregReplace:pattern with:@"" options:NSMatchingReportCompletion];
+//        self.text = str;
+//
+//        UITextPosition * targetPostion = [self positionFromPosition:self.endOfDocument offset:cursorPostion];
+//        self.selectedTextRange = [self textRangeFromPosition:targetPostion toPosition:targetPostion];
+//
+////        return
+//    }
+//
+//}
+////使用正则表达式替换
+//- (NSString *)pregReplace:(NSString *)pattern with:(NSString *)with options:(NSMatchingOptions)options {
+//    NSError *e;
+//    NSRegularExpression * regex = [[NSRegularExpression alloc] initWithPattern:pattern options:NSRegularExpressionCaseInsensitive error:&e];
+//    if (e) {
+//        return @"";
+//    }
+//    return [regex stringByReplacingMatchesInString:self.text options:options range:NSMakeRange(0, self.text.length) withTemplate:with];
+//}
 
 - (CGRect)leftViewRectForBounds:(CGRect)bounds
 {
@@ -253,6 +308,7 @@
 }
 
 -(void)dealloc {
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
     self.delegate = nil;
 }
 
