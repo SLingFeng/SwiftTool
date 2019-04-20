@@ -356,7 +356,7 @@
  @param phone 号码
  @return phone
  */
-+(NSMutableString *)hiddenPhone:(NSString *)phone;
++(NSString *)hiddenPhone:(NSString *)phone;
 #pragma mark - 字体大小
 /**
  *  @author LingFeng, 2016-06-08 11:06:54

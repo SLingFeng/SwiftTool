@@ -20,9 +20,11 @@ class LFDatePicker: UIView, UIPickerViewDelegate, UIPickerViewDataSource {
     var datePicker: UIDatePicker!
     var pickerView: UIPickerView!
     
-    var doneSub = PublishSubject<String>()
+    var doneSub = PublishSubject<[Any]>()
     
     var str = ""
+    
+    var selRow = 0
     
     var data = Array<String>()
     
@@ -52,7 +54,7 @@ class LFDatePicker: UIView, UIPickerViewDelegate, UIPickerViewDataSource {
     //日期格式化器
     lazy var dateFormatter: DateFormatter = {
         let formatter = DateFormatter()
-        formatter.dateFormat = "yyyy年MM月dd日 HH:mm"
+        formatter.dateFormat = "yyyy-MM-dd"// HH:mm
         return formatter
     }()
     
@@ -101,7 +103,7 @@ class LFDatePicker: UIView, UIPickerViewDelegate, UIPickerViewDataSource {
             })
             datePicker.rx.date.subscribe(onNext: {[weak self] x in
                 if let strongSelf = self {
-                     strongSelf.doneSub.onNext(strongSelf.dateFormatter.string(from: x))
+                     strongSelf.doneSub.onNext([strongSelf.dateFormatter.string(from: x), strongSelf.selRow])
                 }
                
             }).disposed(by: disposeBag)
@@ -135,12 +137,12 @@ class LFDatePicker: UIView, UIPickerViewDelegate, UIPickerViewDataSource {
         doneBtn.rx.tap.subscribe({ [weak self] _ in
             if let strongSelf = self {
                 if strongSelf.type == .yearMonthDay {
-                    strongSelf.doneSub.onNext(strongSelf.dateFormatter.string(from: strongSelf.datePicker.date))
+                    strongSelf.doneSub.onNext([strongSelf.dateFormatter.string(from: strongSelf.datePicker.date), strongSelf.selRow])
                 }else {
                     if strongSelf.str.isEmpty {
-                        strongSelf.doneSub.onNext(data.first ?? "")
+                        strongSelf.doneSub.onNext([data.first ?? "", strongSelf.selRow])
                     }else {
-                        strongSelf.doneSub.onNext(strongSelf.str)
+                        strongSelf.doneSub.onNext([strongSelf.str, strongSelf.selRow])
                     }
                 }
                 self?.cancelView()
@@ -181,6 +183,9 @@ class LFDatePicker: UIView, UIPickerViewDelegate, UIPickerViewDataSource {
     
     func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
 //        doneSub.onNext(data[row])
+        if data.count == 0 {
+            return
+        }
         str = data[row]
     }
 }

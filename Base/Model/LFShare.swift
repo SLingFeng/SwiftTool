@@ -26,7 +26,7 @@ class LFShare: NSObject {
 
             let mo = UMSocialMessageObject()
             let io = UMShareImageObject()
-            io.title = "股策通"
+            io.title = "分享"
             io.thumbImage = UIImage(named: "logo")
             io.shareImage = UIImage(named: "logo")
             mo.shareObject = io

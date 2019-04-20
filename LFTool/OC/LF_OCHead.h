@@ -9,6 +9,7 @@
 #ifndef LF_OCHead_h
 #define LF_OCHead_h
 
+#ifdef __OBJC__
 #import <DZNEmptyDataSet/DZNEmptyDataSet-umbrella.h>
 #import <MJRefresh/MJRefresh.h>
 #import "SLFCommonTools.h"
@@ -18,10 +19,17 @@
 #import <SDWebImageManager.h>
 #import <SDImageCache.h>
 #import "SLFAlert.h"
+#import <Masonry/Masonry.h>
 // U-Share核心SDK
 #import <UMShare/UMShare.h>
 // U-Share分享面板SDK，未添加分享面板SDK可将此行去掉
 #import <UShareUI/UShareUI.h>
+
+#import <HelpDeskLite/HelpDeskLite.h>
+#import <HyphenateLite/HyphenateLite.h>
+#import "HelpDeskUI.h"
+
+
 
 #pragma mark - 宽高
 #define kScreenW \
@@ -43,6 +51,12 @@
 //字符串是否为空
 #define kStringIsEmpty(str) ([str isKindOfClass:[NSNull class]] || str == nil || [str length] < 1 ? YES : NO )
 
+#endif
 
+#ifndef __OPTIMIZE__
+#define NSLog(...) NSLog(__VA_ARGS__)
+#else
+#define NSLog(...) {}
+#endif
 
 #endif /* LF_OCHead_h */

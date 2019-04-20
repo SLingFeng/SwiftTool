@@ -673,7 +673,7 @@ static SLFCommonTools * tools = nil;
     return [UIFont boldSystemFontOfSize:[SLFCommonTools adaptiveHeight:(size)]];
 }
 
-+(NSMutableString *)hiddenPhone:(NSString *)phone {
++(NSString *)hiddenPhone:(NSString *)phone {
     if (phone == nil) {
         return [NSMutableString stringWithFormat:@""];
     }

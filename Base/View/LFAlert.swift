@@ -12,6 +12,10 @@ import RxSwift
 
 typealias alertClickIndex = (Int) -> Void
 
+let LFAlertSp = 10
+
+let LFAlertW = kScreenW - CGFloat(LFAlertSp * 2) - 40
+
 class LFAlert: NSObject {
     
    
@@ -45,6 +49,9 @@ class LFAlert: NSObject {
             alertView.addSubview(leftBtn)
             leftBtn.backgroundColor = UIColor("#DDDDDD")
             leftBtn.layer.cornerRadius = 5
+//            if change {
+//                leftBtn.removeFromSuperview()
+//            }
             
             let rightBtn = UIButton(fontSize: 19, fontColor: .white, text: rightTitle)
             alertView.addSubview(rightBtn)
@@ -52,8 +59,8 @@ class LFAlert: NSObject {
             rightBtn.layer.cornerRadius = 5
             
             alertView.snp.makeConstraints({ (make) in
-                make.left.equalTo(10)
-                make.right.equalTo(-10)
+                make.left.equalTo(LFAlertSp)
+                make.right.equalTo(-LFAlertSp)
                 make.centerX.equalTo(_backgroundView)
                 make.centerY.equalTo(_backgroundView).offset(-50)
                 if (contentView != nil) {
@@ -66,7 +73,9 @@ class LFAlert: NSObject {
                 alertView.addSubview(contentView!)
                 
                 contentView!.snp.makeConstraints({ (make) in
-                    make.left.right.equalTo(0)
+                    make.left.equalTo(20)
+                    make.right.equalTo(-20)
+//                    make.centerX.equalTo(alertView.snp.centerX)
                     make.top.equalTo(titleLabel.snp.bottom).offset(20)
                     make.height.equalTo(contentView!.frame.height)
                 })
@@ -97,21 +106,30 @@ class LFAlert: NSObject {
                 make.top.equalTo(20)
             })
             
-            rightBtn.snp.makeConstraints({ (make) in
-                make.right.equalTo(-10)
-                make.height.equalTo(40)
-                make.bottom.equalTo(-20)
-                make.left.equalTo(leftBtn.snp.right).offset(15)
-            })
-            
-            leftBtn.snp.makeConstraints({ (make) in
-                make.left.equalTo(10)
-                make.height.equalTo(40)
-                make.bottom.equalTo(-20)
-                make.right.equalTo(rightBtn.snp.left).offset(-15)
-                make.width.equalTo(rightBtn).priority(999)
-            })
-            
+            if change {
+                rightBtn.snp.makeConstraints({ (make) in
+                    make.right.equalTo(-20)
+                    make.height.equalTo(40)
+                    make.bottom.equalTo(-20)
+                    make.left.equalTo(20)
+                    make.centerX.equalTo(alertView)
+                })
+            }else {
+                rightBtn.snp.makeConstraints({ (make) in
+                    make.right.equalTo(-20)
+                    make.height.equalTo(40)
+                    make.bottom.equalTo(-20)
+                    make.left.equalTo(leftBtn.snp.right).offset(15)
+                })
+                
+                leftBtn.snp.makeConstraints({ (make) in
+                    make.left.equalTo(20)
+                    make.height.equalTo(40)
+                    make.bottom.equalTo(-20)
+                    make.right.equalTo(rightBtn.snp.left).offset(-15)
+                    make.width.equalTo(rightBtn).priority(999)
+                })
+            }
             UIView.animate(withDuration: 0.1, animations: {
                 _backgroundView.alpha = 1
             })

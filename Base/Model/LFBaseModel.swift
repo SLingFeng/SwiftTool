@@ -61,6 +61,25 @@ class LFResponseMsgModel: NSObject, HandyJSON {
     }
 }
 
+class LFResponseArrayModel: NSObject, HandyJSON {
+    /**
+     状态码
+     */
+    var code: NSInteger = 1
+    /**
+     信息
+     */
+    var msg = ""
+    
+    var data : [Any] = []
+    
+    var success: Bool = false
+    
+    required override init() {
+        super.init()
+    }
+}
+
 //这里是为 RxSwift 中的 ObservableType和 Response写一个简单的扩展方法 mapModel，利用我们写好的Model 类，一步就把JSON数据映射成 model
 //extension ObservableType where E == Response {
 //    public func mapModel<T: HandyJSON>(_ type: T.Type) -> Observable<T> {

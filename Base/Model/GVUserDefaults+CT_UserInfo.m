@@ -28,9 +28,9 @@
     self.auditStatus = 0;
     self.bankCardStatus = 0;
     self.pwdStatus = 1;
-    self.user_phone = @"";
-    self.username = @"";
-    self.user_auth = @"";
+    self.user_phone = nil;
+    self.username = nil;
+    self.user_auth = nil;
 }
 
 @end

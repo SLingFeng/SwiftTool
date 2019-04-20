@@ -212,14 +212,16 @@
     if (_enterType != enterType) {
         _enterType = enterType;
         
-        _oldKeyboardType = self.keyboardType;
-        if (enterType == BaseTextFieldEnterNumberAndEN) {
-            self.keyboardType = UIKeyboardTypeASCIICapable;
-        }else {
-            self.keyboardType = _oldKeyboardType;
-        }
+//        _oldKeyboardType = self.keyboardType;
+//        if (enterType == BaseTextFieldEnterNumberAndEN) {
+//            self.keyboardType = UIKeyboardTypeASCIICapable;
+//        }else {
+//            self.keyboardType = _oldKeyboardType;
+//        }
         if (enterType == BaseTextFieldEnterCN) {
             [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(greetingTextFieldChanged:) name:@"UITextFieldTextDidChangeNotification" object:self];
+        }else {
+//            [[NSNotificationCenter defaultCenter] removeObserver:self name:@"UITextFieldTextDidChangeNotification" object:self];
         }
     }
 }

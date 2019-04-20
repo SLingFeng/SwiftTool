@@ -19,11 +19,11 @@ import MBProgressHUD
 //let token = Environment().token
 //let authPlugin = AccessTokenPlugin { token ?? "" }
 
-let apiProvider = MoyaProvider<Api>(manager: WebService.manager(), plugins: [RequestLoadingPlugin(), AuthPlugin()])
-let apiProviderNo = MoyaProvider<Api>(manager: WebService.manager(), plugins: [AuthPlugin()])
+//let apiProvider = MoyaProvider<Api>(manager: WebService.manager(), plugins: [RequestLoadingPlugin(), AuthPlugin()])
+//let apiProviderNo = MoyaProvider<Api>(manager: WebService.manager(), plugins: [AuthPlugin()])
 
-//let apiProvider = MoyaProvider<Api>(plugins: [RequestLoadingPlugin(), AuthPlugin()])
-//let apiProviderNo = MoyaProvider<Api>(plugins: [AuthPlugin()])
+let apiProvider = MoyaProvider<Api>(plugins: [RequestLoadingPlugin(), AuthPlugin()])
+let apiProviderNo = MoyaProvider<Api>(plugins: [AuthPlugin()])
 
 
 enum Api {
@@ -76,6 +76,14 @@ enum Api {
     case trade_countCommissCharge([String : String])
     case config_getConfigValue([String : String])
     case article_getArticleDetail([String : String])
+    case fin_getFinSpeFromId([String : String])
+    case fin_enLargeFin([String : String])
+    case user_reLoginPwd([String : String])
+    case user_getUserMessage
+    case user_isNewMessage
+    case fin_getApplyFinFee([String : String])
+    case article_getColumnInfo([String : String])
+    
 }
 //cs.flyy789.com
 let ApiUrl = "http://cs.flyv888.com"
@@ -232,6 +240,27 @@ extension Api: TargetType {
             ///文章详情
         case .article_getArticleDetail:
             return "/api/article/getArticleDetail"
+             ///获取配资规格
+        case .fin_getFinSpeFromId:
+            return "/api/fin/getFinSpeFromId"
+        ///扩大配资
+        case .fin_enLargeFin:
+            return "/api/fin/enLargeFin"
+        ///重置登录密码
+        case .user_reLoginPwd:
+            return "/api/user/reLoginPwd"
+        ///获取消息通知
+        case .user_getUserMessage:
+            return "/api/user/getUserMessage"
+            ///新消息
+        case .user_isNewMessage:
+            return "/api/user/isNewMessage"
+        ///配资利息
+        case .fin_getApplyFinFee:
+            return "/api/fin/getApplyFinFee"
+            ///获取栏目列表
+        case .article_getColumnInfo:
+            return "/api/article/getColumnInfo"
             
 //        case .fenshi:
 //            return ""
@@ -288,7 +317,12 @@ extension Api: TargetType {
              var .trade_searchTradeOrder(par),
              var .trade_countCommissCharge(par),
              var .config_getConfigValue(par),
-             var .article_getArticleDetail(par):
+             var .article_getArticleDetail(par),
+             var .fin_getFinSpeFromId(par),
+             var .fin_enLargeFin(par),
+             var .user_reLoginPwd(par),
+             var .fin_getApplyFinFee(par),
+             var .article_getColumnInfo(par):
             
             par["token"] = Environment().token ?? ""
             return .requestParameters(parameters: par, encoding: URLEncoding.queryString)
@@ -384,7 +418,7 @@ struct AuthPlugin: PluginType {
 public final class RequestLoadingPlugin:PluginType{
     
     public func willSend(_ request: RequestType, target: TargetType) {
-        LFLog("will+\(target)")
+//        LFLog("will+\(target)")
         if Environment().tokenExists {
             SLFHUD.showLoading()
         }
@@ -474,4 +508,27 @@ func apiRequsetNo(_ a: Any) -> Single<LFResponseModel> {
             api.dispose()
         }
     })
+}
+//MARK: - 网络状态
+let NetworkStatus = NSNotification.Name.init(rawValue:"networkStatus")
+func AlamofiremonitorNet() {
+    let manager = NetworkReachabilityManager(host: "www.baidu.com")
+    manager?.listener = { status in
+        print("网络状态: \(status)")
+        if status == .reachable(.ethernetOrWiFi) { //WIFI
+            NotificationCenter.default.post(name: NetworkStatus, object: true)
+            debugPrint("wifi")
+        } else if status == .reachable(.wwan) { // 蜂窝网络
+            NotificationCenter.default.post(name: NetworkStatus, object: true)
+            debugPrint("4G")
+        } else if status == .notReachable { // 无网络
+            NotificationCenter.default.post(name: NetworkStatus, object: false)
+
+            debugPrint("无网络")
+        } else { // 其他
+            
+        }
+        
+    }
+    manager?.startListening()//开始监听网络
 }

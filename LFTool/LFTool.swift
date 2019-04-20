@@ -249,7 +249,7 @@ class LFTool: NSObject {
     }
     
     class func clearAllSD() {
-        _ = LFAlert.initAlert(title: "你确定要清除缓存?", leftTitle: "取消", rightTitle: "确定", change: false, contentView: nil).subscribe(onSuccess: { (i) in
+        _ = LFAlert.initAlert(title: "你确定要清除缓存吗？", leftTitle: "取消", rightTitle: "确定", change: false, contentView: nil).subscribe(onSuccess: { (i) in
             if i == 1 {
                 SLFHUD.showLoadingHint("清除中...")
                 SDImageCache.shared().clearMemory()
@@ -327,7 +327,10 @@ class LFTool: NSObject {
         view.layer.mask = maskLayer
         
     }
-    
+    ///url
+    class func lfUrl(_ str: String) -> URL {
+        return URL(string: ApiUrl + str)!
+    }
 }
 
 //var str = "hangge.com"
@@ -338,14 +341,16 @@ class LFTool: NSObject {
 //str[0] = "H"
 //
 //print(str[0,10])
-extension String
-{
+extension String {
     subscript(start:Int, length:Int) -> String
     {
         get{
-            let index1 = self.index(self.startIndex, offsetBy: start)
-            let index2 = self.index(index1, offsetBy: length)
-            return String(self[index1..<index2])
+            if self.count < start || self.count >= length {
+                let index1 = self.index(self.startIndex, offsetBy: start)
+                let index2 = self.index(index1, offsetBy: length)
+                return String(self[index1..<index2])
+            }
+            return self
         }
         set{
             let tmp = self
@@ -379,6 +384,27 @@ extension String
                     self += "\(item)"
                 }
             }
+        }
+    }
+    
+    mutating func pointRule() -> String {
+        let n = Double(self)!
+        let i = Darwin.round(n)
+        if i == n {
+            return String(format: "%.0f", n)
+        }else {
+            return String(format: "%.2f", n)
+        }
+    }
+}
+
+extension Double {
+    mutating func pointRule() -> String {
+        let i = Darwin.round(self)
+        if i == self {
+            return String(format: "%.0f", self)
+        }else {
+            return String(format: "%.2f", self)
         }
     }
 }
