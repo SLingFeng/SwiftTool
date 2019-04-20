@@ -25,9 +25,13 @@ class LFBaseViewController: UIViewController {
 
         self.view.backgroundColor = kF8F8F8
         
-        self.navigationController?.navigationBar.isTranslucent = true
-        self.navigationController?.navigationBar.shadowImage = UIImage()
+//        self.navigationController?.navigationBar.isTranslucent = true
+//        self.navigationController?.navigationBar.shadowImage = UIImage()
 
+//        self.navigationController?.navigationBar.setBackgroundImage(UIImage(), for: .any, barMetrics: .default)
+        
+        self.navigationController?.navigationBar.shadowImage = UIImage.createImage(with: UIColor("#DCDCDC"))
+        
     }
 
     override func loadView() {

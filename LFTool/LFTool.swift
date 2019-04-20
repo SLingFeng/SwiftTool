@@ -132,7 +132,7 @@ class LFTool: NSObject {
 //        }else
             if money.count >= 5 {
             let t = Double(money)! / 10000
-            return String(format: "%.2f万", t)
+            return String(format: "%.0f万", t)
         }
         return money + "元"
     }

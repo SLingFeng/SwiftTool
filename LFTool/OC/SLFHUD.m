@@ -65,7 +65,19 @@ static SLFHUD * _HUD = nil;
     HUD.mode = MBProgressHUDModeText;
     [view addSubview:HUD];
     [HUD showAnimated:YES];
-    [HUD hideAnimated:YES afterDelay:2];
+    NSTimeInterval x = 2;
+    if (hint.length <= 6) {
+        x = 1;
+    }else if (hint.length <= 9) {
+        x = 1.5;
+    }else if (hint.length <= 10) {
+        x = 1.7;
+    }else if (hint.length <= 16) {
+        x = 2.5;
+    }else {
+        x = 3.5;
+    }
+    [HUD hideAnimated:YES afterDelay:x];
     HUD.label.numberOfLines = 0;
     [[SLFHUD share] setHUD:HUD];
 }
@@ -103,7 +115,20 @@ static SLFHUD * _HUD = nil;
 //    hud.yOffset = 180;
     hud.removeFromSuperViewOnHide = YES;
 //    [hud hide:YES afterDelay:2];
-    [hud hideAnimated:YES afterDelay:2];
+    
+    NSTimeInterval x = 2;
+    if (hint.length <= 6) {
+        x = 1;
+    }else if (hint.length <= 9) {
+        x = 1.5;
+    }else if (hint.length <= 10) {
+        x = 1.7;
+    }else if (hint.length <= 16) {
+        x = 2.5;
+    }else {
+        x = 3.5;
+    }
+    [hud hideAnimated:YES afterDelay:x];
 }
 
 //+ (void)showHint:(NSString *)hint mode:(MBProgressHUDMode)mode {

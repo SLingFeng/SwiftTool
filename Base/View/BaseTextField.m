@@ -235,8 +235,8 @@
         //过滤非汉字字符
         self.text = [self filterCharactor:self.text withRegex:@"[^\u4e00-\u9fa5]"];
         
-        if (self.text.length >= 4) {
-            self.text = [self.text substringToIndex:4];
+        if (self.text.length >= self.enterNumber) {
+            self.text = [self.text substringToIndex:self.enterNumber];
         }
     }else { //有高亮文字
         //do nothing

@@ -15,9 +15,9 @@ class LFBaseNavigationViewController: UINavigationController {
         
 //        self.navigationBar.setBackgroundImage(UIImage(), for: UIBarPosition.any, barMetrics: .default)
         
-        self.navigationController?.navigationBar.shadowImage = UIImage()
-
-        self.navigationController?.navigationBar.isTranslucent = true
+//        self.navigationController?.navigationBar.shadowImage = UIImage()
+//
+//        self.navigationController?.navigationBar.isTranslucent = true
         
         self.navigationBar.tintColor = k666666
         self.navigationBar.barTintColor = .white
