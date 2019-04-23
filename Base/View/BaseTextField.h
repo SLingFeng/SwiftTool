@@ -44,6 +44,8 @@ typedef enum : NSUInteger {
 
 @property (nonatomic, copy) void(^textFieldChange)(BaseTextField *tf);
 
+@property (nonatomic, copy) void(^textFieldEditingDidEnd)(BaseTextField *tf);
+
 //Placeholder文字颜色
 - (void)setupPlaceholderColor:(UIColor *)placeholderColor;
 

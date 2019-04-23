@@ -46,16 +46,16 @@
     [self addTarget:self action:@selector(TextFieldChange:) forControlEvents:(UIControlEventEditingChanged)];
 //    [self addTarget:self action:@selector(TextFieldChange:) forControlEvents:(UIControlEventAllEditingEvents)];
 
-//    [self addTarget:self action:@selector(editingDidEnd) forControlEvents:(UIControlEventEditingDidEnd)];
+    [self addTarget:self action:@selector(editingDidEnd) forControlEvents:(UIControlEventEditingDidEnd)];
 //    self addTarget:self action:@selector(shouldRrturnKeyClick:) forControlEvents:(UIControlEvent)
     
 }
 
-//- (void)editingDidEnd {
-//    if (self.textFieldEditingDidEnd) {
-//        self.textFieldEditingDidEnd(self);
-//    }
-//}
+- (void)editingDidEnd {
+    if (self.textFieldEditingDidEnd) {
+        self.textFieldEditingDidEnd(self);
+    }
+}
 
 - (void)begin {
     if (!self.window.isKeyWindow){

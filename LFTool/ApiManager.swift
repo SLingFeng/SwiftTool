@@ -83,6 +83,13 @@ enum Api {
     case user_isNewMessage
     case fin_getApplyFinFee([String : String])
     case article_getColumnInfo([String : String])
+    case user_getInvitationInfo
+    
+    
+    
+    
+    
+    
     
 }
 //cs.flyy789.com
@@ -261,6 +268,10 @@ extension Api: TargetType {
             ///获取栏目列表
         case .article_getColumnInfo:
             return "/api/article/getColumnInfo"
+        ///推广
+        case .user_getInvitationInfo:
+            return "/api/user/getInvitationInfo"
+            
             
 //        case .fenshi:
 //            return ""

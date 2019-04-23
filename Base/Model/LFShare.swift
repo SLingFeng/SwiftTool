@@ -10,7 +10,7 @@ import UIKit
 
 class LFShare: NSObject {
     //显示分享面板
-    class func showShareUI(vc: UIViewController) {
+    class func showShareUI(vc: UIViewController, title: String, sub: String, img: String) {
         
         UMSocialShareUIConfig.shareInstance()?.sharePageScrollViewConfig.shareScrollViewPageMaxColumnCountForPortraitAndBottom = 2
         UMSocialShareUIConfig.shareInstance()?.sharePageScrollViewConfig.shareScrollViewPageMaxItemWidth = 60
@@ -26,9 +26,10 @@ class LFShare: NSObject {
 
             let mo = UMSocialMessageObject()
             let io = UMShareImageObject()
-            io.title = "分享"
-            io.thumbImage = UIImage(named: "logo")
-            io.shareImage = UIImage(named: "logo")
+            io.title = title
+            io.descr = sub
+            io.thumbImage = UIImage(named: img)
+            io.shareImage = UIImage(named: img)
             mo.shareObject = io
             LFLog(userinfo)
             UMSocialManager.default()?.share(to: type, messageObject: mo, currentViewController: vc, completion: { (data, e) in
