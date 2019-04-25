@@ -1,9 +1,9 @@
 //
 //  LFTimer.swift
-//  gct
+//  SADF
 //
-//  Created by big on 2019/4/8.
-//  Copyright © 2019 big. All rights reserved.
+//  Created by SADF on 2019/4/8.
+//  Copyright © 2019 SADF. All rights reserved.
 //
 
 import UIKit

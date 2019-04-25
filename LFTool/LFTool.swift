@@ -391,7 +391,8 @@ extension String {
         let n = Double(self)!
         let i = Darwin.round(n)
         if i == n {
-            return String(format: "%.0f", n)
+            let s = Int(n)
+            return String(format: "%.d", s)
         }else {
             return String(format: "%.2f", n)
         }

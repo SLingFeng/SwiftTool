@@ -66,6 +66,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, copy) NSString *fin_week_pic;
 @property (nonatomic, copy) NSString *fin_month_pic;
 @property (nonatomic, copy) NSString *fin_fee_pic;
+@property (nonatomic, copy) NSString *edition_number;
 ///操盘余额
 - (NSString *)chaopanyuer;
 ///配资账户余额=操盘金额-保证金余额

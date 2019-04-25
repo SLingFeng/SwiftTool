@@ -84,9 +84,9 @@ enum Api {
     case fin_getApplyFinFee([String : String])
     case article_getColumnInfo([String : String])
     case user_getInvitationInfo
-    
-    
-    
+    case user_getInvitationList([String : String])
+    case user_getUnderFinOrderList([String : String])
+    case fin_getEnFinFee([String : String])
     
     
     
@@ -271,6 +271,15 @@ extension Api: TargetType {
         ///推广
         case .user_getInvitationInfo:
             return "/api/user/getInvitationInfo"
+            ///推广人员列表
+        case .user_getInvitationList:
+            return "/api/user/getInvitationList"
+            ///查看邀请人员的合约列表
+        case .user_getUnderFinOrderList:
+            return "/api/user/getUnderFinOrderList"
+        ///扩大利息
+        case .fin_getEnFinFee:
+            return "/api/fin/getEnFinFee"
             
             
 //        case .fenshi:
@@ -333,7 +342,10 @@ extension Api: TargetType {
              var .fin_enLargeFin(par),
              var .user_reLoginPwd(par),
              var .fin_getApplyFinFee(par),
-             var .article_getColumnInfo(par):
+             var .article_getColumnInfo(par),
+             var .user_getInvitationList(par),
+             var .user_getUnderFinOrderList(par),
+             var .fin_getEnFinFee(par):
             
             par["token"] = Environment().token ?? ""
             return .requestParameters(parameters: par, encoding: URLEncoding.queryString)

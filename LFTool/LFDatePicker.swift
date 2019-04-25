@@ -16,17 +16,28 @@ enum LFDatePickerType {
     case text
 }
 
+class LFDateModel: NSObject {
+    
+    var id = ""
+    
+    var text = ""
+    
+    var traders_money = ""
+}
+
 class LFDatePicker: UIView, UIPickerViewDelegate, UIPickerViewDataSource {
     var datePicker: UIDatePicker!
     var pickerView: UIPickerView!
     
-    var doneSub = PublishSubject<[Any]>()
+    var doneSub = PublishSubject<LFDateModel>()
+    
+    var doneDateSub = PublishSubject<[Any]>()
     
     var str = ""
     
     var selRow = 0
     
-    var data = Array<String>()
+    var data = Array<LFDateModel>()
     
     
 //    //最简单的pickerView适配器（显示普通文本）
@@ -51,6 +62,7 @@ class LFDatePicker: UIView, UIPickerViewDelegate, UIPickerViewDataSource {
     
     let disposeBag = DisposeBag()
     
+    
     //日期格式化器
     lazy var dateFormatter: DateFormatter = {
         let formatter = DateFormatter()
@@ -58,7 +70,7 @@ class LFDatePicker: UIView, UIPickerViewDelegate, UIPickerViewDataSource {
         return formatter
     }()
     
-    init(type: LFDatePickerType, title: String, data:Array<String>) {
+    init(type: LFDatePickerType, title: String, data:Array<LFDateModel>) {
         super.init(frame: kScreen)
         self.type = type
         titleLabel.text = title
@@ -103,7 +115,7 @@ class LFDatePicker: UIView, UIPickerViewDelegate, UIPickerViewDataSource {
             })
             datePicker.rx.date.subscribe(onNext: {[weak self] x in
                 if let strongSelf = self {
-                     strongSelf.doneSub.onNext([strongSelf.dateFormatter.string(from: x), strongSelf.selRow])
+                     strongSelf.doneDateSub.onNext([strongSelf.dateFormatter.string(from: x), strongSelf.selRow])
                 }
                
             }).disposed(by: disposeBag)
@@ -137,12 +149,12 @@ class LFDatePicker: UIView, UIPickerViewDelegate, UIPickerViewDataSource {
         doneBtn.rx.tap.subscribe({ [weak self] _ in
             if let strongSelf = self {
                 if strongSelf.type == .yearMonthDay {
-                    strongSelf.doneSub.onNext([strongSelf.dateFormatter.string(from: strongSelf.datePicker.date), strongSelf.selRow])
+                    strongSelf.doneDateSub.onNext([strongSelf.dateFormatter.string(from: strongSelf.datePicker.date), strongSelf.selRow])
                 }else {
                     if strongSelf.str.isEmpty {
-                        strongSelf.doneSub.onNext([data.first ?? "", strongSelf.selRow])
+                        strongSelf.doneSub.onNext(data.first ?? LFDateModel())//([data.first ?? "", strongSelf.selRow])
                     }else {
-                        strongSelf.doneSub.onNext([strongSelf.str, strongSelf.selRow])
+                        strongSelf.doneSub.onNext(strongSelf.data[strongSelf.selRow])
                     }
                 }
                 self?.cancelView()
@@ -178,14 +190,17 @@ class LFDatePicker: UIView, UIPickerViewDelegate, UIPickerViewDataSource {
     }
     
     func pickerView(_ pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String? {
-        return data[row]
+        let m = data[row]
+        return m.text
     }
     
     func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
+        self.selRow = row
 //        doneSub.onNext(data[row])
         if data.count == 0 {
             return
         }
-        str = data[row]
+        let m = data[row]
+        str = m.text
     }
 }

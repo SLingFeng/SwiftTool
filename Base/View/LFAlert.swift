@@ -101,6 +101,15 @@ class LFAlert: NSObject {
                 single(.success(1))
             })
             
+            _ = b.rx.tapGesture().when(.recognized).subscribe(onNext: { (_) in
+                UIView.animate(withDuration: 0.1, animations: {
+                    _backgroundView.alpha = 0
+                }) { (_) in
+                    _backgroundView.removeFromSuperview()
+                }
+                single(.success(0))
+            })
+            
             titleLabel.snp.makeConstraints({ (make) in
                 make.left.right.equalTo(0)
                 make.top.equalTo(20)
@@ -209,6 +218,15 @@ class LFAlert: NSObject {
                     _backgroundView.removeFromSuperview()
                 }
                 single(.success(1))
+            })
+            
+            _ = b.rx.tapGesture().when(.recognized).subscribe(onNext: { (_) in
+                UIView.animate(withDuration: 0.1, animations: {
+                    _backgroundView.alpha = 0
+                }) { (_) in
+                    _backgroundView.removeFromSuperview()
+                }
+                single(.success(0))
             })
             
             iv.snp.makeConstraints({ (make) in
