@@ -260,7 +260,15 @@
 }
 
 - (CGFloat)verticalOffsetForEmptyDataSet:(UIScrollView *)scrollView {
-    return -150;
+    CGFloat w = -150;
+    if (IS_IPHONE_Xs_Max || IS_IPHONE_Xr || IS_IPHONE_X || IS_IPHONE_Xs || kiPhone6Plus) {
+
+    }else if (kiPhone5 || kiPhone6) {
+        w = -80;
+    }else {
+        
+    }
+    return w;
 }
 //-(CGFloat)spaceHeightForEmptyDataSet:(UIScrollView *)scrollView {
 //    return -300;

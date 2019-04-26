@@ -69,4 +69,7 @@ class LFPaoMaView: UIView {
         fatalError("init(coder:) has not been implemented")
     }
     
+    deinit {
+        timerDib?.dispose()
+    }
 }

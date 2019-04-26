@@ -111,7 +111,7 @@ class LFDatePicker: UIView, UIPickerViewDelegate, UIPickerViewDataSource {
             backView.addSubview(datePicker)
             datePicker.snp.makeConstraints({ (make) in
                 make.left.right.equalTo(0)
-                make.bottom.equalTo(-39)
+                make.bottom.equalTo(-LFTool.Height_HomeBar())
             })
             datePicker.rx.date.subscribe(onNext: {[weak self] x in
                 if let strongSelf = self {
@@ -125,7 +125,7 @@ class LFDatePicker: UIView, UIPickerViewDelegate, UIPickerViewDataSource {
             backView.addSubview(pickerView)
             pickerView.snp.makeConstraints({ (make) in
                 make.left.right.equalTo(0)
-                make.bottom.equalTo(-39)
+                make.bottom.equalTo(-LFTool.Height_HomeBar())
             })
             pickerView.delegate = self
         }

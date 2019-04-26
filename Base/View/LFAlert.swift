@@ -62,7 +62,7 @@ class LFAlert: NSObject {
                 make.left.equalTo(LFAlertSp)
                 make.right.equalTo(-LFAlertSp)
                 make.centerX.equalTo(_backgroundView)
-                make.centerY.equalTo(_backgroundView).offset(-(50 + ((contentView?.frame.size.height ?? 0)/4)))
+                make.centerY.equalTo(_backgroundView).offset(-(((contentView?.frame.size.height ?? 0)/3.5)))
                 if (contentView != nil) {
                     make.height.equalTo(150 + contentView!.frame.size.height)
                 }else {

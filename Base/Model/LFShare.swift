@@ -15,8 +15,32 @@ class LFShare: NSObject {
         UMSocialShareUIConfig.shareInstance()?.sharePageScrollViewConfig.shareScrollViewPageMaxColumnCountForPortraitAndBottom = 2
         UMSocialShareUIConfig.shareInstance()?.sharePageScrollViewConfig.shareScrollViewPageMaxItemWidth = 60
         UMSocialShareUIConfig.shareInstance()?.sharePageScrollViewConfig.shareScrollViewPageMaxItemHeight = 60
-        UMSocialShareUIConfig.shareInstance()?.shareContainerConfig.shareContainerMarginBottom = LFTool.Height_HomeBar()
-         UMSocialShareUIConfig.shareInstance()?.sharePlatformItemViewConfig.sharePlatformItemViewBGRadiusColor = .clear
+        
+        UMSocialShareUIConfig.shareInstance()?.sharePageScrollViewConfig.shareScrollViewPageMaxItemIconWidth = 60
+        UMSocialShareUIConfig.shareInstance()?.sharePageScrollViewConfig.shareScrollViewPageMaxItemIconHeight = 60
+        
+        UMSocialShareUIConfig.shareInstance()?.sharePageScrollViewConfig.shareScrollViewBackgroundColor = .white
+        UMSocialShareUIConfig.shareInstance()?.sharePageScrollViewConfig.shareScrollViewPageBGColor = .white
+        
+        UMSocialShareUIConfig.shareInstance()?.shareTitleViewConfig.shareTitleViewBackgroundColor = .white
+        UMSocialShareUIConfig.shareInstance()?.shareTitleViewConfig.shareTitleViewTitleString = "选择分享平台"
+        UMSocialShareUIConfig.shareInstance()?.shareTitleViewConfig.shareTitleViewFont = .boldSystemFont(ofSize: 17)
+        
+        UMSocialShareUIConfig.shareInstance()?.sharePageGroupViewConfig.sharePageGroupViewBackgroundColor = .white
+        UMSocialShareUIConfig.shareInstance()?.sharePageGroupViewConfig.sharePageGroupViewMaskColor = .white
+
+        UMSocialShareUIConfig.shareInstance()?.sharePlatformItemViewConfig.sharePlatformItemViewBGRadiusColor = .white
+        
+        UMSocialShareUIConfig.shareInstance()?.sharePageControlConfig.sharePageControlBackgroundColor = .white
+        
+        UMSocialShareUIConfig.shareInstance()?.shareCancelControlConfig.shareCancelControlBackgroundColor = .white
+        
+        UMSocialShareUIConfig.shareInstance()?.shareContainerConfig.shareContainerBackgroundColor = .white
+        UMSocialShareUIConfig.shareInstance()?.shareContainerConfig.shareContainerGradientStartColor = .white
+        UMSocialShareUIConfig.shareInstance()?.shareContainerConfig.shareContainerGradientEndColor = .white
+        UMSocialShareUIConfig.shareInstance()?.shareContainerConfig.shareContainerMarginBottom = LFTool.isIPHONEXLAST() ? 10 : 0//LFTool.Height_HomeBar()
+
+        
         
         UMSocialUIManager.setPreDefinePlatforms([NSNumber(integerLiteral:UMSocialPlatformType.QQ.rawValue),
                                                  NSNumber(integerLiteral:UMSocialPlatformType.wechatSession.rawValue)])

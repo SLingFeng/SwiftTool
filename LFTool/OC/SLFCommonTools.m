@@ -8,16 +8,7 @@
 #import "SLFCommonTools.h"
 #import <sys/utsname.h>
 
-#pragma mark - 宽高
-#define kScreenW \
-([[UIScreen mainScreen] respondsToSelector:@selector(nativeBounds)] ? [UIScreen mainScreen].nativeBounds.size.width/[UIScreen mainScreen].nativeScale : [UIScreen mainScreen].bounds.size.width)
 
-#define kScreenH \
-([[UIScreen mainScreen] respondsToSelector:@selector(nativeBounds)] ? [UIScreen mainScreen].nativeBounds.size.height/[UIScreen mainScreen].nativeScale : [UIScreen mainScreen].bounds.size.height)
-#define IS_IOS11 [[[UIDevice currentDevice] systemVersion] floatValue] >= 11.0
-
-#define JGG_Y(yl,height,h,i,count) yl+(height+h)*(i/(count))
-//#import "LA_MineViewController.h"
 
 static SLFCommonTools * tools = nil;
 @implementation SLFCommonTools
@@ -165,13 +156,13 @@ static SLFCommonTools * tools = nil;
 #pragma mark - 自适应宽高
 +(CGFloat)adaptiveWidth:(CGFloat)width {
 //        return width*(kScreenW/375);
-//    if (IS_IPHONE_Xs_Max || IS_IPHONE_Xr || IS_IPHONE_X || IS_IPHONE_Xs || kiPhone6Plus) {
-//        return width/2;
-//    }else if (kiPhone5 || kiPhone6) {
+    if (IS_IPHONE_Xs_Max || IS_IPHONE_Xr || IS_IPHONE_X || IS_IPHONE_Xs || kiPhone6Plus) {
         return width/2;
-//    }else {
-//        return width;
-//    }
+    }else if (kiPhone5 || kiPhone6) {
+        return width/3;
+    }else {
+        return width/2;
+    }
 }
 
 +(CGFloat)adaptiveHeight:(CGFloat)height {
