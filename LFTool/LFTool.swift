@@ -126,10 +126,10 @@ class LFTool: NSObject {
     }
     ///缩写万元
     class func toWanYi(money: String) -> String {
-//        if money.count >= 9 {
-//            let t = Double(money)! / 10000 / 10000
-//            return String(format: "%.2f亿", t)
-//        }else
+        if money.count >= 9 {
+            let t = Double(money)! / 10000 / 10000
+            return String(format: "%.2f亿", t)
+        }else
             if money.count >= 5 {
             let t = Double(money)! / 10000
             return String(format: "%.0f万", t)
@@ -138,7 +138,7 @@ class LFTool: NSObject {
     }
     class func toWanShou(money: String) -> String {
         if money.count >= 5 {
-            let t = Double(money)! / 10000
+            let t = Double(money)! / 1000000
             
             return String(format: "%.2f万手", t)
         }
@@ -391,8 +391,8 @@ extension String {
         let n = Double(self)!
         let i = Darwin.round(n)
         if i == n {
-            let s = Int(n)
-            return String(format: "%.d", s)
+//            let s = Int(n)
+            return String(format: "%.0f", n)
         }else {
             return String(format: "%.2f", n)
         }

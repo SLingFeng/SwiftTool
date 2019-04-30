@@ -79,7 +79,7 @@ enum Api {
     case fin_getFinSpeFromId([String : String])
     case fin_enLargeFin([String : String])
     case user_reLoginPwd([String : String])
-    case user_getUserMessage
+    case user_getUserMessage([String : String])
     case user_isNewMessage
     case fin_getApplyFinFee([String : String])
     case article_getColumnInfo([String : String])
@@ -87,7 +87,7 @@ enum Api {
     case user_getInvitationList([String : String])
     case user_getUnderFinOrderList([String : String])
     case fin_getEnFinFee([String : String])
-    
+    case common_sendCodeWithPic([String : String])
     
     
     
@@ -280,7 +280,9 @@ extension Api: TargetType {
         ///扩大利息
         case .fin_getEnFinFee:
             return "/api/fin/getEnFinFee"
-            
+        ///获取验证码（账号安全
+        case .common_sendCodeWithPic:
+            return "/api/common/sendCodeWithPic"
             
 //        case .fenshi:
 //            return ""
@@ -345,7 +347,9 @@ extension Api: TargetType {
              var .article_getColumnInfo(par),
              var .user_getInvitationList(par),
              var .user_getUnderFinOrderList(par),
-             var .fin_getEnFinFee(par):
+             var .fin_getEnFinFee(par),
+             var .user_getUserMessage(par),
+             var .common_sendCodeWithPic(par):
             
             par["token"] = Environment().token ?? ""
             return .requestParameters(parameters: par, encoding: URLEncoding.queryString)
@@ -473,6 +477,7 @@ func apiRequset(_ a: Any) -> Single<LFResponseModel> {
 //                let appCoordinator = AppCoordinator(window: UIApplication.shared.keyWindow!)
 //                _ = appCoordinator.start()
 //                    .subscribe()
+//                SLFHUD.hide()
                 se(.error(NSError(domain: model.msg, code: model.code, userInfo: nil)))
 //                SLFHUD.hide()
             }else {
@@ -508,8 +513,8 @@ func apiRequsetNo(_ a: Any) -> Single<LFResponseModel> {
                 Environment().remove()
                 GVUserDefaults.standard().removeUserInfo()
                 _ = LoginCoordinator(vc: nil).start().subscribe()
+//                SLFHUD.hide()
                 se(.error(NSError(domain: model.msg, code: model.code, userInfo: nil)))
-
             }else {
                 se(.error(NSError(domain: model.msg, code: model.code, userInfo: nil)))
             }

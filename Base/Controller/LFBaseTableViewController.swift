@@ -24,11 +24,11 @@ class LFBaseTableViewController: LFBaseViewController, UITableViewDelegate, UITa
         self.tableView.tState = MyTableViewStatusNormal
         self.view.addSubview(self.tableView)
         if  #available(iOS 11.0, *) {
-//            self.tableView.estimatedSectionHeaderHeight = 0.01
-//            self.tableView.estimatedSectionFooterHeight = 0.01
-            self.tableView.estimatedRowHeight = 0;
-            self.tableView.estimatedSectionHeaderHeight = 0;
-            self.tableView.estimatedSectionFooterHeight = 0;
+            self.tableView.estimatedSectionHeaderHeight = 0.01
+            self.tableView.estimatedSectionFooterHeight = 0.01
+            self.tableView.estimatedRowHeight = 0.01;
+//            self.tableView.estimatedSectionHeaderHeight = 0;
+//            self.tableView.estimatedSectionFooterHeight = 0;
         }
         self.tableView.separatorInset = UIEdgeInsets(top: 0, left: 10, bottom: 0, right: 10)
 
@@ -77,11 +77,11 @@ class LFRxBaseTableViewController: LFBaseViewController, UITableViewDelegate {
         self.tableView.tState = MyTableViewStatusNormal
         self.view.addSubview(self.tableView)
         if  #available(iOS 11.0, *) {
-//            self.tableView.estimatedSectionHeaderHeight = 0.01
-//            self.tableView.estimatedSectionFooterHeight = 0.01
-            self.tableView.estimatedRowHeight = 0;
-            self.tableView.estimatedSectionHeaderHeight = 0;
-            self.tableView.estimatedSectionFooterHeight = 0;
+            self.tableView.estimatedSectionHeaderHeight = 0.01
+            self.tableView.estimatedSectionFooterHeight = 0.01
+            self.tableView.estimatedRowHeight = 0.01;
+//            self.tableView.estimatedSectionHeaderHeight = 0;
+//            self.tableView.estimatedSectionFooterHeight = 0;
         }
         self.tableView.separatorInset = UIEdgeInsets(top: 0, left: 10, bottom: 0, right: 10)
         
