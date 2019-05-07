@@ -88,12 +88,12 @@ enum Api {
     case user_getUnderFinOrderList([String : String])
     case fin_getEnFinFee([String : String])
     case common_sendCodeWithPic([String : String])
-    
+    case user_creatqrcode([String : String])
     
     
 }
 //cs.flyy789.com
-let ApiUrl = "http://cs.flyv888.com"
+let ApiUrl = "http://cs.flyy789.com"
 let WsUrl = "wss://w.sinajs.cn/wskt"
 
 extension Api: TargetType {
@@ -283,6 +283,9 @@ extension Api: TargetType {
         ///获取验证码（账号安全
         case .common_sendCodeWithPic:
             return "/api/common/sendCodeWithPic"
+            ///生成二维码
+        case .user_creatqrcode:
+            return "/api/user/creatqrcode"
             
 //        case .fenshi:
 //            return ""
@@ -349,7 +352,8 @@ extension Api: TargetType {
              var .user_getUnderFinOrderList(par),
              var .fin_getEnFinFee(par),
              var .user_getUserMessage(par),
-             var .common_sendCodeWithPic(par):
+             var .common_sendCodeWithPic(par),
+             var .user_creatqrcode(par):
             
             par["token"] = Environment().token ?? ""
             return .requestParameters(parameters: par, encoding: URLEncoding.queryString)
@@ -445,7 +449,7 @@ struct AuthPlugin: PluginType {
 public final class RequestLoadingPlugin:PluginType{
     
     public func willSend(_ request: RequestType, target: TargetType) {
-//        LFLog("will+\(target)")
+        LFLog("will+\(target)")
         if Environment().tokenExists {
             SLFHUD.showLoading()
         }
@@ -539,10 +543,73 @@ func apiRequsetNo(_ a: Any) -> Single<LFResponseModel> {
 }
 //MARK: - 网络状态
 let NetworkStatus = NSNotification.Name.init(rawValue:"networkStatus")
+
+//https://www.jianshu.com/p/9ee53bfa7862
+//class ServerCheck {
+//    private static let sharedInstance = ServerCheck()
+//    var manager = NetworkReachabilityManager(host:"www.baidu.com")
+//    init() {
+//        manager?.listener = { status in
+////            print("\(status)")
+////            if status == .reachable(.ethernetOrWiFi) { //WIFI
+////                NotificationCenter.default.post(name: NSNotification.Name.init(rawValue:"networkStatus"), object: true)
+////                debugPrint("wifi")
+////            } else if status == .reachable(.wwan) { // 蜂窝网络
+////                NotificationCenter.default.post(name: NSNotification.Name.init(rawValue:"networkStatus"), object: true)
+////                debugPrint("4G")
+////            } else if status == .notReachable { // 无网络
+////                NotificationCenter.default.post(name: NSNotification.Name.init(rawValue:"networkStatus"), object: false)
+////
+////                debugPrint("无网络")
+////            } else { // 其他
+////
+////            }
+//        }
+//        //开始监听
+//        manager?.startListening()
+//    }
+//    class var sharedManager:ServerCheck {
+//        let instance = self.sharedInstance
+//        return instance
+//    }
+//    func networkReachabilityStatus() -> Alamofire.NetworkReachabilityManager.NetworkReachabilityStatus {
+//        let status:Alamofire.NetworkReachabilityManager.NetworkReachabilityStatus = (manager?.networkReachabilityStatus)!
+//        print("当前网络状态:\(status)")
+//        return status
+//    }
+//}
+//
+//class SerVer {
+//    enum CustomNetStatus {
+//        case NONET //无网络
+//        case WIFI  //WiFi
+//        case WWAN  // 3G 或 4G
+//    }
+//    class open func netWorkState()->CustomNetStatus{
+//        var status:CustomNetStatus = .NONET
+//        let serVerS:NetworkReachabilityManager.NetworkReachabilityStatus = ServerCheck.sharedManager.networkReachabilityStatus()
+//        switch serVerS {
+//        case .notReachable:
+//            status = .NONET
+//            break
+//        case .reachable(NetworkReachabilityManager.ConnectionType.ethernetOrWiFi):
+//            status = .WIFI
+//            break
+//        case .reachable(NetworkReachabilityManager.ConnectionType.wwan):
+//            status = .WWAN
+//            break
+//            
+//        default:
+//            status = .NONET
+//            break
+//        }
+//        return status
+//    }
+//}
+let manager = NetworkReachabilityManager(host: "www.baidu.com")
 func AlamofiremonitorNet() {
-    let manager = NetworkReachabilityManager(host: "www.baidu.com")
     manager?.listener = { status in
-        print("网络状态: \(status)")
+        debugPrint("网络状态: \(status)")
         if status == .reachable(.ethernetOrWiFi) { //WIFI
             NotificationCenter.default.post(name: NetworkStatus, object: true)
             debugPrint("wifi")
@@ -554,9 +621,9 @@ func AlamofiremonitorNet() {
 
             debugPrint("无网络")
         } else { // 其他
-            
+
         }
-        
+
     }
     manager?.startListening()//开始监听网络
 }

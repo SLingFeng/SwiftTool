@@ -21,9 +21,9 @@
 #import "SLFAlert.h"
 #import <Masonry/Masonry.h>
 // U-Share核心SDK
-#import <UMShare/UMShare.h>
+//#import <UMShare/UMShare.h>
 // U-Share分享面板SDK，未添加分享面板SDK可将此行去掉
-#import <UShareUI/UShareUI.h>
+//#import <UShareUI/UShareUI.h>
 
 #import <HelpDeskLite/HelpDeskLite.h>
 #import <HyphenateLite/HyphenateLite.h>
