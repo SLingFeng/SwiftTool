@@ -16,17 +16,25 @@ class BaseCoordinator<ResultType> {
     
     var window: UIWindow
     var vc: UIViewController
+    var str: String = ""
     
     public init(window: UIWindow) {
         self.window = window
         self.vc = UIViewController()
     }
     
-    public init(vc: UIViewController?) {
+    public init(str: String) {
         self.window = UIApplication.shared.keyWindow!
-        let x = self.window.rootViewController as! UITabBarController
-        let c = x.viewControllers?.first as! UINavigationController
-        self.vc = vc == nil ? c.viewControllers.last! : vc!
+        self.vc = SLFCommonTools.currentViewController()
+        self.str = str
+//        let x = self.window.rootViewController as! UITabBarController
+//        let c = x.viewControllers?.first as! UINavigationController
+//        if c.viewControllers.last == nil {
+//            self.vc = SLFCommonTools.currentViewController()
+//        }else {
+//            self.vc = c.viewControllers.last!
+//        }
+
     }
     
     /// Typealias which will allows to access a ResultType of the Coordainator by `CoordinatorName.CoordinationResult`.

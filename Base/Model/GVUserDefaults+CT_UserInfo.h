@@ -29,10 +29,11 @@ NS_ASSUME_NONNULL_BEGIN
 //是否设置：0、已设置 1、未设置
 @property (nonatomic, assign) NSInteger pwdStatus;
 
+@property (nonatomic, assign) BOOL isShowLoginVC;
     @property (nonatomic, copy) NSString *user_phone;
 @property (nonatomic, copy) NSString *user_auth;
     @property (nonatomic, copy) NSString *username;
-    
+
     
 
 @property (nonatomic, copy) NSString *web_title;
@@ -46,8 +47,8 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, copy) NSString *fee_day;
 @property (nonatomic, copy) NSString *bank;
 @property (nonatomic, copy) NSString *fastpay;
-@property (nonatomic, copy) NSString *commiss_rate;
-@property (nonatomic, copy) NSString *transfer_fee;
+//@property (nonatomic, copy) NSString *commiss_rate;
+//@property (nonatomic, copy) NSString *transfer_fee;
 @property (nonatomic, copy) NSString *stamp_tax;
 @property (nonatomic, copy) NSString *gague_fee;
 @property (nonatomic, copy) NSString *service_qq;
@@ -67,6 +68,12 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, copy) NSString *fin_month_pic;
 @property (nonatomic, copy) NSString *fin_fee_pic;
 @property (nonatomic, copy) NSString *edition_number;
+
+//@property (nonatomic, copy) NSString *activity_home1;
+//@property (nonatomic, copy) NSString *activity_home2;
+//@property (nonatomic, copy) NSString *activity_home3;
+
+
 ///操盘余额
 - (NSString *)chaopanyuer;
 ///配资账户余额=操盘金额-保证金余额

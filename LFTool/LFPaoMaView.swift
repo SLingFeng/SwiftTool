@@ -11,7 +11,7 @@ import RxSwift
 
 class LFPaoMaView: UIView {
 
-    let title = UILabel(fontSize: 15, fontColor: k999999, text: "222777222777222777722277722277722277722277722277qqqqqqwww")
+    let title = UILabel(fontSize: 15, fontColor: UIColor("#379AFF"), text: "")
     
     var timer : Observable<Int>?
     var timerDib : Disposable?
@@ -46,9 +46,9 @@ class LFPaoMaView: UIView {
         
         let tw = SLFCommonTools.textSize(title.text, font: title.font).width + 1
         
-        if tw < self.frame.size.width {
-            return
-        }
+//        if tw < self.frame.size.width {
+//            return
+//        }
         
         var rect = title.frame
         rect.size.width = tw

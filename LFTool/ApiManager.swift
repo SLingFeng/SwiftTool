@@ -89,7 +89,11 @@ enum Api {
     case fin_getEnFinFee([String : String])
     case common_sendCodeWithPic([String : String])
     case user_creatqrcode([String : String])
-    
+    case user_loginOut_token
+    case user_searchTrade([String : String])
+    case user_addMyChoose([String : String])
+    case user_delMyChoose([String : String])
+    case user_myChooseList([String : String])
     
 }
 //cs.flyy789.com
@@ -286,6 +290,21 @@ extension Api: TargetType {
             ///生成二维码
         case .user_creatqrcode:
             return "/api/user/creatqrcode"
+            ///推出登录
+        case .user_loginOut_token:
+            return "/api/user/loginOut/token"
+        ///模糊查询股票
+        case .user_searchTrade:
+            return "/api/user/searchTrade"
+        ///添加自选股
+        case .user_addMyChoose:
+            return "/api/user/addMyChoose"
+        ///删除自选股
+        case .user_delMyChoose:
+            return "/api/user/delMyChoose"
+        ///会员自选股列表
+        case .user_myChooseList:
+            return "/api/user/myChooseList"
             
 //        case .fenshi:
 //            return ""
@@ -353,7 +372,11 @@ extension Api: TargetType {
              var .fin_getEnFinFee(par),
              var .user_getUserMessage(par),
              var .common_sendCodeWithPic(par),
-             var .user_creatqrcode(par):
+             var .user_creatqrcode(par),
+             var .user_searchTrade(par),
+             var .user_addMyChoose(par),
+             var .user_delMyChoose(par),
+             var .user_myChooseList(par):
             
             par["token"] = Environment().token ?? ""
             return .requestParameters(parameters: par, encoding: URLEncoding.queryString)
@@ -474,14 +497,14 @@ func apiRequset(_ a: Any) -> Single<LFResponseModel> {
             if model.code == 0 {
                 se(.success(model))
             }else if model.code == 2 {
-                SLFHUD.showHint(model.msg)
-                Environment().remove()
+//                SLFHUD.showHint(model.msg)
+                SLFHUD.hide()
+                Environment.shared.remove()
                 GVUserDefaults.standard().removeUserInfo()
-                _ = LoginCoordinator(vc: nil).start().subscribe()
+                _ = LoginCoordinator(str: model.msg).start().subscribe()
 //                let appCoordinator = AppCoordinator(window: UIApplication.shared.keyWindow!)
 //                _ = appCoordinator.start()
 //                    .subscribe()
-//                SLFHUD.hide()
                 se(.error(NSError(domain: model.msg, code: model.code, userInfo: nil)))
 //                SLFHUD.hide()
             }else {
@@ -508,16 +531,17 @@ func apiRequset(_ a: Any) -> Single<LFResponseModel> {
 }
 
 func apiRequsetNo(_ a: Any) -> Single<LFResponseModel> {
+    
     return Single<LFResponseModel>.create(subscribe: { (se) -> Disposable in
         let api = apiProviderNo.rx.request(a as! Api).asObservable().share(replay: 1, scope: .forever).mapModel(LFResponseModel.self).subscribe(onNext: { (model) in
             if model.code == 0 {
                 se(.success(model))
             }else if model.code == 2 {
-                SLFHUD.showHint(model.msg)
-                Environment().remove()
+//                SLFHUD.showHint(model.msg)
+                SLFHUD.hide()
+                Environment.shared.remove()
                 GVUserDefaults.standard().removeUserInfo()
-                _ = LoginCoordinator(vc: nil).start().subscribe()
-//                SLFHUD.hide()
+                _ = LoginCoordinator(str: model.msg).start().subscribe()
                 se(.error(NSError(domain: model.msg, code: model.code, userInfo: nil)))
             }else {
                 se(.error(NSError(domain: model.msg, code: model.code, userInfo: nil)))

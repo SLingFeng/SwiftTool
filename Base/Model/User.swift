@@ -13,6 +13,12 @@ class User: NSObject {
     
     var user_phone : String = ""
     
+    var showAnnouncement = false
+    ///去交易
+    var goTran = false
+    
+    var goTranModel: CT_MyChooseListDataModel?
+    
     private override init() {
         
     }

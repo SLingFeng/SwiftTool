@@ -20,6 +20,8 @@ class LFBaseViewController: UIViewController {
     
     lazy var webView = UIWebView(frame: CGRect.zero)
     
+    var topLoadView: LFLoadView!
+    
     override func viewDidLoad() {
         super.viewDidLoad()
 
@@ -62,7 +64,7 @@ class LFBaseViewController: UIViewController {
     func showLoginVC() {
         SLFHUD.showHint("请先登录后在操作", delay: 1.5) {[weak self] in
             if let strongSelf = self {
-                LoginCoordinator(vc: strongSelf).start().subscribe().disposed(by: strongSelf.dig)
+                LoginCoordinator(str: "").start().subscribe().disposed(by: strongSelf.dig)
             }
         }
     }
@@ -77,7 +79,20 @@ class LFBaseViewController: UIViewController {
     }
     */
 
-    
+    func leftView() {
+        
+        let logoIV = UIImageView()
+        topLoadView = LFLoadView(logoIV, gifName: "topLogoLoad")
+        self.navigationItem.leftBarButtonItem = UIBarButtonItem(customView: topLoadView)
+        logoIV.sd_setImage(with: URL(string: ApiUrl + GVUserDefaults.standard().app_web_logo)) {[weak self] (image, e, type, url) in
+            if image != nil {
+                self?.topLoadView.changeLoad(true)
+            }
+        }
+        
+        logoIV.widthAnchor.constraint(equalToConstant: 106).isActive = true
+        logoIV.heightAnchor.constraint(equalToConstant: 32).isActive = true
+    }
 }
 
 //扩展view 显示Hud

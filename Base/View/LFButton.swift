@@ -47,6 +47,7 @@ extension UIButton {
         self.layer.cornerRadius = radius
         self.layer.borderColor = borderColor?.cgColor
         self.layer.borderWidth = borderWidth
+        self.layer.masksToBounds = true
     }
     
     class func button(with buttonType: UIButton.ButtonType, fontSize: CGFloat, fontColor color: UIColor?, fontText text: String?) -> UIButton {
@@ -63,6 +64,7 @@ extension UIButton {
         btn.layer.cornerRadius = radius
         btn.layer.borderColor = borderColor?.cgColor
         btn.layer.borderWidth = borderWidth
+        btn.layer.masksToBounds = true
 //        btn.setup()
         return btn
     }

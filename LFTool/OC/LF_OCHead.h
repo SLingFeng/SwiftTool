@@ -19,6 +19,8 @@
 #import <SDWebImageManager.h>
 #import <SDImageCache.h>
 #import "SLFAlert.h"
+#import "UIImageView+LF.h"
+
 #import <Masonry/Masonry.h>
 // U-Share核心SDK
 //#import <UMShare/UMShare.h>
