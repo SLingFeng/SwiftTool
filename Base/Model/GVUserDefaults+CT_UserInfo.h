@@ -68,6 +68,8 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, copy) NSString *fin_month_pic;
 @property (nonatomic, copy) NSString *fin_fee_pic;
 @property (nonatomic, copy) NSString *edition_number;
+@property (nonatomic, copy) NSString *h5_login_logo;
+
 
 //@property (nonatomic, copy) NSString *activity_home1;
 //@property (nonatomic, copy) NSString *activity_home2;

@@ -10,7 +10,7 @@ import UIKit
 import SnapKit
 import RxCocoa
 import RxSwift
-
+///tableView的代理必须在base里面先写一次 然后继承的类 override 方法才起作用
 class LFBaseTableViewController: LFBaseViewController, UITableViewDelegate, UITableViewDataSource {
 
     var tableView: MyTableView!
@@ -37,6 +37,10 @@ class LFBaseTableViewController: LFBaseViewController, UITableViewDelegate, UITa
         })
     }
     
+    func numberOfSections(in tableView: UITableView) -> Int {
+        return 1
+    }
+    
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return 0
     }
@@ -59,6 +63,10 @@ class LFBaseTableViewController: LFBaseViewController, UITableViewDelegate, UITa
     
     func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
         self.view.endEditing(true)
+    }
+    
+    func tableView(_ tableView: UITableView, shouldHighlightRowAt indexPath: IndexPath) -> Bool {
+        return true
     }
     
 }
@@ -93,6 +101,10 @@ class LFRxBaseTableViewController: LFBaseViewController, UITableViewDelegate {
         self.tableView.footerSetup()
     }
     
+    func numberOfSections(in tableView: UITableView) -> Int {
+        return 1
+    }
+    
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return 0
     }
@@ -115,6 +127,10 @@ class LFRxBaseTableViewController: LFBaseViewController, UITableViewDelegate {
     
     func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
         self.view.endEditing(true)
+    }
+    
+    func tableView(_ tableView: UITableView, shouldHighlightRowAt indexPath: IndexPath) -> Bool {
+        return true
     }
     
 }

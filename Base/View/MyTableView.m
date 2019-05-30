@@ -47,8 +47,8 @@
 
 -(MJRefreshNormalHeader *)headerSetup {
     MJRefreshNormalHeader *header = [MJRefreshNormalHeader headerWithRefreshingTarget:self refreshingAction:@selector(headerR)];
-    header.automaticallyChangeAlpha = YES;
-    header.lastUpdatedTimeLabel.hidden = YES;
+//    header.automaticallyChangeAlpha = YES;
+//    header.lastUpdatedTimeLabel.hidden = YES;
     [header setTitle:@"下拉可以刷新" forState:MJRefreshStateIdle];
     [header setTitle:@"松开立即刷新" forState:MJRefreshStatePulling];
     [header setTitle:@"正在刷新数据中..." forState:MJRefreshStateRefreshing];
@@ -58,7 +58,7 @@
 
 -(MJRefreshAutoNormalFooter *)footerSetup {
     MJRefreshAutoNormalFooter *footer = [MJRefreshAutoNormalFooter footerWithRefreshingTarget:self refreshingAction:@selector(footerR)];
-    footer.automaticallyChangeAlpha = YES;
+//    footer.automaticallyChangeAlpha = YES;
 //    footer.automaticallyHidden = YES;
     [footer setTitle:@"点击或上拉加载更多" forState:MJRefreshStateIdle];
     [footer setTitle:@"正在加载更多的数据" forState:MJRefreshStateRefreshing];
@@ -298,6 +298,8 @@
     _tState = tState;
     [self reloadEmptyDataSet];
     [self reloadData];
+//    [self beginUpdates];
+//    [self endUpdates];
 }
 //- (void)setLoading:(BOOL)loading{
 //    if (_loading != loading) {

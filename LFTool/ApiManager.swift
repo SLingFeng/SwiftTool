@@ -94,7 +94,7 @@ enum Api {
     case user_addMyChoose([String : String])
     case user_delMyChoose([String : String])
     case user_myChooseList([String : String])
-    
+    case trade_getTradeInfo([String : String])
 }
 //cs.flyy789.com
 let ApiUrl = "http://cs.flyy789.com"
@@ -305,9 +305,10 @@ extension Api: TargetType {
         ///会员自选股列表
         case .user_myChooseList:
             return "/api/user/myChooseList"
+            ///股票信息
+        case .trade_getTradeInfo:
+            return "/api/trade/getTradeInfo"
             
-//        case .fenshi:
-//            return ""
         default: return ""
         }
     }
@@ -376,7 +377,8 @@ extension Api: TargetType {
              var .user_searchTrade(par),
              var .user_addMyChoose(par),
              var .user_delMyChoose(par),
-             var .user_myChooseList(par):
+             var .user_myChooseList(par),
+             var .trade_getTradeInfo(par):
             
             par["token"] = Environment().token ?? ""
             return .requestParameters(parameters: par, encoding: URLEncoding.queryString)
@@ -633,17 +635,17 @@ let NetworkStatus = NSNotification.Name.init(rawValue:"networkStatus")
 let manager = NetworkReachabilityManager(host: "www.baidu.com")
 func AlamofiremonitorNet() {
     manager?.listener = { status in
-        debugPrint("网络状态: \(status)")
+//        debugPrint("网络状态: \(status)")
         if status == .reachable(.ethernetOrWiFi) { //WIFI
             NotificationCenter.default.post(name: NetworkStatus, object: true)
-            debugPrint("wifi")
+//            debugPrint("wifi")
         } else if status == .reachable(.wwan) { // 蜂窝网络
             NotificationCenter.default.post(name: NetworkStatus, object: true)
-            debugPrint("4G")
+//            debugPrint("4G")
         } else if status == .notReachable { // 无网络
             NotificationCenter.default.post(name: NetworkStatus, object: false)
 
-            debugPrint("无网络")
+//            debugPrint("无网络")
         } else { // 其他
 
         }

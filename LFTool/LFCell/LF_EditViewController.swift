@@ -34,7 +34,7 @@ class LF_EditViewController: LFBaseTableViewController {
         self.tableView.separatorStyle = .none
     }
     
-    func numberOfSections(in tableView: UITableView) -> Int {
+    override func numberOfSections(in tableView: UITableView) -> Int {
         if cellArr == nil {
             return 0
         }
