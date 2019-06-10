@@ -36,6 +36,8 @@ class LFResponseModel: NSObject, HandyJSON {
     var data = [AnyHashable : Any]()
     
     var success: Bool = false
+    
+    var agent_income = ""
 
     required override init() {
         super.init()

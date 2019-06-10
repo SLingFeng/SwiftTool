@@ -23,6 +23,8 @@ class LFDateModel: NSObject {
     var text = ""
     
     var traders_money = ""
+    
+    var index = 0
 }
 
 class LFDatePicker: UIView, UIPickerViewDelegate, UIPickerViewDataSource {
@@ -154,7 +156,9 @@ class LFDatePicker: UIView, UIPickerViewDelegate, UIPickerViewDataSource {
                     if strongSelf.str.isEmpty {
                         strongSelf.doneSub.onNext(data.first ?? LFDateModel())//([data.first ?? "", strongSelf.selRow])
                     }else {
-                        strongSelf.doneSub.onNext(strongSelf.data[strongSelf.selRow])
+                        let m = strongSelf.data[strongSelf.selRow]
+                        m.index = strongSelf.selRow
+                        strongSelf.doneSub.onNext(m)
                     }
                 }
                 self?.cancelView()

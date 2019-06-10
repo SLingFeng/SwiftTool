@@ -21,6 +21,8 @@ class User: NSObject {
     var pzGoTran = false
     
     var goTranModel: CT_MyChooseListDataModel?
+    ///推广总佣金
+    var agentIncome : String = "0.00"
     
     private override init() {
         

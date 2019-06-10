@@ -95,6 +95,9 @@ enum Api {
     case user_delMyChoose([String : String])
     case user_myChooseList([String : String])
     case trade_getTradeInfo([String : String])
+    case user_windowClose
+    case user_windowOpen
+    case user_applyAgentIncome
 }
 //cs.flyy789.com
 let ApiUrl = "http://cs.flyy789.com"
@@ -160,6 +163,7 @@ extension Api: TargetType {
             ///设置密码
         case .user_setWDPwd:
             return "/api/user/setWDPwd"
+            ///查询密码设置状态
         case .user_issetWDPwd:
             return "/api/user/issetWDPwd"
             ///重新设置手机号
@@ -308,6 +312,16 @@ extension Api: TargetType {
             ///股票信息
         case .trade_getTradeInfo:
             return "/api/trade/getTradeInfo"
+            ///离线状态 关闭
+        case .user_windowClose:
+            return "/api/user/windowClose"
+            ///离线状态 开启
+        case .user_windowOpen:
+            return "/api/user/windowOpen"
+        ///申请代理提成
+        case .user_applyAgentIncome:
+            return "/api/user/applyAgentIncome"
+            
             
         default: return ""
         }
@@ -474,7 +488,7 @@ struct AuthPlugin: PluginType {
 public final class RequestLoadingPlugin:PluginType{
     
     public func willSend(_ request: RequestType, target: TargetType) {
-        LFLog("will+\(target)")
+//        LFLog("will+\(target)")
         if Environment().tokenExists {
             SLFHUD.showLoading()
         }

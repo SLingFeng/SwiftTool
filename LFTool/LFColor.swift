@@ -8,7 +8,7 @@
 
 import UIKit
 
-let kMainColor = SLFCommonTools.colorHex("#F52028")
+let kMainColor = SLFCommonTools.colorHex("#e70202")
 let k333333 = SLFCommonTools.colorHex("#333333")
 let k666666 = SLFCommonTools.colorHex("#666666")
 let k999999 = SLFCommonTools.colorHex("#999999")
