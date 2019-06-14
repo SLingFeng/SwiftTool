@@ -8,18 +8,39 @@
 
 import UIKit
 
-let kMainColor = SLFCommonTools.colorHex("#e70202")
+let kMainColor = SLFCommonTools.colorHex("#11A23C")
+
+let k000000 = SLFCommonTools.colorHex("#000000")
 let k333333 = SLFCommonTools.colorHex("#333333")
 let k666666 = SLFCommonTools.colorHex("#666666")
 let k999999 = SLFCommonTools.colorHex("#999999")
 
+let k393939 = SLFCommonTools.colorHex("#393939")
+
+
+let k1A1A1A = SLFCommonTools.colorHex("#1A1A1A")
+
 let kF8F8F8 = SLFCommonTools.colorHex("#F8F8F8")
+
+
+let kA3A3A3 = SLFCommonTools.colorHex("#A3A3A3")
+let kA9A7A7 = SLFCommonTools.colorHex("#A9A7A7")
+
+let kFE8600 = SLFCommonTools.colorHex("#FE8600")
+
 
 let kEEEEEE = SLFCommonTools.colorHex("#EEEEEE")
 let kDDDDDD = SLFCommonTools.colorHex("#DDDDDD")
 let k0076FF = UIColor("#0076FF")
 
 let kF62028 = UIColor("#F62028")
+
+let k484848 = SLFCommonTools.colorHex("#484848")
+
+let k858585 = SLFCommonTools.colorHex("#858585")
+
+
+
 
 
 

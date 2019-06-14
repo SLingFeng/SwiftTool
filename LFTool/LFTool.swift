@@ -93,8 +93,10 @@ class LFTool: NSObject {
         if view.isKind(of: UIView.self) {
             view.layer.cornerRadius = radius
             view.layer.masksToBounds = true
-            view.layer.borderWidth = width
-            view.layer.borderColor = color.cgColor
+            if width != 0.0 {
+                view.layer.borderWidth = width
+                view.layer.borderColor = color.cgColor
+            }
         }
     }
     

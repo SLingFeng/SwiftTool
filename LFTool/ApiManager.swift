@@ -517,7 +517,7 @@ func apiRequset(_ a: Any) -> Single<LFResponseModel> {
                 SLFHUD.hide()
                 Environment.shared.remove()
                 GVUserDefaults.standard().removeUserInfo()
-                _ = LoginCoordinator(str: model.msg).start().subscribe()
+//                _ = LoginCoordinator(str: model.msg).start().subscribe()
 //                let appCoordinator = AppCoordinator(window: UIApplication.shared.keyWindow!)
 //                _ = appCoordinator.start()
 //                    .subscribe()
@@ -557,7 +557,7 @@ func apiRequsetNo(_ a: Any) -> Single<LFResponseModel> {
                 SLFHUD.hide()
                 Environment.shared.remove()
                 GVUserDefaults.standard().removeUserInfo()
-                _ = LoginCoordinator(str: model.msg).start().subscribe()
+//                _ = LoginCoordinator(str: model.msg).start().subscribe()
                 se(.error(NSError(domain: model.msg, code: model.code, userInfo: nil)))
             }else {
                 se(.error(NSError(domain: model.msg, code: model.code, userInfo: nil)))

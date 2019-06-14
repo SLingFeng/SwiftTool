@@ -20,6 +20,7 @@
 #import <SDImageCache.h>
 #import "SLFAlert.h"
 #import "UIImageView+LF.h"
+#import <SDAutoLayout.h>
 
 #import <Masonry/Masonry.h>
 // U-Share核心SDK
@@ -27,9 +28,9 @@
 // U-Share分享面板SDK，未添加分享面板SDK可将此行去掉
 //#import <UShareUI/UShareUI.h>
 
-#import <HelpDeskLite/HelpDeskLite.h>
-#import <HyphenateLite/HyphenateLite.h>
-#import "HelpDeskUI.h"
+//#import <HelpDeskLite/HelpDeskLite.h>
+//#import <HyphenateLite/HyphenateLite.h>
+//#import "HelpDeskUI.h"
 
 
 

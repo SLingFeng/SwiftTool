@@ -9,6 +9,7 @@
 import Foundation
 import RxCocoa
 import RxSwift
+import RxGesture
 
 typealias alertClickIndex = (Int) -> Void
 

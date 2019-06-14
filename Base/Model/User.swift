@@ -20,7 +20,7 @@ class User: NSObject {
     ///配资点击去交易
     var pzGoTran = false
     
-    var goTranModel: CT_MyChooseListDataModel?
+//    var goTranModel: CT_MyChooseListDataModel?
     ///推广总佣金
     var agentIncome : String = "0.00"
     

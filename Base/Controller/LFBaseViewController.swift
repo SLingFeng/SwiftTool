@@ -9,6 +9,7 @@
 import UIKit
 import RxSwift
 import RxCocoa
+import UIColor_Hex_Swift
 
 class LFBaseViewController: UIViewController {
 
@@ -20,7 +21,24 @@ class LFBaseViewController: UIViewController {
     
     lazy var webView = UIWebView(frame: CGRect.zero)
     
-    var topLoadView: LFLoadView!
+//    var topLoadView: LFLoadView!
+    
+    lazy var navTitleLabel: UILabel = {
+        let label = UILabel(fontSize: 23, fontColor: .white, text: "")
+        label.tag = 123
+        label.frame = CGRect(x: 15, y: 0, width: 200, height: 38)
+        self.navigationController?.navigationBar.addSubview(label)
+        return label
+    }()
+    
+    func changeNavLabel(isHidden: Bool) {
+        let v = self.navigationController?.navigationBar.viewWithTag(123)!
+        UIView.animate(withDuration: 0.15, animations: {
+            v?.alpha = isHidden ? 0 : 1
+        }) { (b) in
+            v?.isHidden = isHidden
+        }
+    }
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -62,11 +80,11 @@ class LFBaseViewController: UIViewController {
     }
     
     func showLoginVC() {
-        SLFHUD.showHint("请先登录后在操作", delay: 1.5) {[weak self] in
-            if let strongSelf = self {
-                LoginCoordinator(str: "").start().subscribe().disposed(by: strongSelf.dig)
-            }
-        }
+//        SLFHUD.showHint("请先登录后在操作", delay: 1.5) {[weak self] in
+//            if let strongSelf = self {
+////                LoginCoordinator(str: "").start().subscribe().disposed(by: strongSelf.dig)
+//            }
+//        }
     }
     
     /*
@@ -79,20 +97,20 @@ class LFBaseViewController: UIViewController {
     }
     */
 
-    func leftView() {
-        
-        let logoIV = UIImageView()
-        topLoadView = LFLoadView(logoIV, gifName: "topLogoLoad")
-        self.navigationItem.leftBarButtonItem = UIBarButtonItem(customView: topLoadView)
-        logoIV.sd_setImage(with: URL(string: ApiUrl + GVUserDefaults.standard().app_web_logo)) {[weak self] (image, e, type, url) in
-            if image != nil {
-                self?.topLoadView.changeLoad(true)
-            }
-        }
-        
-        logoIV.widthAnchor.constraint(equalToConstant: 106).isActive = true
-        logoIV.heightAnchor.constraint(equalToConstant: 32).isActive = true
-    }
+//    func leftView() {
+//
+//        let logoIV = UIImageView()
+//        topLoadView = LFLoadView(logoIV, gifName: "topLogoLoad")
+//        self.navigationItem.leftBarButtonItem = UIBarButtonItem(customView: topLoadView)
+//        logoIV.sd_setImage(with: URL(string: ApiUrl + GVUserDefaults.standard().app_web_logo)) {[weak self] (image, e, type, url) in
+//            if image != nil {
+//                self?.topLoadView.changeLoad(true)
+//            }
+//        }
+//
+//        logoIV.widthAnchor.constraint(equalToConstant: 106).isActive = true
+//        logoIV.heightAnchor.constraint(equalToConstant: 32).isActive = true
+//    }
 }
 
 //扩展view 显示Hud

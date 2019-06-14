@@ -30,8 +30,9 @@ class LFBaseTableViewController: LFBaseViewController, UITableViewDelegate, UITa
 //            self.tableView.estimatedSectionHeaderHeight = 0;
 //            self.tableView.estimatedSectionFooterHeight = 0;
         }
-        self.tableView.separatorInset = UIEdgeInsets(top: 0, left: 10, bottom: 0, right: 10)
-
+//        self.tableView.separatorInset = UIEdgeInsets(top: 0, left: 10, bottom: 0, right: 10)
+        self.tableView.separatorStyle = .none
+        self.tableView.backgroundColor = .white
         self.tableView.snp.makeConstraints({ (make) in
             make.edges.equalTo(self.view).inset(UIEdgeInsets.zero)
         })
