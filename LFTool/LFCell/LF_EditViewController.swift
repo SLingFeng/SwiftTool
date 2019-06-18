@@ -17,7 +17,7 @@ class LF_EditViewController: LFBaseTableViewController {
         }
     }
     
-    let doBtn = UIButton(fontSize: 19, fontColor: .white, text: "确定", backg: kMainColor, radius: 5, borderColor: .clear, borderWidth: 0)
+    let doBtn = UIButton(fontSize: 19, fontColor: .white, text: "确定")
 
 //    func setCellModelContent() {
 //        
@@ -27,10 +27,12 @@ class LF_EditViewController: LFBaseTableViewController {
         super.viewDidLoad()
 
         self.needTableView(style: .grouped)
-        self.tableView.register(LF_EditTableViewCell.self, forCellReuseIdentifier: "LF_EditTableViewCell")
+//        self.tableView.register(LF_EditTableViewCell.self, forCellReuseIdentifier: "LF_EditTableViewCell")
+        self.tableView.register(LF_EditIVTableViewCell.self, forCellReuseIdentifier: "LF_EditIVTableViewCell")
+
         
         self.tableView.separatorInset = UIEdgeInsets.init(top: 0, left: kScreenW, bottom: 0, right: 0)
-        self.tableView.backgroundColor = kF8F8F8
+//        self.tableView.backgroundColor = kF8F8F8
         self.tableView.separatorStyle = .none
     }
     
@@ -49,11 +51,21 @@ class LF_EditViewController: LFBaseTableViewController {
     }
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "LF_EditTableViewCell") as! LF_EditTableViewCell
+        let model = cellArr![indexPath.section][indexPath.row]
         
-        cell.model = cellArr![indexPath.section][indexPath.row]
+//        if model.type == 3 || model.type == 31 {
         
-        return cell
+            let cell = tableView.dequeueReusableCell(withIdentifier: "LF_EditIVTableViewCell") as! LF_EditIVTableViewCell
+            
+            cell.model = model
+            
+            return cell
+//        }
+//        let cell = tableView.dequeueReusableCell(withIdentifier: "LF_EditTableViewCell") as! LF_EditTableViewCell
+//
+//        cell.model = model
+//
+//        return cell
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
@@ -82,11 +94,20 @@ class LF_EditViewController: LFBaseTableViewController {
             view.backgroundColor = .white
             view.addSubview(doBtn)
             
+            doBtn.setBackgroundImage(UIImage.gradient(size: CGSize(width: 100, height: 44), colors: [UIColor("#A1C73B"), UIColor("#11A23C")]), for: .normal)
+            doBtn.setBackgroundImage(UIImage.createImage(with: UIColor("#A1C73B")), for: .highlighted)
+            doBtn.shadowColor = UIColor.hexAlpha(hex: "#12A23C", talpha: 0.53)
+            doBtn.shadowOffset = CGSize(width: 0, height: 3)
+            doBtn.shadowOpacity = 0.33
+            doBtn.shadowRadius = 12
+            doBtn.backgroundColor = UIColor.white
+            doBtn.cornerRadius = 22
+            
             doBtn.snp.makeConstraints({ (make) in
-                make.left.equalTo(10)
-                make.right.equalTo(-10)
+                make.left.equalTo(15)
+                make.right.equalTo(-15)
                 make.centerY.equalTo(view)
-                make.height.equalTo(40)
+                make.height.equalTo(44)
             })
             
             return view
@@ -94,4 +115,34 @@ class LF_EditViewController: LFBaseTableViewController {
         return nil
     }
     
+    override func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        return 55
+    }
+    
+    func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
+//        let model = cellArr![indexPath.section][indexPath.row]
+//
+//        if model.type == 3 || model.type == 31 {
+            let cell = cell as? LFBaseRTableViewCell
+            
+            if indexPath.row == 0 && indexPath.row == tableView.numberOfRows(inSection: indexPath.section) - 1 {
+                //只有一个
+                cell?.changeShow(type: .one)
+                cell?.line.isHidden = true
+            } else if indexPath.row == 0 {
+                //最顶端的Cell（两个向下圆弧和一条线）
+                cell?.line.isHidden = false
+                cell?.changeShow(type: .top)
+            } else if indexPath.row == tableView.numberOfRows(inSection: indexPath.section) - 1 {
+                //最底端的Cell（两个向上的圆弧和一条线）
+                cell?.line.isHidden = true
+                cell?.changeShow(type: .botton)
+            } else {
+                //中间的Cell
+                cell?.changeShow(type: .middin)
+                cell?.line.isHidden = false
+                return
+            }
+//        }
+    }
 }

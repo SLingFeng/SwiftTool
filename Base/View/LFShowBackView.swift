@@ -19,9 +19,10 @@ class LFShowBackView: UIView {
     let dig = DisposeBag()
     
     override init(frame: CGRect) {
-        super.init(frame: frame)
-        UIApplication.shared.keyWindow?.addSubview(backgroundView)
-        
+        super.init(frame: kScreen)
+
+        UIApplication.shared.keyWindow?.addSubview(self)
+        self.addSubview(backgroundView)
         
     }
     
@@ -35,7 +36,7 @@ class LFShowBackView: UIView {
         }
     }
     
-    func hide() {
+    @objc func hide() {
         UIView.animate(withDuration: 0.1) {
             self.backgroundView.removeFromSuperview()
             self.removeFromSuperview()

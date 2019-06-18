@@ -21,8 +21,9 @@
 #import "SLFAlert.h"
 #import "UIImageView+LF.h"
 #import <SDAutoLayout.h>
-
 #import <Masonry/Masonry.h>
+#import <UIView+HJViewStyle.h>
+
 // U-Share核心SDK
 //#import <UMShare/UMShare.h>
 // U-Share分享面板SDK，未添加分享面板SDK可将此行去掉

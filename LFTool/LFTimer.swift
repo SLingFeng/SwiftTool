@@ -35,7 +35,7 @@ class LFTimer: NSObject {
         
         timerDib?.dispose()
         
-        timer = Observable<Int>.interval(RxTimeInterval(1), scheduler: MainScheduler.instance)
+        timer = Observable<Int>.interval(RxTimeInterval.seconds(1), scheduler: MainScheduler.instance)
         
         timerDib = timer!.subscribe(onNext: {[weak self] (_) in
             if let strongSelf = self {

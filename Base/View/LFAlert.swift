@@ -13,7 +13,7 @@ import RxGesture
 
 typealias alertClickIndex = (Int) -> Void
 
-let LFAlertSp = 10
+let LFAlertSp = 43
 
 let LFAlertW = kScreenW - CGFloat(LFAlertSp * 2) - 40
 
@@ -21,7 +21,7 @@ class LFAlert: NSObject {
     
    
     
-    class func initAlert(title: String, leftTitle: String, rightTitle: String, change: Bool, contentView: UIView?) -> Single<Int> {
+    class func initAlert(title: String?, leftTitle: String, rightTitle: String, change: Bool, contentView: UIView?) -> Single<Int> {
 //        let dig = DisposeBag()
 
         return Single<Int>.create { single in
@@ -38,26 +38,42 @@ class LFAlert: NSObject {
             let alertView = UIView()
             _backgroundView.addSubview(alertView)
             alertView.backgroundColor = .white
-            alertView.layer.masksToBounds = true
-            alertView.layer.cornerRadius = 5
-            
-            let titleLabel = UILabel(fontSize: 19, fontColor: k333333, text: title)
-            alertView.addSubview(titleLabel)
-            titleLabel.font = UIFont.boldSystemFont(ofSize: 19)
-            titleLabel.textAlignment = .center
-            
-            let leftBtn = UIButton(fontSize: 19, fontColor: k666666, text: leftTitle)
+//            alertView.layer.masksToBounds = true
+            alertView.layer.cornerRadius = 13
+            let titleLabel: UILabel?
+            if (title?.isEmpty ?? true) == false {
+                titleLabel = UILabel(fontSize: 19, fontColor: k333333, text: title)
+                alertView.addSubview(titleLabel!)
+                titleLabel!.font = UIFont.boldSystemFont(ofSize: 19)
+                titleLabel!.textAlignment = .center
+                
+                titleLabel!.snp.makeConstraints({ (make) in
+                    make.left.right.equalTo(0)
+                    make.top.equalTo(20)
+                })
+            }
+                
+            let leftBtn = UIButton(fontSize: 15, fontColor: k1A1A1A, text: leftTitle)
             alertView.addSubview(leftBtn)
-            leftBtn.backgroundColor = UIColor("#DDDDDD")
-            leftBtn.layer.cornerRadius = 5
-//            if change {
-//                leftBtn.removeFromSuperview()
-//            }
+            leftBtn.backgroundColor = UIColor.white
+            leftBtn.cornerRadius = 22
+            leftBtn.shadowColor = UIColor.hexAlpha(hex: "#000000", talpha: 0.23)
+            leftBtn.shadowOffset = CGSize(width: 0, height: 3)
+            leftBtn.shadowOpacity = 0.33
+            leftBtn.shadowRadius = 12
+            leftBtn.borderWidth = 1
+            leftBtn.borderColor = UIColor("#F6F4F4")
             
-            let rightBtn = UIButton(fontSize: 19, fontColor: .white, text: rightTitle)
+            let rightBtn = UIButton(fontSize: 15, fontColor: .white, text: rightTitle)
             alertView.addSubview(rightBtn)
-            rightBtn.backgroundColor = kMainColor
-            rightBtn.layer.cornerRadius = 5
+            rightBtn.backgroundColor = UIColor.white
+            rightBtn.cornerRadius = 22
+            rightBtn.setBackgroundImage(UIImage.gradient(size: CGSize(width: 100, height: 44), colors: [UIColor("#A1C73B"), UIColor("#11A23C")]), for: .normal)
+            rightBtn.shadowColor = UIColor.hexAlpha(hex: "#057A26", talpha: 0.53)
+            rightBtn.shadowOffset = CGSize(width: 0, height: 3)
+            rightBtn.shadowOpacity = 0.33
+            rightBtn.shadowRadius = 12
+//            rightBtn.borderWidth = 0
             
             alertView.snp.makeConstraints({ (make) in
                 make.left.equalTo(LFAlertSp)
@@ -70,6 +86,9 @@ class LFAlert: NSObject {
                     make.height.equalTo(150)
                 }
             })
+            
+            let topSpace = (title == nil) ? 80 : 20
+            
             if (contentView != nil) {
                 alertView.addSubview(contentView!)
                 
@@ -77,12 +96,16 @@ class LFAlert: NSObject {
                     make.left.equalTo(20)
                     make.right.equalTo(-20)
 //                    make.centerX.equalTo(alertView.snp.centerX)
-                    make.top.equalTo(titleLabel.snp.bottom).offset(20)
+//                    if (titleLabel != nil) {
+//                        make.top.equalTo(titleLabel!.snp.bottom).offset(20)
+//                    }else {
+                        make.top.equalTo(topSpace)
+//                    }
                     make.height.equalTo(contentView!.frame.height)
                 })
             }
             
-            _ = leftBtn.rx.tap.subscribe({_ in
+            let d = leftBtn.rx.tap.subscribe({_ in
 //                LFAlert.removeView()
                 UIView.animate(withDuration: 0.1, animations: {
                     _backgroundView.alpha = 0
@@ -92,7 +115,7 @@ class LFAlert: NSObject {
                 single(.success(0))
             })
             
-            _ = rightBtn.rx.tap.subscribe({_ in
+            let d1 = rightBtn.rx.tap.subscribe({_ in
 //                LFAlert.removeView()
                 UIView.animate(withDuration: 0.1, animations: {
                     _backgroundView.alpha = 0
@@ -102,7 +125,7 @@ class LFAlert: NSObject {
                 single(.success(1))
             })
             
-            _ = b.rx.tapGesture().when(.recognized).subscribe(onNext: { (_) in
+            let d2 = b.rx.tapGesture().when(.recognized).subscribe(onNext: { (_) in
                 UIView.animate(withDuration: 0.1, animations: {
                     _backgroundView.alpha = 0
                 }) { (_) in
@@ -111,32 +134,29 @@ class LFAlert: NSObject {
                 single(.success(0))
             })
             
-            titleLabel.snp.makeConstraints({ (make) in
-                make.left.right.equalTo(0)
-                make.top.equalTo(20)
-            })
+            
             
             if change {
                 rightBtn.snp.makeConstraints({ (make) in
-                    make.right.equalTo(-20)
-                    make.height.equalTo(40)
+                    make.right.equalTo(-25)
+                    make.height.equalTo(44)
                     make.bottom.equalTo(-20)
-                    make.left.equalTo(20)
+                    make.left.equalTo(25)
                     make.centerX.equalTo(alertView)
                 })
             }else {
                 rightBtn.snp.makeConstraints({ (make) in
-                    make.right.equalTo(-20)
-                    make.height.equalTo(40)
+                    make.right.equalTo(-25)
+                    make.height.equalTo(44)
                     make.bottom.equalTo(-20)
-                    make.left.equalTo(leftBtn.snp.right).offset(15)
+                    make.left.equalTo(leftBtn.snp.right).offset(40)
                 })
                 
                 leftBtn.snp.makeConstraints({ (make) in
-                    make.left.equalTo(20)
-                    make.height.equalTo(40)
+                    make.left.equalTo(25)
+                    make.height.equalTo(44)
                     make.bottom.equalTo(-20)
-                    make.right.equalTo(rightBtn.snp.left).offset(-15)
+                    make.right.equalTo(rightBtn.snp.left).offset(-40)
                     make.width.equalTo(rightBtn).priority(999)
                 })
             }
@@ -144,7 +164,11 @@ class LFAlert: NSObject {
                 _backgroundView.alpha = 1
             })
             
-            return Disposables.create()
+            return Disposables.create{
+                d.dispose()
+                d2.dispose()
+                d1.dispose()
+            }
         }
     }
     
@@ -211,7 +235,7 @@ class LFAlert: NSObject {
 //                single(.success(0))
 //            })
             
-            _ = rightBtn.rx.tap.subscribe({_ in
+            let d1 = rightBtn.rx.tap.subscribe({_ in
                 //                LFAlert.removeView()
                 UIView.animate(withDuration: 0.1, animations: {
                     _backgroundView.alpha = 0
@@ -221,7 +245,7 @@ class LFAlert: NSObject {
                 single(.success(1))
             })
             
-            _ = b.rx.tapGesture().when(.recognized).subscribe(onNext: { (_) in
+            let d2 = b.rx.tapGesture().when(.recognized).subscribe(onNext: { (_) in
                 UIView.animate(withDuration: 0.1, animations: {
                     _backgroundView.alpha = 0
                 }) { (_) in
@@ -258,7 +282,10 @@ class LFAlert: NSObject {
                 _backgroundView.alpha = 1
             })
             
-            return Disposables.create()
+            return Disposables.create{
+                d2.dispose()
+                d1.dispose()
+            }
         }
     }
     

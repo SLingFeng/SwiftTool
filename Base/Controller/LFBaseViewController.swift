@@ -32,12 +32,12 @@ class LFBaseViewController: UIViewController {
     }()
     
     func changeNavLabel(isHidden: Bool) {
-        let v = self.navigationController?.navigationBar.viewWithTag(123)!
-        UIView.animate(withDuration: 0.15, animations: {
-            v?.alpha = isHidden ? 0 : 1
-        }) { (b) in
-            v?.isHidden = isHidden
-        }
+//        let v = self.navigationController?.navigationBar.viewWithTag(123)!
+//        UIView.animate(withDuration: 0.11, animations: {
+//            v?.alpha = isHidden ? 0 : 1
+//        }) { (b) in
+//            v?.isHidden = isHidden
+//        }
     }
     
     override func viewDidLoad() {
@@ -50,8 +50,9 @@ class LFBaseViewController: UIViewController {
 
 //        self.navigationController?.navigationBar.setBackgroundImage(UIImage(), for: .any, barMetrics: .default)
         
-        self.navigationController?.navigationBar.shadowImage = UIImage.createImage(with: UIColor("#DCDCDC"))
-        
+//        self.navigationController?.navigationBar.shadowImage = UIImage.createImage(with: UIColor("#DCDCDC"))
+        self.navigationController?.navigationBar.titleTextAttributes = [NSAttributedString.Key.foregroundColor: UIColor.white]
+
     }
 
     override func loadView() {

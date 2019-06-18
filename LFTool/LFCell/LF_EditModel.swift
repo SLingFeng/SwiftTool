@@ -19,7 +19,10 @@ class LF_EditModel: NSObject {
      20:LF_EditTableViewCell 右边视图
      21:不能点击tf
      
-     ----
+     3:LF_EditIVTableViewCell 多行拼层圆角的 输入 
+     
+     
+     ------
      2：FY_HousePhotoAddTableViewCell
      3: FY_HouseEnterTextViewTableViewCell
      40: FY_MultipleTableViewCell 第一个和其他不能全选
@@ -52,5 +55,5 @@ class LF_EditModel: NSObject {
     var enterNumber: Int = 0
     var rightIVHidden = false
     var custom : UIView?
-    
+    var leftIV_Image = ""
 }

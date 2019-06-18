@@ -14,6 +14,9 @@ public let kScreenH = UIScreen.main.responds(to: #selector(getter: UIScreen.nati
 
 let kScreen = UIScreen.main.bounds
 
+let spW = CGFloat(26.0)
+let spH = CGFloat(20.0)
+
 public func LFLog<T>(_ m: T,
                          file: String = #file,
                          method: String = #function,
@@ -53,7 +56,7 @@ class LFTool: NSObject {
     }
     
     public class func Height_NavBar() -> CGFloat {
-        return LFTool.isIPHONEXLAST() ? 88.0 : 60.0
+        return LFTool.isIPHONEXLAST() ? 88.0 : 64.0
     }
     
     public class func Height_TabBar() -> CGFloat {

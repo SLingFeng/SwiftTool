@@ -19,20 +19,30 @@ class LFBaseNavigationViewController: UINavigationController {
 //
 //        self.navigationController?.navigationBar.isTranslucent = true
         
-        self.navigationBar.tintColor = k666666
+        self.navigationBar.tintColor = .white
         self.navigationBar.barTintColor = .white
 //        navigationController?.navigationBar.apply(gradient: [UIColor("#A1C73B"), UIColor("#11A23C")])
-
     }
     
     override func pushViewController(_ viewController: UIViewController, animated: Bool) {
+
         if (self.viewControllers.count > 0) {
             viewController.hidesBottomBarWhenPushed = true
+            let v = self.navigationBar.viewWithTag(123)
+            v?.isHidden = true
         }
         super.pushViewController(viewController, animated: animated)
     }
 
-   
+    override func popViewController(animated: Bool) -> UIViewController? {
+//        LFLog(self.viewControllers.count)
+        if (self.viewControllers.count <= 2) {
+            let v = self.navigationBar.viewWithTag(123)
+            v?.isHidden = false
+        }
+        
+        return super.popViewController(animated: animated)
+    }
 
 }
 
@@ -50,6 +60,19 @@ extension UINavigationController {
             }
         }
     }
+    
+//    func pushViewController(_ viewController: UIViewController, animated: Bool) {
+//        let v = self.navigationController?.navigationBar.viewWithTag(123)
+//        
+//        if (self.viewControllers.count > 0) {
+//            viewController.hidesBottomBarWhenPushed = true
+//            v?.isHidden = true
+//            
+//        }else {
+//            v?.isHidden = false
+//        }
+//        super.pushViewController(viewController, animated: animated)
+//    }
     
 }
 
