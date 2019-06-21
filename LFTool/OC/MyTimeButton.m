@@ -136,7 +136,7 @@
     _status = status;
     if (status == 0) {
         self.enabled = 1;
-        [self setBackgroundColor:[SLFCommonTools colorHex:@"#379AFF"]];
+        [self setBackgroundColor:[SLFCommonTools colorHex:@"#12A23C"]];
         [self setTitleColor:[UIColor whiteColor] forState:(UIControlStateNormal)];
     }else if (status == 1) {
         self.enabled = 0;

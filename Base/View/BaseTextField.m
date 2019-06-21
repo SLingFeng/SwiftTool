@@ -63,7 +63,7 @@
         
     }
     if (self.textFieldBegin) {
-        self.textFieldBegin();
+        self.textFieldBegin(self);
     }
 }
 

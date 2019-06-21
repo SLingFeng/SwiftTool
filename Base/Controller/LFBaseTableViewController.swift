@@ -84,8 +84,9 @@ class LFRxBaseTableViewController: LFBaseViewController, UITableViewDelegate {
     func needTableView(style: UITableView.Style) {
         self.tableView = MyTableView(frame: .zero, style: style)
 //        self.tableView.dataSource = self
-//        self.tableView.delegate = self
-        self.tableView.backgroundColor = kF8F8F8
+        self.tableView.delegate = self
+        self.tableView.separatorStyle = .none
+        self.tableView.backgroundColor = .white
         self.tableView.tableHeaderView = UIView(frame: .zero)
         self.tableView.tState = MyTableViewStatusNormal
         self.view.addSubview(self.tableView)
@@ -96,7 +97,7 @@ class LFRxBaseTableViewController: LFBaseViewController, UITableViewDelegate {
 //            self.tableView.estimatedSectionHeaderHeight = 0;
 //            self.tableView.estimatedSectionFooterHeight = 0;
         }
-        self.tableView.separatorInset = UIEdgeInsets(top: 0, left: 10, bottom: 0, right: 10)
+//        self.tableView.separatorInset = UIEdgeInsets(top: 0, left: 10, bottom: 0, right: 10)
         
         self.tableView.snp.makeConstraints({ (make) in
             make.edges.equalTo(self.view).inset(UIEdgeInsets.zero)

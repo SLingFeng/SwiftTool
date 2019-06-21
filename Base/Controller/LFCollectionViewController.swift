@@ -10,10 +10,37 @@ import UIKit
 
 class LFCollectionViewController: LFBaseViewController, UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
 
+    var collectionView: UICollectionView!
+    
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
         
+    }
+    
+    
+    func neededCollectionViewDirection(_ direction: UICollectionView.ScrollDirection) {
+        let layout = UICollectionViewFlowLayout()
+        layout.scrollDirection = (direction)
+        
+        collectionView = UICollectionView(frame: CGRect(x: 0, y: 0, width: 0, height: 0), collectionViewLayout: layout)
+        collectionView.delegate = self
+        collectionView.dataSource = self
+        collectionView.backgroundColor = .white
+        view.addSubview(collectionView)
+        
+//        collectionView.mas_makeConstraints({ make in
+//            make.edges.insets(UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0))
+//        })
+        self.collectionView.snp_makeConstraints({ (make) in
+            make.edges.equalTo(self.view).inset(UIEdgeInsets.zero)
+        })
+    }
+    
+    
+    func numberOfSections(in collectionView: UICollectionView) -> Int {
+        return 1
     }
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
@@ -24,14 +51,6 @@ class LFCollectionViewController: LFBaseViewController, UICollectionViewDelegate
         return UICollectionViewCell()
     }
 
-    /*
-    // MARK: - Navigation
-
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Get the new view controller using segue.destination.
-        // Pass the selected object to the new view controller.
-    }
-    */
+    
 
 }

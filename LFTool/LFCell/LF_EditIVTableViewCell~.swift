@@ -32,7 +32,7 @@ class LF_EditIVTableViewCell: LFBaseRTableViewCell {
                 })
                 
                 custom!.snp.makeConstraints({ (make) in
-                    make.size.equalTo(CGSize(width: custom!.width, height: 32))
+                    make.size.equalTo(CGSize(width: custom!.width, height: 30))
                     make.right.equalTo(-spW)
                     make.left.equalTo(tf.snp.right).offset(5)
                     make.centerY.equalTo(self)

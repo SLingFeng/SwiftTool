@@ -10,6 +10,8 @@ import UIKit
 
 class LFBaseRTableViewController: LFBaseTableViewController {
 
+    var showLine = true
+    
     override func viewDidLoad() {
         super.viewDidLoad()
 
@@ -41,6 +43,10 @@ class LFBaseRTableViewController: LFBaseTableViewController {
             cell?.changeShow(type: .middin)
             cell?.line.isHidden = false
             return
+        }
+        
+        if showLine == false {
+            cell?.line.isHidden = true
         }
 //        let maskPath = UIBezierPath(roundedRect: cell.contentView.bounds, byRoundingCorners: rc!, cornerRadii: CGSize(width: 7, height: 7))
 //        let maskLayer = CAShapeLayer()

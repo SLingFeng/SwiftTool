@@ -20,7 +20,9 @@ class LF_EditModel: NSObject {
      21:不能点击tf
      
      3:LF_EditIVTableViewCell 多行拼层圆角的 输入 
+     31:LF_EditIVTableViewCell 多行拼层圆角的 输入 不能点击tf
      
+     39: 服务协议
      
      ------
      2：FY_HousePhotoAddTableViewCell
@@ -45,7 +47,11 @@ class LF_EditModel: NSObject {
 //    var tfSet: ((_ tf: BaseTextField?) -> Void)?
 //    var fsTextViewHandler: ((_ textView: FSTextView?) -> Void)?
 //    var selectIDBlock: ((_ ids: String?) -> Void)?
-//    var onClickBlock: ((_ sender: MyButton?) -> Void)?
+//    var onClickBlock: ((_ sender: UIButton) -> Void)?
+    
+    var clickOne = PublishSubject<Int>()
+    var clickTwo = PublishSubject<Void>()
+    
     var keyboardType: UIKeyboardType?
     var enterType: BaseTextFieldEnterType?
     var isSecureTextEntry = false

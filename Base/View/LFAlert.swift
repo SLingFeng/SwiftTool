@@ -57,7 +57,7 @@ class LFAlert: NSObject {
             alertView.addSubview(leftBtn)
             leftBtn.backgroundColor = UIColor.white
             leftBtn.cornerRadius = 22
-            leftBtn.shadowColor = UIColor.hexAlpha(hex: "#000000", talpha: 0.23)
+            leftBtn.shadowColor = UIColor.hexAlpha(hex: "#000000", talpha: 0.09)
             leftBtn.shadowOffset = CGSize(width: 0, height: 3)
             leftBtn.shadowOpacity = 0.33
             leftBtn.shadowRadius = 12
@@ -69,9 +69,9 @@ class LFAlert: NSObject {
             rightBtn.backgroundColor = UIColor.white
             rightBtn.cornerRadius = 22
             rightBtn.setBackgroundImage(UIImage.gradient(size: CGSize(width: 100, height: 44), colors: [UIColor("#A1C73B"), UIColor("#11A23C")]), for: .normal)
-            rightBtn.shadowColor = UIColor.hexAlpha(hex: "#057A26", talpha: 0.53)
             rightBtn.shadowOffset = CGSize(width: 0, height: 3)
             rightBtn.shadowOpacity = 0.33
+            rightBtn.shadowColor = UIColor.hexAlpha(hex: "#057A26", talpha: 0.33)
             rightBtn.shadowRadius = 12
 //            rightBtn.borderWidth = 0
             
@@ -172,7 +172,7 @@ class LFAlert: NSObject {
         }
     }
     
-    class func initAlert(topImg: String, title: String, btnTitle: String) -> Single<Int> {
+    class func initAlert(topImg: String, title: String, btnTitle: String, backImg: String?) -> Single<Int> {
         
         return Single<Int>.create { single in
             
@@ -185,11 +185,13 @@ class LFAlert: NSObject {
             b.backgroundColor = SLFCommonTools.colorHex(0x000000, alpha: 0.5)
             _backgroundView.addSubview(b)
             
-            let alertView = UIView()
+            let alertView = UIImageView(image: UIImage(named: backImg ?? ""))
             _backgroundView.addSubview(alertView)
-            alertView.backgroundColor = .white
-            alertView.layer.masksToBounds = true
-            alertView.layer.cornerRadius = 5
+            if backImg == nil {
+                alertView.backgroundColor = .white
+                alertView.layer.masksToBounds = true
+                alertView.layer.cornerRadius = 5
+            }
             
             let iv = UIImageView(image: UIImage(named: topImg))
             alertView.addSubview(iv)
@@ -202,19 +204,29 @@ class LFAlert: NSObject {
             let rightBtn = UIButton(fontSize: 19, fontColor: .white, text: btnTitle)
             alertView.addSubview(rightBtn)
             rightBtn.backgroundColor = kMainColor
-            rightBtn.layer.cornerRadius = 5
+            rightBtn.cornerRadius = 22
             
-            alertView.snp.makeConstraints({ (make) in
-                make.left.equalTo(40)
-                make.right.equalTo(-40)
-                make.centerX.equalTo(_backgroundView)
-                make.centerY.equalTo(_backgroundView).offset(-50)
-//                if (contentView != nil) {
-//                    make.height.equalTo(150 + contentView!.frame.size.height)
-//                }else {
+            if backImg != nil {
+                alertView.snp.makeConstraints({ (make) in
+                    make.left.equalTo(40)
+                    make.right.equalTo(-40)
+                    make.centerX.equalTo(_backgroundView)
+                    make.centerY.equalTo(_backgroundView).offset(-50)
+                    make.size.equalTo(CGSize(width: 290, height: 370))
+                })
+            }else {
+                alertView.snp.makeConstraints({ (make) in
+                    make.left.equalTo(40)
+                    make.right.equalTo(-40)
+                    make.centerX.equalTo(_backgroundView)
+                    make.centerY.equalTo(_backgroundView).offset(-50)
+                    //                if (contentView != nil) {
+                    //                    make.height.equalTo(150 + contentView!.frame.size.height)
+                    //                }else {
                     make.height.equalTo(220)
-//                }
-            })
+                    //                }
+                })
+            }
 //            if (contentView != nil) {
 //                alertView.addSubview(contentView!)
 //
@@ -262,7 +274,7 @@ class LFAlert: NSObject {
             
             titleLabel.snp.makeConstraints({ (make) in
                 make.left.right.equalTo(0)
-                make.top.equalTo(iv.snp.bottom).offset(25)
+                make.bottom.equalTo(rightBtn.snp_top).offset(-25)
             })
             
 //            rightBtn.snp.makeConstraints({ (make) in
@@ -275,7 +287,7 @@ class LFAlert: NSObject {
             rightBtn.snp.makeConstraints({ (make) in
                 make.bottom.equalTo(-20)
                 make.centerX.equalTo(alertView)
-                make.size.equalTo(CGSize(width: 160, height: 40))
+                make.size.equalTo(CGSize(width: 160, height: 44))
             })
             
             UIView.animate(withDuration: 0.1, animations: {

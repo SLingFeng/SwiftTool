@@ -26,11 +26,29 @@ class LFButton: UIButton {
     */
 
 }
-
+struct UIButtonKeys {
+    static var onClick = "konClick"
+//    static var kAnotherProperty = "kAnotherProperty"
+}
 extension UIButton {
+
+//    (str: String) -> Void
+    
+//    var onClick: (_ sender: UIButton) -> Void {
+//        get {
+//            return objc_getAssociatedObject(self, &UIButtonKeys.onClick) as! (UIButton) -> Void
+//        }
+//
+//        set {
+//            objc_setAssociatedObject(self,&UIButtonKeys.onClick, newValue, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
+//        }
+//    }
+    
+    
     
     public convenience init(fontSize: CGFloat, fontColor: UIColor?, text: String?) {
         self.init()
+
         
         self.setTitleColor(fontColor, for: .normal)
         self.titleLabel!.font = UIFont.systemFont(ofSize: fontSize)
@@ -49,6 +67,14 @@ extension UIButton {
         self.layer.borderWidth = borderWidth
         self.layer.masksToBounds = true
     }
+    
+//    func setClick() {
+//        self.addTarget(self, action: #selector(onBtnClick(sender:)), for: .touchUpInside)
+//    }
+//    
+//    @objc func onBtnClick(sender: UIButton) {
+//        self.onClick(sender)
+//    }
     
     class func button(with buttonType: UIButton.ButtonType, fontSize: CGFloat, fontColor color: UIColor?, fontText text: String?) -> UIButton {
         return UIButton.button(with: buttonType, fontSize: fontSize, fontColor: color, fontText: text, backg: UIColor.clear, radius: 0, borderColor: UIColor.clear, borderWidth: 0)

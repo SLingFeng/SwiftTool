@@ -17,7 +17,7 @@ class LF_EditViewController: LFBaseTableViewController {
         }
     }
     
-    let doBtn = UIButton(fontSize: 19, fontColor: .white, text: "确定")
+    let doBtn = UIButton(fontSize: 16, fontColor: .white, text: "确定")
 
 //    func setCellModelContent() {
 //        
@@ -27,7 +27,7 @@ class LF_EditViewController: LFBaseTableViewController {
         super.viewDidLoad()
 
         self.needTableView(style: .grouped)
-//        self.tableView.register(LF_EditTableViewCell.self, forCellReuseIdentifier: "LF_EditTableViewCell")
+        self.tableView.register(BF_AgreementTableViewCell.self, forCellReuseIdentifier: "BF_AgreementTableViewCell")
         self.tableView.register(LF_EditIVTableViewCell.self, forCellReuseIdentifier: "LF_EditIVTableViewCell")
 
         
@@ -53,7 +53,15 @@ class LF_EditViewController: LFBaseTableViewController {
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let model = cellArr![indexPath.section][indexPath.row]
         
-//        if model.type == 3 || model.type == 31 {
+        if model.type == 39 {
+            
+            let cell = tableView.dequeueReusableCell(withIdentifier: "BF_AgreementTableViewCell") as! BF_AgreementTableViewCell
+            
+            cell.model = model
+            
+            return cell
+            
+        }
         
             let cell = tableView.dequeueReusableCell(withIdentifier: "LF_EditIVTableViewCell") as! LF_EditIVTableViewCell
             
@@ -96,10 +104,10 @@ class LF_EditViewController: LFBaseTableViewController {
             
             doBtn.setBackgroundImage(UIImage.gradient(size: CGSize(width: 100, height: 44), colors: [UIColor("#A1C73B"), UIColor("#11A23C")]), for: .normal)
             doBtn.setBackgroundImage(UIImage.createImage(with: UIColor("#A1C73B")), for: .highlighted)
-            doBtn.shadowColor = UIColor.hexAlpha(hex: "#12A23C", talpha: 0.53)
             doBtn.shadowOffset = CGSize(width: 0, height: 3)
             doBtn.shadowOpacity = 0.33
             doBtn.shadowRadius = 12
+            doBtn.shadowColor = UIColor.hexAlpha(hex: "#12A23C", talpha: 0.33)
             doBtn.backgroundColor = UIColor.white
             doBtn.cornerRadius = 22
             

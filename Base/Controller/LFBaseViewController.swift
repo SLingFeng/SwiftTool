@@ -43,7 +43,7 @@ class LFBaseViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        self.view.backgroundColor = kF8F8F8
+        self.view.backgroundColor = .white
         
 //        self.navigationController?.navigationBar.isTranslucent = true
 //        self.navigationController?.navigationBar.shadowImage = UIImage()
@@ -81,11 +81,11 @@ class LFBaseViewController: UIViewController {
     }
     
     func showLoginVC() {
-//        SLFHUD.showHint("请先登录后在操作", delay: 1.5) {[weak self] in
-//            if let strongSelf = self {
-////                LoginCoordinator(str: "").start().subscribe().disposed(by: strongSelf.dig)
-//            }
-//        }
+        SLFHUD.showHint("请先登录后在操作", delay: 1.5) {[weak self] in
+            if let strongSelf = self {
+                LoginCoordinator(str: "").start().subscribe().disposed(by: strongSelf.dig)
+            }
+        }
     }
     
     /*

@@ -33,15 +33,13 @@ typedef enum : NSUInteger {
 @property (assign, nonatomic) NSInteger leftViewX;
 //设置开始输入间距
 @property (assign, nonatomic) NSInteger enterSpace;
+
+@property (copy, nonatomic) void(^textFieldBegin)(BaseTextField *tf);
+
+@property (nonatomic, copy) void(^returnKeyClick)(BaseTextField *tf);
 /**
  输入改变时
  */
-//@property (copy, nonatomic) void(^textFieldChange)(NSString *);
-
-@property (copy, nonatomic) void(^textFieldBegin)(void);
-
-@property (nonatomic, copy) void(^returnKeyClick)(BaseTextField *tf);
-
 @property (nonatomic, copy) void(^textFieldChange)(BaseTextField *tf);
 
 @property (nonatomic, copy) void(^textFieldEditingDidEnd)(BaseTextField *tf);
