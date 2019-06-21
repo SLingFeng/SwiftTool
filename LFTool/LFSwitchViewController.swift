@@ -35,6 +35,10 @@ class LFSwitchViewController: LFBaseViewController {
         }
     }
     ///当前显示的vc
+    var currentVC: UIViewController?
+    ///上一个显示的vc
+    var lastVC: UIViewController?
+    ///当前显示第几个vc
     var showIndex = 0
 //    {
 //        didSet {
@@ -43,7 +47,11 @@ class LFSwitchViewController: LFBaseViewController {
 //    }
     var showIndexSubject = PublishSubject<Int>()
     
-    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        currentVC = self.children.first
+        selIndexVC(num: 0)
+    }
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -59,7 +67,7 @@ class LFSwitchViewController: LFBaseViewController {
     
     @objc func switchVC(sw: UISwipeGestureRecognizer) {
         
-        var lastVC: UIViewController = vcs[showIndex]
+        lastVC = self.children[showIndex]
 
         switch sw.direction {
         case .right:
@@ -70,30 +78,40 @@ class LFSwitchViewController: LFBaseViewController {
         default:
             break
         }
-        LFLog(showIndex)
-        if showIndex > vcs.count - 1 {
+
+        if showIndex > self.children.count - 1 {
             //右
             showIndex = 0
-            lastVC = vcs.last!
+            lastVC = self.children.last!
         }else if showIndex < 0 {
             //左
-            showIndex = vcs.count - 1
-            lastVC = vcs.first!
+            showIndex = self.children.count - 1
+            lastVC = self.children.first!
         }
-        lastVC.view.isHidden = true
+        lastVC?.view.removeFromSuperview()
         
-        
-        vcs[showIndex].view.isHidden = false
+        LFLog(showIndex)
+        self.currentVC = self.children[showIndex]
+        self.view.addSubview(self.currentVC!.view)
+        self.currentVC?.view.snp.makeConstraints({ (make) in
+            make.edges.equalTo(self.contentView).inset(UIEdgeInsets.zero)
+        })
         showIndexSubject.onNext(showIndex)
     }
     
     func selIndexVC(num: Int) {
-        vcs.forEach { (vc) in
-            vc.view.isHidden = true
+        self.children.forEach { (vc) in
+            vc.view.removeFromSuperview()
         }
-        if num <= vcs.count - 1 || num > 0 {
-            vcs[num].view.isHidden = false
+        if num <= self.children.count - 1 || num > 0 {
+            
+            lastVC?.view.removeFromSuperview()
             showIndex = num
+            self.currentVC = self.children[showIndex]
+            self.view.addSubview(self.currentVC!.view)
+            self.currentVC?.view.snp.makeConstraints({ (make) in
+                make.edges.equalTo(self.contentView).inset(UIEdgeInsets.zero)
+            })
         }
     }
     
