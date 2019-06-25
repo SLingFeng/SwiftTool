@@ -32,11 +32,11 @@ class LFBaseViewController: UIViewController {
     }()
     
     func changeNavLabel(isHidden: Bool) {
-//        let v = self.navigationController?.navigationBar.viewWithTag(123)!
+        let v = self.navigationController?.navigationBar.viewWithTag(123)!
 //        UIView.animate(withDuration: 0.11, animations: {
 //            v?.alpha = isHidden ? 0 : 1
 //        }) { (b) in
-//            v?.isHidden = isHidden
+            v?.isHidden = isHidden
 //        }
     }
     

@@ -66,7 +66,9 @@ class LFSwitchViewController: LFBaseViewController {
     }
     
     @objc func switchVC(sw: UISwipeGestureRecognizer) {
-        
+        guard self.children.count != 0 else {
+            return
+        }
         lastVC = self.children[showIndex]
 
         switch sw.direction {
@@ -100,6 +102,9 @@ class LFSwitchViewController: LFBaseViewController {
     }
     
     func selIndexVC(num: Int) {
+        guard self.children.count != 0 else {
+            return
+        }
         self.children.forEach { (vc) in
             vc.view.removeFromSuperview()
         }

@@ -74,6 +74,29 @@ class LFBaseTableViewController: LFBaseViewController, UITableViewDelegate, UITa
         return true
     }
     
+    ///统一设置table
+    public class func setTableView(tableView: MyTableView, vc: UIViewController) {
+        tableView.dataSource = vc as? UITableViewDataSource
+        tableView.delegate = vc as? UITableViewDelegate
+        tableView.tableHeaderView = UIView(frame: .init(x: 0, y: 0, width: 0, height: CGFloat.leastNormalMagnitude))
+        tableView.tState = MyTableViewStatusNormal
+        vc.view.addSubview(tableView)
+        if  #available(iOS 11.0, *) {
+            tableView.estimatedSectionHeaderHeight = 0.01
+            tableView.estimatedSectionFooterHeight = 0.01
+            tableView.estimatedRowHeight = 0.01;
+        }
+        //        self.tableView.separatorInset = UIEdgeInsets(top: 0, left: 10, bottom: 0, right: 10)
+        tableView.separatorStyle = .none
+        tableView.backgroundColor = .white
+//        tableView.snp.makeConstraints({ (make) in
+//            make.edges.equalTo(self.view).inset(UIEdgeInsets.zero)
+//        })
+        tableView.estimatedSectionHeaderHeight = 0;
+        tableView.estimatedSectionFooterHeight = 0;
+        tableView.estimatedRowHeight = 0
+        
+    }
 }
 
 class LFRxBaseTableViewController: LFBaseViewController, UITableViewDelegate {

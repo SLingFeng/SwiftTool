@@ -90,3 +90,26 @@ class LFBaseRTableViewCell: LFBaseTableViewCell {
     }
 
 }
+///带线
+class LFBaseLineRTableViewCell: LFBaseTableViewCell {
+    
+    let backView = LFLineRView(frame: .init(x: 15, y: 0, width: kScreenW - 30, height: 0))
+    
+    
+    override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
+        super.init(style: style, reuseIdentifier: reuseIdentifier)
+        
+        self.contentView.addSubview(backView)
+
+        backView.snp_makeConstraints({ (make) in
+            make.left.equalTo(15)
+            make.right.equalTo(-15)
+            make.bottom.top.equalTo(0)
+        })
+        
+    }
+    
+    required init?(coder aDecoder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+}
