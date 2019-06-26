@@ -10,7 +10,7 @@ import UIKit
 
 class LFBaseRTableViewController: LFBaseTableViewController {
 
-    var showLine = true
+    var showLine = false
     
     override func viewDidLoad() {
         super.viewDidLoad()

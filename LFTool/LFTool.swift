@@ -336,6 +336,20 @@ class LFTool: NSObject {
     class func lfUrl(_ str: String) -> URL {
         return URL(string: ApiUrl + str)!
     }
+    //性别 0、未知，1、男，2、女
+    class func gender(_ str: String) -> String {
+        switch str {
+        case "0":
+            return "未知"
+        case "1":
+            return "男"
+        case "2":
+            return "女"
+        default:
+            return ""
+        }
+    }
+    
 }
 
 //var str = "hangge.com"

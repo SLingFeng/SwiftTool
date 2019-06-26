@@ -31,6 +31,21 @@ struct Environment {
         }
     }
     
+    var udid: String? {
+        get {
+            return try? keychainService.get(forKey: KeychainKeys.Udid.rawValue) ?? ""
+        }
+        
+        set {
+            do {
+                try keychainService.set(key: KeychainKeys.Udid.rawValue, value: newValue!)
+            }
+            catch _ {
+                //                print(error)
+            }
+        }
+    }
+    
     var tokenExists: Bool {
         if token!.isEmpty {
             return false
@@ -56,13 +71,24 @@ struct Environment {
         
     }
     
+    func setUDID() {
+        guard let str = try! self.keychainService.get(forKey: KeychainKeys.Udid.rawValue) else {
+            return
+        }
+        LFLog(str)
+        if str.isEmpty {
+            try? self.keychainService.set(key: KeychainKeys.Udid.rawValue, value: OpenUDID.value())
+        }
+        
+    }
+    
     func remove()  {
         self.keychainService.remove()
     }
     
     private enum KeychainKeys: String {
         case Token = "user_auth_token"
-//        case Uername = "username"
+        case Udid = "udid"
 //        case Phone = "user_phone"
 //        case Authorization = "user_auth"
     }

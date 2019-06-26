@@ -33,6 +33,7 @@ let kEEEEEE = SLFCommonTools.colorHex("#EEEEEE")
 
 let kD2E0EC = UIColor("#D2E0EC")
 let kDDDDDD = SLFCommonTools.colorHex("#DDDDDD")
+let kF5F5F5 = UIColor("#F5F5F5")
 let k0076FF = UIColor("#0076FF")
 
 let kF62028 = UIColor("#F62028")

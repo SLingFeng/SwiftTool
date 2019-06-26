@@ -95,7 +95,7 @@ class LFSwitchViewController: LFBaseViewController {
         LFLog(showIndex)
         self.currentVC = self.children[showIndex]
         self.view.addSubview(self.currentVC!.view)
-        self.currentVC?.view.snp.makeConstraints({ (make) in
+        self.currentVC?.view.snp.remakeConstraints({ (make) in
             make.edges.equalTo(self.contentView).inset(UIEdgeInsets.zero)
         })
         showIndexSubject.onNext(showIndex)
@@ -114,7 +114,7 @@ class LFSwitchViewController: LFBaseViewController {
             showIndex = num
             self.currentVC = self.children[showIndex]
             self.view.addSubview(self.currentVC!.view)
-            self.currentVC?.view.snp.makeConstraints({ (make) in
+            self.currentVC?.view.snp.remakeConstraints({ (make) in
                 make.edges.equalTo(self.contentView).inset(UIEdgeInsets.zero)
             })
         }

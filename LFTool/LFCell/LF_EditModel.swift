@@ -58,7 +58,7 @@ class LF_EditModel: NSObject {
     var mulitpleData: [AnyHashable] = []
     //用户输入文字保存起来
     var userEnterText = ""
-    var enterNumber: Int = 0
+    var enterNumber: Int = -1
     var rightIVHidden = false
     var custom : UIView?
     var leftIV_Image = ""
