@@ -42,8 +42,9 @@ class LF_EditModel: NSObject {
     var btnTitle = ""
     var placeholder = ""
     var rightText = ""
-    var cellDidClick: ((_ cell: LF_EditTableViewCell?) -> Void)?
+    var cellDidClick: ((_ cell: UITableViewCell?) -> Void)?
     var textFieldChange: ((_ tf: BaseTextField?) -> Void)?
+    var textFieldEditingDidEnd: ((_ tf: BaseTextField?) -> Void)?
 //    var tfSet: ((_ tf: BaseTextField?) -> Void)?
 //    var fsTextViewHandler: ((_ textView: FSTextView?) -> Void)?
 //    var selectIDBlock: ((_ ids: String?) -> Void)?

@@ -61,6 +61,7 @@ class LF_EditIVTableViewCell: LFBaseRTableViewCell {
             
             tf.text = model!.userEnterText
             tf.textFieldChange = model!.textFieldChange
+            tf.textFieldEditingDidEnd = model!.textFieldEditingDidEnd
             if (model!.keyboardType != nil) {
                 tf.keyboardType = model!.keyboardType!
             }

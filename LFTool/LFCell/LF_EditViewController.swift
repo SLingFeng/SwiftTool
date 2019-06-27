@@ -80,7 +80,7 @@ class LF_EditViewController: LFBaseTableViewController {
         tableView.deselectRow(at: indexPath, animated: true)
         let model = cellArr![indexPath.section][indexPath.row]
         if (model.cellDidClick != nil) {
-            model.cellDidClick!(tableView.cellForRow(at: indexPath) as? LF_EditTableViewCell)
+            model.cellDidClick!(tableView.cellForRow(at: indexPath))
         }
     }
     

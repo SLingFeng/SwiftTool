@@ -15,6 +15,7 @@ class LFSwitchViewController: LFBaseViewController {
     lazy var contentView: UIView = {
         let contentView = UIView()
         self.view.addSubview(contentView)
+        self.view.sendSubviewToBack(contentView)
         contentView.snp.makeConstraints({ (make) in
             make.edges.equalTo(self.view).inset(UIEdgeInsets.zero)
         })
@@ -94,7 +95,9 @@ class LFSwitchViewController: LFBaseViewController {
         
         LFLog(showIndex)
         self.currentVC = self.children[showIndex]
-        self.view.addSubview(self.currentVC!.view)
+        self.contentView.addSubview(self.currentVC!.view)
+        self.contentView.sendSubviewToBack(self.currentVC!.view)
+
         self.currentVC?.view.snp.remakeConstraints({ (make) in
             make.edges.equalTo(self.contentView).inset(UIEdgeInsets.zero)
         })
@@ -113,7 +116,9 @@ class LFSwitchViewController: LFBaseViewController {
             lastVC?.view.removeFromSuperview()
             showIndex = num
             self.currentVC = self.children[showIndex]
-            self.view.addSubview(self.currentVC!.view)
+            self.contentView.addSubview(self.currentVC!.view)
+            self.contentView.sendSubviewToBack(self.currentVC!.view)
+
             self.currentVC?.view.snp.remakeConstraints({ (make) in
                 make.edges.equalTo(self.contentView).inset(UIEdgeInsets.zero)
             })
