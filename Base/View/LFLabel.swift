@@ -10,6 +10,33 @@ import UIKit
 
 class LFLabel: UILabel {
     
+    override init(frame: CGRect) {
+        super.init(frame: frame)
+        
+    }
+    
+    lazy var bacView: LFLineRView = {
+        let bacView = LFLineRView()
+        self.addSubview(bacView)
+        bacView.snp_makeConstraints({ (make) in
+            make.edges.equalTo(UIEdgeInsets.zero)
+        })
+        return bacView
+    }()
+    
+    
+    func setLine() {
+        
+        bacView.bd = .allCorners
+        bacView.borderWidth = 0.5
+        bacView.borderColor = UIColor("#D2E0EC")
+        bacView.corners = []
+    }
+    
+    required init?(coder aDecoder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
 }
 
 extension UILabel {

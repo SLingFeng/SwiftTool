@@ -87,7 +87,7 @@ class LFAlert: NSObject {
                 }
             })
             
-            let topSpace = (title == nil) ? 80 : 20
+            let topSpace = (title == nil) ? 20 : 60
             
             if (contentView != nil) {
                 alertView.addSubview(contentView!)
@@ -208,8 +208,8 @@ class LFAlert: NSObject {
             
             if backImg != nil {
                 alertView.snp.makeConstraints({ (make) in
-                    make.left.equalTo(40)
-                    make.right.equalTo(-40)
+                    make.left.equalTo(40).priorityMedium()
+                    make.right.equalTo(-40).priorityMedium()
                     make.centerX.equalTo(_backgroundView)
                     make.centerY.equalTo(_backgroundView).offset(-50)
                     make.size.equalTo(CGSize(width: 290, height: 370))

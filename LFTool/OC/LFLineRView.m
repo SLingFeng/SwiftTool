@@ -55,6 +55,7 @@
     self.radius = 5;
     self.borderColor = [UIColor blackColor];
     self.borderWidth = 1;
+    self.backgroundColor = [UIColor clearColor];
 }
 
 - (void)drawRect:(CGRect)rect {
@@ -132,10 +133,12 @@
     }
     if (BorderDirectionNumber == 4) {
         CGContextMoveToPoint(context, 0, 0);
-        CGContextAddArcToPoint(context, 0, height, width, height, radius);
-        CGContextAddArcToPoint(context, width, height, width, 0, radius);
-        CGContextAddArcToPoint(context,  width, 0, 0, 0, radius);
-        CGContextAddArcToPoint(context,  0, 0, 0, height, radius);
+        CGContextAddArcToPoint(context, 0, height, width, height, (corners & UIRectCornerBottomLeft) ? radius : 0);
+        CGContextAddArcToPoint(context, width, height, width, 0, (corners & UIRectCornerBottomRight) ? radius : 0);
+        CGContextAddArcToPoint(context,  width, 0, 0, 0, (corners & UIRectCornerTopLeft) ? radius : 0);
+        CGContextAddArcToPoint(context,  0, 0, 0, height, (corners & UIRectCornerTopRight) ? radius : 0);
+//        CGContextAddArcToPoint(context,  width, 0, 0, 0, radius);
+//        CGContextAddArcToPoint(context,  0, 0, 0, height, radius);
         CGContextStrokePath(context);
     }else if (BorderDirectionNumber == 3){
         if (BD & BorderDirectionLeft && BD & BorderDirectionBottom && BD & BorderDirectionRight) {
