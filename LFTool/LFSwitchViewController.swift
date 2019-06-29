@@ -109,7 +109,7 @@ class LFSwitchViewController: LFBaseViewController {
             return
         }
         
-        if num <= self.children.count - 1 && num > 0 {
+        if num <= self.children.count - 1 {
             self.children.forEach { (vc) in
                 vc.view.removeFromSuperview()
             }
