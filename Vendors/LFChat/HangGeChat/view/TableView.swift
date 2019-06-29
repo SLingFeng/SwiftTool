@@ -12,7 +12,7 @@ class TableView:UITableView,UITableViewDelegate, UITableViewDataSource
     //用于保存所有消息
     var bubbleSection:NSMutableArray!
     //数据源，用于与 ViewController 交换数据
-    var chatDataSource:ChatDataSource!
+    weak var chatDataSource: ChatDataSource?
     
     var  snapInterval:TimeInterval!
     var  typingBubble:ChatBubbleTypingType!
@@ -42,7 +42,7 @@ class TableView:UITableView,UITableViewDelegate, UITableViewDataSource
         var count =  0
         if ((self.chatDataSource != nil))
         {
-            count = self.chatDataSource.rowsForChatTable(self)
+            count = self.chatDataSource?.rowsForChatTable(self) ?? 0
             
             if(count > 0)
             {
@@ -50,8 +50,9 @@ class TableView:UITableView,UITableViewDelegate, UITableViewDataSource
                 
                 for i in 0 ..< count
                 {
-                    let object =  self.chatDataSource.chatTableView(self, dataForRow:i)
-                    bubbleData.add(object)
+                    if let object =  self.chatDataSource?.chatTableView(self, dataForRow:i) {
+                        bubbleData.add(object)
+                    }
                 }
                 bubbleData.sort(comparator: sortDate)
                 
@@ -162,4 +163,8 @@ class TableView:UITableView,UITableViewDelegate, UITableViewDataSource
         
         return cell
     }
+    
+//    deinit {
+//        chatDataSource = nil
+//    }
 }

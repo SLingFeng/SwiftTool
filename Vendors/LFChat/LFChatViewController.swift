@@ -10,7 +10,8 @@ import UIKit
 import RxCocoa
 import RxSwift
 
-class LFChatViewController: LFBaseViewController, ChatDataSource, UITextFieldDelegate, UITextViewDelegate {
+class LFChatViewController: LFBaseViewController, ChatDataSource, UITextFieldDelegate, UITextViewDelegate, LFSocketDelegate {
+    
     //UITableViewDelegate, UITableViewDataSource
     
     let toolBarHeight: CGFloat = 56
@@ -20,6 +21,7 @@ class LFChatViewController: LFBaseViewController, ChatDataSource, UITextFieldDel
     
     let me = UserInfo(name:"Xiaoming" ,logo:("xiaoming.png"))
 
+    let socket = LFSocket.shared
     
     enum AnimateType {
         case animate1 // 键盘弹出的话不会遮挡消息
@@ -58,33 +60,10 @@ class LFChatViewController: LFBaseViewController, ChatDataSource, UITextFieldDel
         // 消除tableview的留白
         self.automaticallyAdjustsScrollViewInsets = false
         
+        
+        
         // 标题
         self.setNavTitle("聊天广场")
-        //        let title = UILabel(frame: CGRect(x: (SCREEN_WIDTH - 100)/2, y: 10, width: 100, height: 24))
-        //        title.text = "聊天广场"
-        //        title.textAlignment = .center
-        //        title.font = UIFont.systemFont(ofSize: 20)
-        //        title.textColor = UIColor.white
-        //        self.navigationController?.navigationBar.barTintColor = UIColor.rgbColorFromHex(rgb: 0x4682B4)
-        //        self.navigationItem.titleView = title
-        
-        // 聊天界面
-//        chatTableView = UITableView()
-//        chatTableView.backgroundColor = UIColor.clear
-//        // 自动布局
-//        chatTableView.translatesAutoresizingMaskIntoConstraints = false
-//        chatTableView.estimatedRowHeight = 110
-//        chatTableView.delegate = self
-//        chatTableView.dataSource = self
-//        chatTableView.backgroundColor = UIColor("#F7F5F9")
-//        // 让列表最后一条消息和底部工具栏有一定距离
-//        chatTableView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: fitBlank, right: 0)
-//        chatTableView.separatorStyle = .none
-//        chatTableView.register(ChatBaseCell.self, forCellReuseIdentifier: "chat")
-//        // 点击列表使键盘消失
-//        let removeKeyBoardTap = UITapGestureRecognizer(target: self, action: #selector(tapRemoveBottomView(recognizer:)))
-//        chatTableView.addGestureRecognizer(removeKeyBoardTap)
-//        self.view.addSubview(chatTableView)
         
         self.tableView = TableView(frame:CGRect.zero, style: .plain)
         self.view.addSubview(tableView)
@@ -142,12 +121,14 @@ class LFChatViewController: LFBaseViewController, ChatDataSource, UITextFieldDel
         tableView.reloadData()
         animateType = .animate1
         lastDifY = 0
-        
+        NotificationCenter.default.removeObserver(self)
+        socket.removeDelegate(self)
     }
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        
+        socket.addDelegate(self)
+
         // 添加键盘弹出消失监听
         if fisrtLoad {
             NotificationCenter.default.addObserver(self, selector: #selector(keyBoardWillShow(notification:)), name: UIResponder.keyboardWillShowNotification, object: nil)
@@ -407,25 +388,39 @@ class LFChatViewController: LFBaseViewController, ChatDataSource, UITextFieldDel
         }
     }
     
+    //MARK: socket
+    func lfSocketDidReceiveMessage(_ message: Any?) {
+        LFLog(message)
+    }
+
+    func lfSocketDidFailWithError(_ error: Error?) {
+        LFLog(error)
+    }
+    
     //MARK: - 图片
     func showSheet() {
         let ac = UIAlertController(title: nil, message: nil, preferredStyle: .actionSheet)
         
-//        if UIImagePickerController.isSourceTypeAvailable(.camera) {
-//            ac.addAction(UIAlertAction(title: "拍照", style: .default) { [weak self](_) in
-//                UIImagePickerController.rx.createWithParent(self) { picker in
-//                    picker.sourceType = .camera
-//                    //                picker.allowsEditing = true
-//                    }
-//                    .flatMap { $0.rx.didFinishPickingMediaWithInfo }.map {[weak self] info in
-//                        let img = info["UIImagePickerControllerOriginalImage"] as! UIImage
-//                        return img
-//                    }
-//                    .bind(to: imageView.rx.image)
-//                    .disposed(by: self!.dig)
-//            })
-//
-//        }
+        if UIImagePickerController.isSourceTypeAvailable(.camera) {
+            ac.addAction(UIAlertAction(title: "拍照", style: .default) { [weak self](_) in
+                if let strongSelf = self {
+                    UIImagePickerController.rx.createWithParent(strongSelf) { picker in
+                        picker.sourceType = .photoLibrary
+                        //picker.allowsEditing = true
+                        }
+                        .flatMap { $0.rx.didFinishPickingMediaWithInfo }.map { info -> UIImage in
+                            let img = info["UIImagePickerControllerOriginalImage"] as! UIImage
+                            return img
+                        }
+                        .subscribe(onNext: { (img) in
+                            if let strongSelf = self {
+                                strongSelf.selImgSubject.onNext(img)
+                            }
+                        }).disposed(by: strongSelf.dig)
+                }
+            })
+
+        }
         
         ac.addAction(UIAlertAction(title: "从手机相册选", style: .default) { [weak self](_) in
             if let strongSelf = self {

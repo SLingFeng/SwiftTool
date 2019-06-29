@@ -3,7 +3,7 @@ import Foundation
 /*
   数据提供协议
 */
-protocol ChatDataSource
+protocol ChatDataSource : AnyObject
 {
     /*返回对话记录中的全部行数*/
     func rowsForChatTable( _ tableView:TableView) -> Int
