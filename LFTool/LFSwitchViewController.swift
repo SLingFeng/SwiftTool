@@ -108,11 +108,11 @@ class LFSwitchViewController: LFBaseViewController {
         guard self.children.count != 0 else {
             return
         }
-        self.children.forEach { (vc) in
-            vc.view.removeFromSuperview()
-        }
-        if num <= self.children.count - 1 || num > 0 {
-            
+        
+        if num <= self.children.count - 1 && num > 0 {
+            self.children.forEach { (vc) in
+                vc.view.removeFromSuperview()
+            }
             lastVC?.view.removeFromSuperview()
             showIndex = num
             self.currentVC = self.children[showIndex]
