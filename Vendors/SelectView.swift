@@ -431,4 +431,12 @@ class SelectScrollView: SelectView {
         scroll.setContentOffset(CGPoint(x: kScreenW * CGFloat(index), y: 0), animated: true)
         
     }
+    
+    override func setSelectBtn(index: Int) {
+        super.setSelectBtn(index: index)
+        
+        let num = floorf(Float(CGFloat(index) / 4.0))
+        scroll.setContentOffset(CGPoint(x: kScreenW * CGFloat(num), y: 0), animated: true)
+        
+    }
 }
