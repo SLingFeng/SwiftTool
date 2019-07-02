@@ -74,6 +74,10 @@ class LFBaseTableViewController: LFBaseViewController, UITableViewDelegate, UITa
         return true
     }
     
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        
+    }
+    
     ///统一设置table
     public class func setTableView(tableView: MyTableView, vc: UIViewController) {
         tableView.dataSource = vc as? UITableViewDataSource

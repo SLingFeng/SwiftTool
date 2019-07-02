@@ -10,7 +10,11 @@ import UIKit
 
 class LFStackView: UIView {
 
-    var sv: UIStackView!
+    var sv: UIStackView?
+    
+    override init(frame: CGRect) {
+        super.init(frame: frame)
+    }
     
     class func arrangedLabels(text: [String], fontSize: CGFloat, color: UIColor, axis: NSLayoutConstraint.Axis, distribution: UIStackView.Distribution, alignment: UIStackView.Alignment, rate: [CGFloat], noLayout:[Bool] = []) -> LFStackView {
     
@@ -77,17 +81,31 @@ class LFStackView: UIView {
         if views.count == rate.count {
             for i in 0..<views.count {
                 let v = views[i]
-                let w = rate[i]
+                let wh = rate[i]
                 if noLayout.count <= 0 {
                     v.snp.makeConstraints({ (make) in
-                        make.width.equalTo(sv).multipliedBy(w)
+                        if axis == .horizontal {
+                            make.width.equalTo(sv).multipliedBy(wh)
+                            make.height.equalTo(sv)
+                        }
+                        if axis == .vertical {
+                            make.width.equalTo(sv)
+                            make.height.equalTo(sv).multipliedBy(wh)
+                        }
                     })
                     continue
                 }
                 let layout = noLayout[i]
                 if layout {
                     v.snp.makeConstraints({ (make) in
-                        make.width.equalTo(sv).multipliedBy(w)
+                        if axis == .horizontal {
+                            make.width.equalTo(sv).multipliedBy(wh)
+                            make.height.equalTo(sv)
+                        }
+                        if axis == .vertical {
+                            make.width.equalTo(sv)
+                            make.height.equalTo(sv).multipliedBy(wh)
+                        }
                     })
                 }
             }
@@ -99,17 +117,71 @@ class LFStackView: UIView {
         
         return sv
     }
+    //返回
+    class func createSelf(arrangedSubviews views: [UIView], axis: NSLayoutConstraint.Axis, distribution: UIStackView.Distribution, alignment: UIStackView.Alignment, rate: [CGFloat], noLayout:[Bool] = []) -> LFStackView {
+        
+        let view = LFStackView(frame: .zero)
+        
+        let sv = UIStackView(arrangedSubviews: views)
+        view.sv = sv
+        view.addSubview(sv)
+        
+        sv.snp.makeConstraints({ (make) in
+            make.edges.equalTo(UIEdgeInsets.zero)
+        })
+        
+        view.sv = sv
+        
+        if views.count == rate.count {
+            for i in 0..<views.count {
+                let v = views[i]
+                let wh = rate[i]
+                if noLayout.count <= 0 {
+                    v.snp.makeConstraints({ (make) in
+                        if axis == .horizontal {
+                            make.width.equalTo(sv).multipliedBy(wh)
+                            make.height.equalTo(sv)
+                        }
+                        if axis == .vertical {
+                            make.width.equalTo(sv)
+                            make.height.equalTo(sv).multipliedBy(wh)
+                        }
+                    })
+                    continue
+                }
+                let layout = noLayout[i]
+                if layout {
+                    v.snp.makeConstraints({ (make) in
+                        if axis == .horizontal {
+                            make.width.equalTo(sv).multipliedBy(wh)
+                            make.height.equalTo(sv)
+                        }
+                        if axis == .vertical {
+                            make.width.equalTo(sv)
+                            make.height.equalTo(sv).multipliedBy(wh)
+                        }
+                    })
+                }
+            }
+        }
+        
+        sv.axis = axis
+        sv.distribution = distribution
+        sv.alignment = alignment
+        
+        return view
+    }
     
     required init(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
     
     func replaceText(text: [String]) {
-        guard text.count == sv.arrangedSubviews.count else {
+        guard text.count == sv?.arrangedSubviews.count else {
             return
         }
-        for i in 0..<sv.arrangedSubviews.count {
-            let v = sv.arrangedSubviews[i]
+        for i in 0..<(sv?.arrangedSubviews.count ?? 0) {
+            let v = sv?.arrangedSubviews[i]
             if let label: UILabel = v as? UILabel {
                 label.text = text[i]
             }

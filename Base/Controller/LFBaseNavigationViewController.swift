@@ -28,8 +28,9 @@ class LFBaseNavigationViewController: UINavigationController {
 
         if (self.viewControllers.count > 0) {
             viewController.hidesBottomBarWhenPushed = true
-            let v = self.navigationBar.viewWithTag(123)
-            v?.isHidden = true
+            if let v = self.navigationBar.viewWithTag(123) {
+                v.isHidden = true
+            }
         }
         super.pushViewController(viewController, animated: animated)
     }
@@ -37,8 +38,9 @@ class LFBaseNavigationViewController: UINavigationController {
     override func popViewController(animated: Bool) -> UIViewController? {
 //        LFLog(self.viewControllers.count)
         if (self.viewControllers.count <= 2) {
-            let v = self.navigationBar.viewWithTag(123)
-            v?.isHidden = false
+            if let v = self.navigationBar.viewWithTag(123) {
+                v.isHidden = false
+            }
         }
         
         return super.popViewController(animated: animated)

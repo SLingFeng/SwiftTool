@@ -100,6 +100,8 @@ class LFBaseLineRTableViewCell: LFBaseTableViewCell {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         
         self.contentView.addSubview(backView)
+        
+        self.selectionStyle = .none
 
         backView.snp_makeConstraints({ (make) in
             make.left.equalTo(15)

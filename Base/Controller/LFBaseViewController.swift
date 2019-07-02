@@ -32,11 +32,13 @@ class LFBaseViewController: UIViewController {
     }()
     
     func changeNavLabel(isHidden: Bool) {
-        let v = self.navigationController?.navigationBar.viewWithTag(123)!
+        if let v = self.navigationController?.navigationBar.viewWithTag(123) {
+            v.isHidden = isHidden
+        }
 //        UIView.animate(withDuration: 0.11, animations: {
 //            v?.alpha = isHidden ? 0 : 1
 //        }) { (b) in
-            v?.isHidden = isHidden
+        
 //        }
     }
     
@@ -81,7 +83,7 @@ class LFBaseViewController: UIViewController {
     }
     
     func showLoginVC() {
-        SLFHUD.showHint("请先登录后在操作", delay: 1.5) {[weak self] in
+        SLFHUD.showHint("请先登录", delay: 1.5) {[weak self] in
             if let strongSelf = self {
                 LoginCoordinator(str: "").start().subscribe().disposed(by: strongSelf.dig)
             }

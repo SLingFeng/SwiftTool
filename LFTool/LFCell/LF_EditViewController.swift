@@ -76,7 +76,7 @@ class LF_EditViewController: LFBaseTableViewController {
 //        return cell
     }
     
-    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+    override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
         let model = cellArr![indexPath.section][indexPath.row]
         if (model.cellDidClick != nil) {

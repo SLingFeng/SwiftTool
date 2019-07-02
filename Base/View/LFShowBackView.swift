@@ -24,6 +24,7 @@ class LFShowBackView: UIView {
         UIApplication.shared.keyWindow?.addSubview(self)
         self.addSubview(backgroundView)
         
+        backgroundView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(hide)))
     }
     
     required init?(coder aDecoder: NSCoder) {

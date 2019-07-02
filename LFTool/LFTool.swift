@@ -17,6 +17,9 @@ let kScreen = UIScreen.main.bounds
 let spW = CGFloat(26.0)
 let spH = CGFloat(20.0)
 
+let kPlaceholderImageUser = UIImage(named: "me_img_default")
+
+
 public func LFLog<T>(_ m: T,
                          file: String = #file,
                          method: String = #function,

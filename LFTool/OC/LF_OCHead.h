@@ -23,6 +23,10 @@
 #import <SDAutoLayout.h>
 #import <Masonry/Masonry.h>
 #import <UIView+HJViewStyle.h>
+#import "OpenUDID.h"
+#import "LFLineRView.h"
+#import "XDProgressView.h"
+#import "CountDown.h"
 
 // U-Share核心SDK
 //#import <UMShare/UMShare.h>

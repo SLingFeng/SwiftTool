@@ -1040,7 +1040,7 @@ static SLFCommonTools * tools = nil;
 
 +(NSString *)isUserCode:(NSString *)text {
     if ([text isEqualToString:@""]) {
-        return @"请输入手机验证码";
+        return @"请输入短信验证码";
     }
     return @"go";
 }

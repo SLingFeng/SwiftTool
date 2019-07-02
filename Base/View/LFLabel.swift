@@ -25,9 +25,9 @@ class LFLabel: UILabel {
     }()
     
     
-    func setLine() {
+    func setLine(_ bd: BorderDirection = .allCorners) {
         
-        bacView.bd = .allCorners
+        bacView.bd = bd
         bacView.borderWidth = 0.5
         bacView.borderColor = UIColor("#D2E0EC")
         bacView.corners = []
