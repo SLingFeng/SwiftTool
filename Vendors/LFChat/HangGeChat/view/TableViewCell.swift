@@ -8,34 +8,51 @@ class TableViewCell:UITableViewCell {
     //头像
     var avatarImage:UIImageView!
     //消息数据结构
-    var msgItem:MessageItem!
+    var msgItem:MessageItem! {
+        didSet {
+            rebuildUserInterface()
+        }
+    }
+    //名字
+    let userName = UILabel(fontSize: 12, fontColor: k858585, text: "昵称")
+    //
+    var contentText = UILabel(fontSize: 15, fontColor: .white, text: "文字")
+    
+
+    override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
+        super.init(style: style, reuseIdentifier: reuseIdentifier)
+        
+    }
     
     required init?(coder aDecoder: NSCoder) {
-        super.init(coder: aDecoder)
+        fatalError("init(coder:) has not been implemented")
     }
     
     //- (void) setupInternalData
-    init(data:MessageItem, reuseIdentifier cellId:String) {
-        self.msgItem = data
-        super.init(style: UITableViewCell.CellStyle.default, reuseIdentifier:cellId)
-        self.contentView.backgroundColor = UIColor("#F7F5F9")
-        rebuildUserInterface()
-    }
+//    init(data:MessageItem, reuseIdentifier cellId:String) {
+//        self.msgItem = data
+//        super.init(style: UITableViewCell.CellStyle.default, reuseIdentifier:cellId)
+//        self.contentView.backgroundColor = UIColor("#F7F5F9")
+//        rebuildUserInterface()
+//    }
     
     func rebuildUserInterface() {
         
         self.selectionStyle = UITableViewCell.SelectionStyle.none
+        contentText.removeFromSuperview()
+        self.contentView.addSubview(userName)
+        
         if (self.bubbleImage == nil)
         {
             self.bubbleImage = UIImageView()
-            self.addSubview(self.bubbleImage)
+            self.contentView.addSubview(self.bubbleImage)
         }
         
         let type =  self.msgItem.mtype
         let width =  self.msgItem.view.frame.size.width
         let height =  self.msgItem.view.frame.size.height
         
-        var x =  (type == ChatType.someone) ? 0 : self.frame.size.width - width -
+        var x =  (type == ChatType.someone) ? 0 : kScreenW - width -
             self.msgItem.insets.left - self.msgItem.insets.right
         
         var y:CGFloat =  0
@@ -46,25 +63,39 @@ class TableViewCell:UITableViewCell {
             let thisUser =  self.msgItem.user
             //self.avatarImage.removeFromSuperview()
             
-            let imageName = thisUser.avatar != "" ? thisUser.avatar : "noAvatar.png"
-            self.avatarImage = UIImageView(image:UIImage(named:imageName))
+//            let imageName = thisUser.avatar != "" ? thisUser.avatar : "noAvatar.png"
+            if self.avatarImage == nil {
+                self.avatarImage = UIImageView()
+                self.contentView.addSubview(self.avatarImage)
+            }
             
-            self.avatarImage.layer.cornerRadius = 9.0
+            self.avatarImage.sd_setImage(with: URL(string: thisUser.avatar), placeholderImage: kPlaceholderImageUser)
+            
+            self.avatarImage.layer.cornerRadius = 55/2
             self.avatarImage.layer.masksToBounds = true
-            self.avatarImage.layer.borderColor = UIColor(white:0.0 ,alpha:0.2).cgColor
-            self.avatarImage.layer.borderWidth = 1.0
+//            self.avatarImage.layer.borderColor = UIColor(white:0.0 ,alpha:0.2).cgColor
+//            self.avatarImage.layer.borderWidth = 1.0
             
             //别人头像，在左边，我的头像在右边
-            let avatarX =  (type == ChatType.someone) ? 2 : self.frame.size.width - 52
+            let avatarX =  (type == ChatType.someone) ? 2 : kScreenW - 52
             
             //头像居于消息顶部
             let avatarY:CGFloat =  0
             //set the frame correctly
-            self.avatarImage.frame = CGRect(x: avatarX, y: avatarY, width: 50, height: 50)
-            self.addSubview(self.avatarImage)
+            self.avatarImage.frame = CGRect(x: avatarX, y: avatarY, width: 55, height: 55)
+            if type == .mine {
+                LFLog(avatarImage)
+            }
+//            let nameX =  (type == ChatType.someone) ? avatarX + avatarImage.frame.width + 20 : kScreenW - (kScreenW - 220)
+            userName.textAlignment = (type == ChatType.someone) ? .left : .right
+            self.userName.frame = CGRect(x: avatarImage.frame.width + 30, y: avatarY, width: kScreenW - 150, height: 20)
+            
+            userName.text = thisUser.username
+            
+            contentText = msgItem.view as! UILabel
             
             //如果只有一行消息（消息框高度不大于头像）则将消息框居中于头像位置 
-            let delta =  (50 - (self.msgItem.insets.top
+            let delta =  ((self.msgItem.insets.top
                 + self.msgItem.insets.bottom + self.msgItem.view.frame.size.height))/2
             if (delta > 0) {
                 y = delta
@@ -77,11 +108,12 @@ class TableViewCell:UITableViewCell {
             }
         }
         
-        self.customView = self.msgItem.view
+        self.customView = self.contentText
         self.customView.frame = CGRect(x: x + self.msgItem.insets.left,
             y: y + self.msgItem.insets.top, width: width, height: height)
         
-        self.addSubview(self.customView)
+        self.contentView.addSubview(self.customView)
+        self.contentView.bringSubviewToFront(self.customView)
         
         //如果是别人的消息，在左边，如果是我输入的消息，在右边
         if (type == ChatType.someone)

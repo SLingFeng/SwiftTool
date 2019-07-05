@@ -11,10 +11,11 @@ import Foundation
 class Message {
     ///true 对方 false 自己
     var incoming = true
+    var name = ""
     var text = ""
     var avatar = ""
     
-    let time: String = {
+    var time: String = {
         let calender = Calendar(identifier: .gregorian)
         let date = Date()
         let formater = DateFormatter()
@@ -23,9 +24,10 @@ class Message {
         return timeString
     }()
     
-    init(incoming: Bool, text: String, avatar: String) {
+    init(incoming: Bool, text: String, avatar: String, name: String) {
         self.incoming = incoming
         self.text = text
         self.avatar = avatar
+        self.name = name
     }
 }

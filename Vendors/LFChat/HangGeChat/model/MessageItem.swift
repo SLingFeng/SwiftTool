@@ -39,7 +39,7 @@ class MessageItem {
     }
     
     //构造文本消息体
-    convenience init(body:NSString, user:UserInfo, date:Date, mtype:ChatType) {
+    convenience init(body: String, user:UserInfo, date:Date, mtype:ChatType) {
         let font =  UIFont.boldSystemFont(ofSize: 12)
         
         let width =  225, height = 10000.0
@@ -55,7 +55,7 @@ class MessageItem {
         
         label.numberOfLines = 0
         label.lineBreakMode = NSLineBreakMode.byWordWrapping
-        label.text = (body.length != 0 ? body as String : "")
+        label.text = (body.count != 0 ? body as String : "")
         label.font = font
         label.backgroundColor = UIColor.clear
         

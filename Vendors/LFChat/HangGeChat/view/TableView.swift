@@ -33,6 +33,8 @@ class TableView:UITableView,UITableViewDelegate, UITableViewDataSource
         self.separatorStyle = UITableViewCell.SeparatorStyle.none
         self.delegate = self
         self.dataSource = self
+        self.register(TableViewCell.self, forCellReuseIdentifier: "ChatCell")
+
     }
     
     override func reloadData() {
@@ -134,34 +136,36 @@ class TableView:UITableView,UITableViewDelegate, UITableViewDataSource
         
         let item =  data as! MessageItem
         let height  =  max(item.insets.top + item.view.frame.size.height  + item.insets.bottom, 52) + 17
-        print("height:\(height)")
+//        print("height:\(height)")
         return height
     }
     
     //返回自定义的 TableViewCell
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath)
-        -> UITableViewCell {        
-        // Header based on snapInterval
-        if (indexPath.row == 0)
-        {
-            let cellId = "HeaderCell"
+        -> UITableViewCell {
+            // Header based on snapInterval
+            if (indexPath.row == 0)
+            {
+                let cellId = "HeaderCell"
+                
+                let hcell =  TableHeaderViewCell(reuseIdentifier:cellId)
+                let section =  self.bubbleSection[indexPath.section] as! NSMutableArray
+                let data = section[indexPath.row] as! MessageItem
+                
+                hcell.setDate(data.date)
+                return hcell
+            }
+            // Standard
+            let cellId = "ChatCell"
             
-            let hcell =  TableHeaderViewCell(reuseIdentifier:cellId)
             let section =  self.bubbleSection[indexPath.section] as! NSMutableArray
-            let data = section[indexPath.row] as! MessageItem
+            let data = section[indexPath.row - 1]
             
-            hcell.setDate(data.date)
-            return hcell
-        }
-        // Standard
-        let cellId = "ChatCell"
-        
-        let section =  self.bubbleSection[indexPath.section] as! NSMutableArray
-        let data = section[indexPath.row - 1]
-        
-        let cell =  TableViewCell(data:data as! MessageItem, reuseIdentifier:cellId)
-        
-        return cell
+            let cell = tableView.dequeueReusableCell(withIdentifier: cellId) as! TableViewCell
+            cell.msgItem = data as! MessageItem
+            //        let cell =  TableViewCell(data:data as! MessageItem, reuseIdentifier:cellId)
+            
+            return cell
     }
     
 //    deinit {

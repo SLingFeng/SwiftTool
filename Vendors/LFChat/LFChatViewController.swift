@@ -9,6 +9,7 @@
 import UIKit
 import RxCocoa
 import RxSwift
+import IQKeyboardManager
 
 class LFChatViewController: LFBaseViewController, ChatDataSource, UITextFieldDelegate, UITextViewDelegate, LFSocketDelegate {
     
@@ -19,7 +20,7 @@ class LFChatViewController: LFBaseViewController, ChatDataSource, UITextFieldDel
     let SCREEN_WIDTH = UIScreen.main.bounds.size.width
     let SCREEN_HEIGHT = UIScreen.main.bounds.size.height
     
-    let me = UserInfo(name:"Xiaoming" ,logo:("xiaoming.png"))
+    let me = UserInfo(name:GVUserDefaults.standard().nick_name ,logo:GVUserDefaults.standard().image_path)
 
     let socket = LFSocket.shared
     
@@ -36,13 +37,13 @@ class LFChatViewController: LFBaseViewController, ChatDataSource, UITextFieldDel
 //    var msgList = [Message]()
     
     var mUserInfo: Dictionary<AnyHashable, Any>!
-    var mKeyBoardAnimateDuration: Double!
+    var mKeyBoardAnimateDuration: Double = 0.0
     var mKeyBoardHeight: CGFloat = LFTool.Height_HomeBar()
     
     var fisrtLoad = true
     var animateType = AnimateType.animate1
     var lastDifY: CGFloat = 0
-    var animateOption: UIView.AnimationOptions!
+    var animateOption: UIView.AnimationOptions = []
     var oldOffsetY: CGFloat = 0
     var isKeyboardShowed = false
     
@@ -60,7 +61,7 @@ class LFChatViewController: LFBaseViewController, ChatDataSource, UITextFieldDel
         // 消除tableview的留白
         self.automaticallyAdjustsScrollViewInsets = false
         
-        
+        socket.addDelegate(self)
         
         // 标题
         self.setNavTitle("聊天广场")
@@ -113,6 +114,9 @@ class LFChatViewController: LFBaseViewController, ChatDataSource, UITextFieldDel
                 strongSelf.reloadTableView()
             }
         }).disposed(by: dig)
+        
+        
+        socket.send(["type" : "login", "client_name" : GVUserDefaults.standard().nick_name, "room_id" : "1", "token" : Environment().token!])
     }
     
     override func viewDidDisappear(_ animated: Bool) {
@@ -122,13 +126,15 @@ class LFChatViewController: LFBaseViewController, ChatDataSource, UITextFieldDel
         animateType = .animate1
         lastDifY = 0
         NotificationCenter.default.removeObserver(self)
+        socket.send(["type":"logout", "client_id": socket.model.client_id])
         socket.removeDelegate(self)
+//        IQKeyboardManager.shared().shouldResignOnTouchOutside = true
     }
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         socket.addDelegate(self)
-
+//        IQKeyboardManager.shared().shouldResignOnTouchOutside = false
         // 添加键盘弹出消失监听
         if fisrtLoad {
             NotificationCenter.default.addObserver(self, selector: #selector(keyBoardWillShow(notification:)), name: UIResponder.keyboardWillShowNotification, object: nil)
@@ -180,19 +186,20 @@ class LFChatViewController: LFBaseViewController, ChatDataSource, UITextFieldDel
                 return true
             }
             
-            let you = UserInfo(name:"Xiaohua", logo:("xiaohua.png"))
+//            let you = UserInfo(name:"Xiaohua", logo:("xiaohua.png"))
 //            let messageOut = Message(incoming: false, text: msgText, avatar: "newbeeee")
 //            msgList.append(messageOut)
 //            let messageIn = Message(incoming: true, text: msgText, avatar: "chris")
 //            msgList.append(messageIn)
-            let sender = textView
-            let thisChat = MessageItem(body:sender.text! as NSString, user:me, date:Date(), mtype:ChatType.mine)
-            let thatChat = MessageItem(body:"你说的是：\(sender.text!)" as NSString, user:you, date:Date(), mtype:ChatType.someone)
+//            let sender = textView
+//            let thisChat = MessageItem(body:sender.text! as NSString, user:me, date:Date(), mtype:ChatType.mine)
+//            let thatChat = MessageItem(body:"你说的是：\(sender.text!)" as NSString, user:you, date:Date(), mtype:ChatType.someone)
             
-            Chats.append(thisChat)
-            Chats.append(thatChat)
+//            Chats.append(thisChat)
+//            Chats.append(thatChat)
             
-            reloadTableView()
+            socket.send(["type" : "say", "from_client_id" : socket.model.client_id, "to_client_id" : "all/client_id", "content" : textView.text!])
+//            reloadTableView()
             textView.text = ""
             return false
         }
@@ -390,11 +397,67 @@ class LFChatViewController: LFBaseViewController, ChatDataSource, UITextFieldDel
     
     //MARK: socket
     func lfSocketDidReceiveMessage(_ message: Any?) {
-        LFLog(message)
+//        LFLog(message)
+        
+        if let data = message as? NSDictionary {
+            //{"code":0,"msg":"connected","data":{"client_id":"7f0000010fa000000001"}}//自己登录
+            let my = data["msg"] as? String
+            if my == "connected" {
+                let id = (data["data"] as! NSDictionary)["client_id"] as! String
+                socket.model.client_id = id
+            }
+            //{"type":"login","client_id":"7f0000010fa700000002","client_name":"ch","time":"2019-07-03 18:25:20","client_list":{"7f0000010fa600000001":"ch","7f0000010fa600000002":"lf","7f0000010fa700000002":"ch"}}
+            if let type = data["type"] as? String {
+                
+                switch type {
+                case "ping":
+//                    socket.send(["type":"pong"])
+                    return
+//                case "login":
+//                    let id = data["client_id"] as! String
+//                    LFLog("login id \(id)")
+//                    socket.model.client_id = id
+                case "say":
+//                    {"type":"say","from_client_id":"7f0000010fa100000001","from_client_name":"lyl123456","to_client_id":"all","content":"\u5404\u4f4d\u597d","time":"2019-07-04 09:47:02"}
+                    let from_client_id = data["from_client_id"] as! String
+                    let name = (data["from_client_name"] as? String) ?? ""
+                    let text = (data["content"] as? String) ?? ""
+                    let who = from_client_id == socket.model.client_id ? ChatType.mine : ChatType.someone
+//                    LFLog("sayid \(from_client_id)")
+                    let you = UserInfo(name:name, logo:GVUserDefaults.standard().image_path)
+                    let thatChat = MessageItem(body:text, user:you, date:Date(), mtype:who)
+                    Chats.append(thatChat)
+                    reloadTableView()
+                    
+                case "history":
+                    if let m = BF_ChatModel.deserialize(from: data) {
+                        //["data"] as? NSDictionary
+                        m.data.forEach { (model) in
+                            let who = model.from_user_id == socket.model.client_id ? ChatType.mine : ChatType.someone
+                            
+                            let you = UserInfo(name:model.nick_name, logo:model.image_path)
+                            let thatChat = MessageItem(body:model.content, user:you, date:Date(), mtype:who)
+                            Chats.insert(thatChat, at: 0)
+                        }
+                    }
+                    reloadTableView()
+                    
+                default:
+                    break
+                }
+                
+            }
+            
+            
+        }
+            
+            
+        
+        
     }
 
     func lfSocketDidFailWithError(_ error: Error?) {
-        LFLog(error)
+//        LFLog(error)
     }
     
     //MARK: - 图片

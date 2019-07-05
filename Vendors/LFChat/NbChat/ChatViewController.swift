@@ -7,11 +7,10 @@
 //
 
 import UIKit
+import RxCocoa
+import RxSwift
 
-let toolBarHeight: CGFloat = 56
-let fitBlank: CGFloat = 15
-let SCREEN_WIDTH = UIScreen.main.bounds.size.width
-let SCREEN_HEIGHT = UIScreen.main.bounds.size.height
+
 
 enum AnimateType {
     case animate1 // 键盘弹出的话不会遮挡消息
@@ -19,7 +18,12 @@ enum AnimateType {
     case animate3 // 最后一条消息距离输入框在小范围内，这里设为 2 * fitBlank = 30
 }
 
-class ChatViewController: LFBaseViewController, UITableViewDelegate, UITableViewDataSource, UITextViewDelegate {
+class ChatViewController: LFBaseViewController, UITableViewDelegate, UITableViewDataSource, UITextViewDelegate, LFSocketDelegate {
+    
+    let toolBarHeight: CGFloat = 56
+    let fitBlank: CGFloat = 15
+    let SCREEN_WIDTH = UIScreen.main.bounds.size.width
+    let SCREEN_HEIGHT = UIScreen.main.bounds.size.height
     
     var chatTableView: UITableView!
     var toolBarView: ToolBarView!
@@ -27,18 +31,28 @@ class ChatViewController: LFBaseViewController, UITableViewDelegate, UITableView
     var msgList = [Message]()
     
     var mUserInfo: Dictionary<AnyHashable, Any>!
-    var mKeyBoardAnimateDuration: Double!
+    var mKeyBoardAnimateDuration: Double = 0.5
     var mKeyBoardHeight: CGFloat = LFTool.Height_HomeBar()
     
     var fisrtLoad = true
-    var animateType = AnimateType.animate1
+    var animateType = AnimateType.animate1 {
+        didSet {
+            LFLog(animateType)
+        }
+    }
     var lastDifY: CGFloat = 0
-    var animateOption: UIView.AnimationOptions!
+    var animateOption: UIView.AnimationOptions = []
     var oldOffsetY: CGFloat = 0
     var isKeyboardShowed = false
 
+    let socket = LFSocket.shared
+    
+    let selImgSubject = PublishSubject<UIImage>()
+    
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        socket.addDelegate(self)
         
         self.view.backgroundColor = UIColor.white
         
@@ -47,13 +61,6 @@ class ChatViewController: LFBaseViewController, UITableViewDelegate, UITableView
         
         // 标题
         self.setNavTitle("聊天广场")
-//        let title = UILabel(frame: CGRect(x: (SCREEN_WIDTH - 100)/2, y: 10, width: 100, height: 24))
-//        title.text = "聊天广场"
-//        title.textAlignment = .center
-//        title.font = UIFont.systemFont(ofSize: 20)
-//        title.textColor = UIColor.white
-//        self.navigationController?.navigationBar.barTintColor = UIColor.rgbColorFromHex(rgb: 0x4682B4)
-//        self.navigationItem.titleView = title
         
         // 聊天界面
         chatTableView = UITableView()
@@ -76,7 +83,6 @@ class ChatViewController: LFBaseViewController, UITableViewDelegate, UITableView
         // 底部工具栏界面
         toolBarView = ToolBarView()
         toolBarView.textView.delegate = self
-//        toolBarView.refreshButton.addTarget(self, action: #selector(clearMessage), for: .touchUpInside)
         self.view.addSubview(toolBarView)
         
         // 添加约束
@@ -95,6 +101,22 @@ class ChatViewController: LFBaseViewController, UITableViewDelegate, UITableView
         }
         
         oldOffsetY = chatTableView.contentOffset.y
+        
+        toolBarView.imageBtn.rx.tap.subscribe(onNext: {[weak self] (_) in
+            if let strongSelf = self {
+                strongSelf.showSheet()
+            }
+        }).disposed(by: dig)
+        
+        selImgSubject.subscribe(onNext: {[weak self] (img) in
+            if let strongSelf = self {
+//                let second =  MessageItem(image:img,user:strongSelf.me, date:Date(), mtype:.mine)
+//                strongSelf.Chats.append(second)
+//                strongSelf.reloadTableView()
+            }
+        }).disposed(by: dig)
+        
+        socket.send(["type" : "login", "client_name" : GVUserDefaults.standard().nick_name, "room_id" : "1", "token" : Environment().token!])
     }
     
     override func viewDidDisappear(_ animated: Bool) {
@@ -103,11 +125,14 @@ class ChatViewController: LFBaseViewController, UITableViewDelegate, UITableView
         chatTableView.reloadData()
         animateType = .animate1
         lastDifY = 0
-        
+        NotificationCenter.default.removeObserver(self)
+        socket.removeDelegate(self)
+
     }
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
+        socket.addDelegate(self)
 
         // 添加键盘弹出消失监听
         if fisrtLoad {
@@ -134,9 +159,9 @@ class ChatViewController: LFBaseViewController, UITableViewDelegate, UITableView
             // 向上滑动
         } else if scrollView.contentOffset.y < oldOffsetY {
             // 向下滑动
-            if isKeyboardShowed {
-                hideKeyboard()
-            }
+//            if isKeyboardShowed {
+//                hideKeyboard()
+//            }
         }
         
         oldOffsetY = scrollView.contentOffset.y
@@ -146,17 +171,25 @@ class ChatViewController: LFBaseViewController, UITableViewDelegate, UITableView
     func textView(_ textView: UITextView, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool {
         if text == "\n" {
             let msgText = textView.text.trimmingCharacters(in: .whitespaces)
+
             if msgText.lengthOfBytes(using: .utf8) == 0 {
                 return true
             }
-            let messageOut = Message(incoming: false, text: msgText, avatar: "newbeeee")
-            msgList.append(messageOut)
-            let messageIn = Message(incoming: true, text: msgText, avatar: "chris")
-            msgList.append(messageIn)
-            reloadTableView()
+//            if text != "" && text != "\n" {
+//                return true
+//            }
+//            if text == "\n" {
+//                return false
+//            }
+            //            let messageOut = Message(incoming: false, text: msgText, avatar: "newbeeee")
+            //            msgList.append(messageOut)
+            //            let messageIn = Message(incoming: true, text: msgText, avatar: "chris")
+            //            msgList.append(messageIn)
+            socket.send(["type" : "say", "from_client_id" : socket.model.client_id, "to_client_id" : "all/client_id", "content" : textView.text!])
             textView.text = ""
             return false
         }
+        
         return true
     }
     
@@ -202,7 +235,7 @@ class ChatViewController: LFBaseViewController, UITableViewDelegate, UITableView
             let rectCellView = chatTableView.rectForRow(at: lastIndex)
             let rect = chatTableView.convert(rectCellView, to: chatTableView.superview)
             let cellDistance = rect.origin.y + rect.height
-            let distance1 = SCREEN_HEIGHT - toolBarHeight - mKeyBoardHeight
+            let distance1 = SCREEN_HEIGHT - toolBarHeight - mKeyBoardHeight - LFTool.Height_NavBar()
             let distance2 = SCREEN_HEIGHT - toolBarHeight - 2 * fitBlank
             let difY = cellDistance - distance1
             
@@ -347,6 +380,126 @@ class ChatViewController: LFBaseViewController, UITableViewDelegate, UITableView
             toolBarView.textView.resignFirstResponder()
             toolBarView.transform = CGAffineTransform.identity
         }
+
     }
+    
+    //MARK: socket
+    func lfSocketDidReceiveMessage(_ message: Any?) {
+        //        LFLog(message)
+        
+        if let data = message as? NSDictionary {
+            //{"code":0,"msg":"connected","data":{"client_id":"7f0000010fa000000001"}}//自己登录
+            let my = data["msg"] as? String
+            if my == "connected" {
+                let id = (data["data"] as! NSDictionary)["client_id"] as! String
+                socket.model.client_id = id
+            }
+            //{"type":"login","client_id":"7f0000010fa700000002","client_name":"ch","time":"2019-07-03 18:25:20","client_list":{"7f0000010fa600000001":"ch","7f0000010fa600000002":"lf","7f0000010fa700000002":"ch"}}
+            if let type = data["type"] as? String {
+                
+                switch type {
+                case "ping":
+                    //                    socket.send(["type":"pong"])
+                    return
+                case "login":
+                    let id = data["client_id"] as! String
+                    LFLog("login id \(id)")
+                    socket.model.client_id = id
+                case "say":
+                    //                    {"type":"say","from_client_id":"7f0000010fa100000001","from_client_name":"lyl123456","to_client_id":"all","content":"\u5404\u4f4d\u597d","time":"2019-07-04 09:47:02"}
+                    let from_client_id = data["from_client_id"] as! String
+                    let name = (data["from_client_name"] as? String) ?? ""
+                    let text = (data["content"] as? String) ?? ""
+                    let time = (data["time"] as? String) ?? ""
+                    let who = from_client_id == socket.model.client_id ? false : true
+                    //                    LFLog("sayid \(from_client_id)")
+                    let m = Message(incoming: who, text: text, avatar: GVUserDefaults.standard().image_path, name: name)
+                    m.time = time
+                    msgList.append(m)
+                    reloadTableView()
+                    
+                case "history":
+                    if let m = BF_ChatModel.deserialize(from: data) {
+                        m.data.forEach { (model) in
+                            let who = model.from_user_id == GVUserDefaults.standard().uid ? false : true
+                            
+                            let m = Message(incoming: who, text: model.content, avatar: model.image_path, name: model.nick_name)
+                            m.time = SLFCommonTools.timestamp(Double(model.create_time) ?? 0, formart: "YYYY-dd-MM hh:mm:ss")
+                            msgList.insert(m, at: 0)
+                        }
+                    }
+                    reloadTableView()
+                    
+                default:
+                    break
+                }
+                
+            }
+            
+            
+        }
+        
+        
+        
+        
+    }
+    
+    func lfSocketDidFailWithError(_ error: Error?) {
+        //        LFLog(error)
+    }
+    
+    //MARK: - 图片
+    func showSheet() {
+        let ac = UIAlertController(title: nil, message: nil, preferredStyle: .actionSheet)
+        
+        if UIImagePickerController.isSourceTypeAvailable(.camera) {
+            ac.addAction(UIAlertAction(title: "拍照", style: .default) { [weak self](_) in
+                if let strongSelf = self {
+                    UIImagePickerController.rx.createWithParent(strongSelf) { picker in
+                        picker.sourceType = .photoLibrary
+                        //picker.allowsEditing = true
+                        }
+                        .flatMap { $0.rx.didFinishPickingMediaWithInfo }.map { info -> UIImage in
+                            let img = info["UIImagePickerControllerOriginalImage"] as! UIImage
+                            return img
+                        }
+                        .subscribe(onNext: { (img) in
+                            if let strongSelf = self {
+                                strongSelf.selImgSubject.onNext(img)
+                            }
+                        }).disposed(by: strongSelf.dig)
+                }
+            })
+            
+        }
+        
+        ac.addAction(UIAlertAction(title: "从手机相册选", style: .default) { [weak self](_) in
+            if let strongSelf = self {
+                UIImagePickerController.rx.createWithParent(strongSelf) { picker in
+                    picker.sourceType = .photoLibrary
+                    //                picker.allowsEditing = true
+                    }
+                    .flatMap { $0.rx.didFinishPickingMediaWithInfo }.map { info -> UIImage in
+                        let img = info["UIImagePickerControllerOriginalImage"] as! UIImage
+                        return img
+                    }
+                    .subscribe(onNext: { (img) in
+                        if let strongSelf = self {
+                            strongSelf.selImgSubject.onNext(img)
+                        }
+                    }).disposed(by: strongSelf.dig)
+                //                    .bind(to: strongSelf.selImgSubject)
+                //                    .disposed(by: strongSelf.dig)
+            }
+        })
+        
+        ac.addAction(UIAlertAction(title: "取消", style: .cancel) { (_) in
+            
+        })
+        self.present(ac, animated: true) {
+            
+        }
+    }
+    
 }
 

@@ -20,9 +20,9 @@ class ChatTextCell: ChatBaseCell {
         
         
         textBackgroundImageView = UIImageView()
-        textBackgroundImageView.isUserInteractionEnabled = true
-        textBackgroundImageView.layer.cornerRadius = 10
-        textBackgroundImageView.layer.masksToBounds = true
+//        textBackgroundImageView.isUserInteractionEnabled = true
+//        textBackgroundImageView.layer.cornerRadius = 10
+//        textBackgroundImageView.layer.masksToBounds = true
         
         
         self.addSubview(textBackgroundImageView)
@@ -34,13 +34,17 @@ class ChatTextCell: ChatBaseCell {
         messageLabel.text = message.text
         
         if message.incoming {
-            textBackgroundImageView.backgroundColor = UIColor.rgbColorFromHex(rgb: 0xFFC95B)
+//            textBackgroundImageView.backgroundColor = UIColor.rgbColorFromHex(rgb: 0xFFC95B)
+            self.textBackgroundImageView.image = UIImage(named:("home_chat_white"))
+            messageLabel.textColor = k1A1A1A
         } else {
-            textBackgroundImageView.backgroundColor = UIColor.rgbColorFromHex(rgb: 0xB0C4DE)
+//            textBackgroundImageView.backgroundColor = UIColor.rgbColorFromHex(rgb: 0xB0C4DE)
+            self.textBackgroundImageView.image = UIImage(named:"home_chat_green")
+            messageLabel.textColor = .white
         }
 
         messageLabel.snp.makeConstraints { (make) in
-            make.top.equalTo(avatarImageView).offset(10)
+            make.top.equalTo(avatarImageView).offset(30)
             make.width.lessThanOrEqualTo(220)
             make.bottom.equalTo(-20)
             if message.incoming {
@@ -51,10 +55,10 @@ class ChatTextCell: ChatBaseCell {
         }
         
         textBackgroundImageView.snp.makeConstraints { (make) in
-            make.top.equalTo(messageLabel).offset(-10)
-            make.left.equalTo(messageLabel).offset(-10)
-            make.right.equalTo(messageLabel).offset(10)
-            make.bottom.equalTo(messageLabel).offset(10)
+            make.top.equalTo(messageLabel).offset(-8)
+            make.left.equalTo(messageLabel).offset(-15)
+            make.right.equalTo(messageLabel).offset(15)
+            make.bottom.equalTo(messageLabel).offset(12)
         }
 
     }

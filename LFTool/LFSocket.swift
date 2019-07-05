@@ -29,7 +29,7 @@ class LFSocket: NSObject, SRWebSocketDelegate {
     
     static let shared = LFSocket()
     
-    let apiws = "ws://www.huaton.net:6321"
+    let apiws = "ws://cs.flyv888.com:8284"
     
     var heartBeat: Timer!
     var reConnecTime: TimeInterval = TimeInterval(floatLiteral: 0)
@@ -38,6 +38,9 @@ class LFSocket: NSObject, SRWebSocketDelegate {
     
     var delegates: NSMutableArray = NSMutableArray(capacity: 1)
     
+    var model = LFSocketModel()
+    //未发送的
+    var noSendArray: [String] = []
     
     private override init() {
         super.init()
@@ -64,6 +67,7 @@ class LFSocket: NSObject, SRWebSocketDelegate {
     }
     
     func webSocket(_ webSocket: SRWebSocket!, didReceiveMessage message: Any!) {
+        LFLog(message)
         let data = LFSocket.dictionaryWithJsonString(message as? String)
         delegates.forEach { (delegate) in
             if let dg = delegate as? LFSocketDelegate {
@@ -74,8 +78,14 @@ class LFSocket: NSObject, SRWebSocketDelegate {
     
     func webSocketDidOpen(_ webSocket: SRWebSocket!) {
         initHearBeat()
-        
-        
+        LFLog("open")
+//        noSendArray.forEach { (jsonString) in
+//            webSocket.send(jsonString)
+//        }
+        for jsonString in noSendArray {
+            webSocket.send(jsonString)
+        }
+        noSendArray.removeAll()
     }
     
     func webSocket(_ webSocket: SRWebSocket!, didFailWithError error: Error!) {
@@ -85,6 +95,7 @@ class LFSocket: NSObject, SRWebSocketDelegate {
                 dg.lfSocketDidFailWithError(error)
             }
         }
+        LFLog(error)
     }
     
     func webSocket(_ webSocket: SRWebSocket!, didCloseWithCode code: Int, reason: String!, wasClean: Bool) {
@@ -96,7 +107,7 @@ class LFSocket: NSObject, SRWebSocketDelegate {
         }
         destoryHeartBeat()
         reConnect()
-        
+        LFLog(reason)
     }
     
     
@@ -109,9 +120,56 @@ class LFSocket: NSObject, SRWebSocketDelegate {
     ///   - parameters: 需要的参数
     ///   - message: 返回数据
     ///   - fail: 返回失败
-    func send(forParameters parameters: [AnyHashable : Any], didReceive message: DidReceiveMessage, fail: DidFailWithError) {
+    func send(_ parameters: [AnyHashable : Any]) {
+//        , didReceive message: DidReceiveMessage, fail: DidFailWithError
+        LFLog(parameters)
+        var par = parameters
         
+        par["time"] = SLFCommonTools.timestamp(Date().timeIntervalSince1970, formart: "YYYY-MM-dd HH:mm:ss")
         
+        var jsonData: Data? = nil
+        do {
+            jsonData = try JSONSerialization.data(withJSONObject: parameters, options: .prettyPrinted)
+        } catch {
+            
+        }
+        
+        if let jsonData = jsonData {
+            
+            if let jsonString = String(data: jsonData, encoding: .utf8) {
+                
+                
+                if (socket != nil) {
+                    
+                    if socket.readyState == .OPEN {
+                        self.socket.send(jsonString)
+                    }else if socket.readyState == .CONNECTING {
+                        noSendArray.append(jsonString)
+//                        self.socket.send(jsonString)
+                        
+//                        reConnect()
+                    }else if socket.readyState == .CLOSING || socket.readyState == .CLOSED {
+                        //断开了，调用 reConnect 方法重连
+                        reConnect()
+                    }
+                    
+                }else {
+//                    NSLog(@"没网络，发送失败，一旦断网 socket 会被我设置 nil 的");
+//                    NSLog(@"其实最好是发送前判断一下网络状态比较好，我写的有点晦涩，socket==nil来表示断网");
+                    destoryHeartBeat()
+                    reConnect()
+                }
+                
+                
+            }
+            
+            
+            
+        }
+        
+//        let jsonData = JSONSerialization.data(withJSONObject: parameters, options: .prettyPrinted) {
+//
+//        }
         
     }
 //    - (void)sendForParameters:(NSDictionary *)parameters didReceive:(DidReceiveMessage)message fail:(DidFailWithError)fail {
@@ -189,6 +247,24 @@ class LFSocket: NSObject, SRWebSocketDelegate {
     
     func addDelegate(_ delegate: LFSocketDelegate) {
 //        self.delegates.append(delegate)
+        //查找
+        let vc = delegate as? UIViewController
+//        delegates.forEach { (dg) in
+//            if let dg = dg as? UIViewController {
+//                if dg == vc {
+//                    return
+//                }
+//            }
+//        }
+        for dg in delegates {
+            if let dg = dg as? UIViewController {
+                if dg == vc {
+                    return
+                }
+            }
+        }
+        
+        //没有在添加
         weak var dg = delegate
         if let dg = dg {
             delegates.add(dg)
@@ -323,4 +399,12 @@ extension DispatchQueue {
     var safe: DispachQueueSafety {
         return DispachQueueSafety.default
     }
+}
+
+
+class LFSocketModel: NSObject {
+    
+    var client_id = ""
+    
+    
 }

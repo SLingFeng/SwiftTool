@@ -21,6 +21,7 @@ class ToolBarView: UIView {
         textView = UITextView()
         textView.font = UIFont.systemFont(ofSize: 17)
         textView.layer.cornerRadius = 5.0
+        textView.enablesReturnKeyAutomatically = true
         textView.scrollsToTop = false
         textView.textContainerInset = UIEdgeInsets(top: 5, left: 5, bottom: 5, right: 5)
         textView.backgroundColor = UIColor("#F7F7F7")
