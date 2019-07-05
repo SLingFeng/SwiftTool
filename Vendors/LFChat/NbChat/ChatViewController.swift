@@ -305,7 +305,7 @@ class ChatViewController: LFBaseViewController, UITableViewDelegate, UITableView
     }
     
     // 刷新列表
-    func reloadTableView() {
+    func reloadTableView(animated: Bool = true) {
         chatTableView.reloadData()
         chatTableView.layoutIfNeeded()
         
@@ -347,16 +347,16 @@ class ChatViewController: LFBaseViewController, UITableViewDelegate, UITableView
                     UIView.animate(withDuration: mKeyBoardAnimateDuration, delay: 0, options: animateOption, animations: animate)
                     lastDifY = mKeyBoardHeight
                 }
-                scrollToBottom()
+                scrollToBottom(animated: animated)
             }
         }
         LFLog("end lastDifY:\(lastDifY)")
     }
     
     // 滚动最后一条消息到列表界面底部
-    func scrollToBottom() {
+    func scrollToBottom(animated: Bool = true) {
         if msgList.count > 0 {
-            chatTableView.scrollToRow(at: IndexPath(row: msgList.count - 1, section: 0), at: .bottom, animated: true)
+            chatTableView.scrollToRow(at: IndexPath(row: msgList.count - 1, section: 0), at: .bottom, animated: animated)
         }
     }
     
@@ -428,7 +428,7 @@ class ChatViewController: LFBaseViewController, UITableViewDelegate, UITableView
                             msgList.insert(m, at: 0)
                         }
                     }
-                    reloadTableView()
+                    reloadTableView(animated: false)
                     
                 default:
                     break
