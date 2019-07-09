@@ -76,7 +76,7 @@ struct Environment {
             return
         }
         LFLog(str)
-        if str.isEmpty {
+        if str.isEmpty || str == "" {
             try? self.keychainService.set(key: KeychainKeys.Udid.rawValue, value: OpenUDID.value())
         }
         

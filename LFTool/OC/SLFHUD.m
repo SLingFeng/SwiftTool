@@ -40,17 +40,27 @@ static SLFHUD * _HUD = nil;
     return [self share];
 }
 //重写 copy
-+(id)copyWithZone:(struct _NSZone *)zone{
-    return self;
-}
+//+(id)copyWithZone:(struct _NSZone *)zone{
+//    return self;
+//}
 
 + (MBProgressHUD *)Hud {
-    UIView *view = [[UIApplication sharedApplication].delegate window];
-    MBProgressHUD *hud = [MBProgressHUD HUDForView:view];
-    if (hud != nil) {
-        hud = [MBProgressHUD showHUDAddedTo:view animated:YES];
+    UIViewController *vc = [SLFCommonTools currentViewController];
+    UIView *view;
+    if (vc != nil) {
+        view = vc.view;
+    }else {
+        view = [[UIApplication sharedApplication].delegate window];
     }
-    [hud setRemoveFromSuperViewOnHide:1];
+    MBProgressHUD *hud = [MBProgressHUD HUDForView:view];
+    if (hud == nil) {
+        hud = [MBProgressHUD showHUDAddedTo:view animated:YES];
+//        hud = [[MBProgressHUD alloc] initWithView:view];
+    }
+    
+
+    hud.userInteractionEnabled = NO;
+//    [hud setRemoveFromSuperViewOnHide:1];
     [[SLFHUD share] setHUD:hud];
     return hud;
 }
@@ -60,7 +70,7 @@ static SLFHUD * _HUD = nil;
 }
 
 + (void)showHudInView:(UIView *)view hint:(NSString *)hint {
-    MBProgressHUD *HUD = [[MBProgressHUD alloc] initWithView:view];
+    MBProgressHUD * HUD = [SLFHUD Hud];
     HUD.label.text = hint;
     HUD.mode = MBProgressHUDModeText;
     [view addSubview:HUD];
@@ -83,8 +93,7 @@ static SLFHUD * _HUD = nil;
 }
 
 + (void)showLoadingHint:(NSString *)hint {
-    UIView *view = [[UIApplication sharedApplication].delegate window];
-    MBProgressHUD * hud = [MBProgressHUD showHUDAddedTo:view animated:YES];
+    MBProgressHUD * hud = [SLFHUD Hud];
     hud.label.text = hint;
     hud.label.numberOfLines = 0;
     [hud showAnimated:YES];
@@ -94,19 +103,18 @@ static SLFHUD * _HUD = nil;
 
 + (void)showLoading {
     MBProgressHUD * hud = [SLFHUD Hud];
-    if (hud == nil) {
-        UIView *view = [[UIApplication sharedApplication].delegate window];
-        hud = [MBProgressHUD showHUDAddedTo:view animated:YES];
-    }
+//    if (hud == nil) {
+//        UIView *view = [[UIApplication sharedApplication].delegate window];
+//        hud = [MBProgressHUD showHUDAddedTo:view animated:YES];
+//    }
     [hud showAnimated:YES];
-    [hud hideAnimated:YES afterDelay:10];
+    [hud hideAnimated:YES afterDelay:30];
+    hud.userInteractionEnabled = NO;
     [[SLFHUD share] setHUD:hud];
 }
 
 + (void)showHint:(NSString *)hint {
-    UIView *view = [[UIApplication sharedApplication].delegate window];
-    MBProgressHUD * hud = [MBProgressHUD showHUDAddedTo:view animated:YES];
-    hud.userInteractionEnabled = NO;
+    MBProgressHUD * hud = [SLFHUD Hud];
     // Configure for text only and offset down
     hud.mode = MBProgressHUDModeText;
     hud.label.text = hint;
@@ -146,9 +154,7 @@ static SLFHUD * _HUD = nil;
 //}
 
 + (void)showHint:(NSString *)hint delay:(NSTimeInterval)delay {
-    UIView *view = [[UIApplication sharedApplication].delegate window];
-    MBProgressHUD * hud = [MBProgressHUD showHUDAddedTo:view animated:YES];
-    hud.userInteractionEnabled = NO;
+    MBProgressHUD * hud = [SLFHUD Hud];
     // Configure for text only and offset down
     hud.mode = MBProgressHUDModeText;
     hud.label.text = hint;
@@ -160,8 +166,7 @@ static SLFHUD * _HUD = nil;
 }
 
 + (void)showHint:(NSString *)hint yOffset:(float)yOffset {
-    UIView *view = [[UIApplication sharedApplication].delegate window];
-    MBProgressHUD * hud = [MBProgressHUD showHUDAddedTo:view animated:YES];
+    MBProgressHUD * hud = [SLFHUD Hud];
     hud.userInteractionEnabled = NO;
     // Configure for text only and offset down
     hud.mode = MBProgressHUDModeText;
@@ -177,12 +182,13 @@ static SLFHUD * _HUD = nil;
 + (void)hideHud {
     UIView *view = [[UIApplication sharedApplication].delegate window];
     [MBProgressHUD hideHUDForView:view animated:YES];
-    [[SLFHUD Hud] hideAnimated:YES];
+    MBProgressHUD * hud = [SLFHUD Hud];
+//    NSLog(@"hud:%@", hud);
+    [hud hideAnimated:YES];
 }
 
 + (void)showHint:(NSString *)hint delay:(NSTimeInterval)delay completion:(completionBlock)block {
-    UIView *view = [[UIApplication sharedApplication].delegate window];
-    MBProgressHUD * hud = [MBProgressHUD showHUDAddedTo:view animated:YES];
+    MBProgressHUD * hud = [SLFHUD Hud];
     hud.delegate = [SLFHUD share];
     hud.mode = MBProgressHUDModeText;
     hud.label.text = hint;

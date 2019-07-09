@@ -256,7 +256,7 @@ class LFTool: NSObject {
         //    print(showInComma(source: "1234567", gap: 4, seperator: "#")) //输出123#4567
     }
     
-    class func clearAllSD() {
+    class func clearAllSD(done: @escaping (() -> Void)) {
         _ = LFAlert.initAlert(title: "你确定要清除缓存吗？", leftTitle: "取消", rightTitle: "确定", change: false, contentView: nil).subscribe(onSuccess: { (i) in
             if i == 1 {
                 SLFHUD.showLoadingHint("清除中...")
@@ -264,6 +264,7 @@ class LFTool: NSObject {
                 SDImageCache.shared().clearDisk(onCompletion: {
                     SLFHUD.hide()
                     SLFHUD.showHint("清除成功")
+                    done()
                 })
             }
         })
@@ -364,6 +365,12 @@ class LFTool: NSObject {
 //
 //print(str[0,10])
 extension String {
+    //判断空字符串
+    
+    func empty() -> Bool {
+        return self.isEmpty && self == ""
+    }
+    
     subscript(start:Int, length:Int) -> String
     {
         get{
