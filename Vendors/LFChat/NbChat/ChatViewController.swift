@@ -9,7 +9,7 @@
 import UIKit
 import RxCocoa
 import RxSwift
-
+//import PPStickerInputView
 
 
 enum AnimateType {
@@ -18,7 +18,7 @@ enum AnimateType {
     case animate3 // 最后一条消息距离输入框在小范围内，这里设为 2 * fitBlank = 30
 }
 
-class ChatViewController: LFBaseViewController, UITableViewDelegate, UITableViewDataSource, UITextViewDelegate, LFSocketDelegate {
+class ChatViewController: LFBaseViewController, UITableViewDelegate, UITableViewDataSource, UITextViewDelegate, LFSocketDelegate, PPStickerInputViewDelegate {
     
     let toolBarHeight: CGFloat = 56
     let fitBlank: CGFloat = 15
@@ -26,13 +26,13 @@ class ChatViewController: LFBaseViewController, UITableViewDelegate, UITableView
     let SCREEN_HEIGHT = UIScreen.main.bounds.size.height
     
     var chatTableView: UITableView!
-    var toolBarView: ToolBarView!
+    var toolBarView: PPStickerInputView!//ToolBarView!
     
     var msgList = [Message]()
     
     var mUserInfo: Dictionary<AnyHashable, Any>!
     var mKeyBoardAnimateDuration: Double = 0.5
-    var mKeyBoardHeight: CGFloat = LFTool.Height_HomeBar()
+    var mKeyBoardHeight: CGFloat = 0
     
     var fisrtLoad = true
     var animateType = AnimateType.animate1 {
@@ -81,8 +81,9 @@ class ChatViewController: LFBaseViewController, UITableViewDelegate, UITableView
         self.view.addSubview(chatTableView)
         
         // 底部工具栏界面
-        toolBarView = ToolBarView()
+        toolBarView = PPStickerInputView()
         toolBarView.textView.delegate = self
+        toolBarView.delegate = self
         self.view.addSubview(toolBarView)
         
         // 添加约束
@@ -115,7 +116,7 @@ class ChatViewController: LFBaseViewController, UITableViewDelegate, UITableView
 //                strongSelf.reloadTableView()
             }
         }).disposed(by: dig)
-        
+        socket.initSocket()
         socket.send(["type" : "login", "client_name" : GVUserDefaults.standard().nick_name, "room_id" : "1", "token" : Environment().token!])
     }
     
@@ -133,13 +134,17 @@ class ChatViewController: LFBaseViewController, UITableViewDelegate, UITableView
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         socket.addDelegate(self)
-
+        
         // 添加键盘弹出消失监听
         if fisrtLoad {
             NotificationCenter.default.addObserver(self, selector: #selector(keyBoardWillShow(notification:)), name: UIResponder.keyboardWillShowNotification, object: nil)
             NotificationCenter.default.addObserver(self, selector: #selector(keyBoardWillHide(notification:)), name: UIResponder.keyboardWillHideNotification, object: nil)
         }
         fisrtLoad = false
+    }
+    
+    deinit {
+        socket.disConnect(type: .disConnectByUser)
     }
     
     // MARK: tableViewDelegate
@@ -193,6 +198,26 @@ class ChatViewController: LFBaseViewController, UITableViewDelegate, UITableView
         return true
     }
     
+    func stickerInputViewDidClickSendButton(_ inputView: PPStickerInputView!) {
+        
+        let text = inputView.plainText
+        if text?.count == 0 {
+            return
+        }
+        
+        let s = NSAttributedString(string: text!)
+        LFLog(s)
+        
+    }
+    
+    func stickerInputViewDidChange(_ inputView: PPStickerInputView!) {
+        LFLog(inputView)
+//        let keyBoardHeight = inputView.frame.size.height - 56
+//        mKeyBoardHeight = (keyBoardHeight - LFTool.Height_HomeBar())
+//
+//        showKeyboard()
+    }
+    
     // MARK: private
     @objc func keyBoardWillShow(notification: Notification) {
         let userInfo = notification.userInfo! as Dictionary
@@ -201,7 +226,7 @@ class ChatViewController: LFBaseViewController, UITableViewDelegate, UITableView
         let keyBoardRect = value.cgRectValue
         // 得到键盘高度
         let keyBoardHeight = keyBoardRect.size.height
-        mKeyBoardHeight = LFTool.isIPHONEXLAST() ? (keyBoardHeight - LFTool.Height_HomeBar()) : keyBoardHeight
+        mKeyBoardHeight = keyBoardHeight
         
         // 得到键盘弹出所需时间
         let duration = userInfo[UIResponder.keyboardAnimationDurationUserInfoKey] as! NSNumber
@@ -216,7 +241,7 @@ class ChatViewController: LFBaseViewController, UITableViewDelegate, UITableView
         let keyBoardRect = value.cgRectValue
         // 得到键盘高度
         let keyBoardHeight = keyBoardRect.size.height
-        mKeyBoardHeight = LFTool.isIPHONEXLAST() ? (keyBoardHeight - LFTool.Height_HomeBar()) : keyBoardHeight
+        mKeyBoardHeight = keyBoardHeight
         // 得到键盘弹出所需时间
         let duration = userInfo[UIResponder.keyboardAnimationDurationUserInfoKey] as! NSNumber
         mKeyBoardAnimateDuration = duration.doubleValue
@@ -233,9 +258,9 @@ class ChatViewController: LFBaseViewController, UITableViewDelegate, UITableView
         if msgList.count > 0 {
             let lastIndex = IndexPath(row: msgList.count - 1, section: 0)
             let rectCellView = chatTableView.rectForRow(at: lastIndex)
-            let rect = chatTableView.convert(rectCellView, to: chatTableView.superview)
+            let rect = self.view.convert(rectCellView, to: chatTableView.superview)
             let cellDistance = rect.origin.y + rect.height
-            let distance1 = SCREEN_HEIGHT - toolBarHeight - mKeyBoardHeight - LFTool.Height_NavBar()
+            let distance1 = SCREEN_HEIGHT - toolBarHeight - mKeyBoardHeight - LFTool.Height_HomeBar()
             let distance2 = SCREEN_HEIGHT - toolBarHeight - 2 * fitBlank
             let difY = cellDistance - distance1
             
@@ -253,12 +278,12 @@ class ChatViewController: LFBaseViewController, UITableViewDelegate, UITableView
                 animateType = .animate2
             } else {
                 animate = {
-                    self.self.view.transform = CGAffineTransform(translationX: 0, y: -self.mKeyBoardHeight)
+                    self.view.transform = CGAffineTransform(translationX: 0, y: -self.mKeyBoardHeight)
                 }
                 animateType = .animate3
             }
         }
-        let options = UIView.AnimationOptions(rawValue: UInt((mUserInfo[UIResponder.keyboardAnimationCurveUserInfoKey] as! NSNumber).intValue << 16))
+        let options = UIView.AnimationOptions(rawValue: UInt((mUserInfo[UIResponder.keyboardAnimationCurveUserInfoKey] as? NSNumber ?? 0).intValue << 16))
         animateOption = options
         
         UIView.animate(withDuration: mKeyBoardAnimateDuration, delay: 0, options: options, animations: animate) { (isFinished) in
@@ -292,14 +317,17 @@ class ChatViewController: LFBaseViewController, UITableViewDelegate, UITableView
                 }
             case .animate3:
                 animate = {
-                    self.self.view.transform = CGAffineTransform.identity
+                    self.view.transform = CGAffineTransform.identity
                 }
+//                break
             }
             
             UIView.animate(withDuration: mKeyBoardAnimateDuration, delay: 0, options: options, animations: animate, completion: { (finish) in
+                if finish {
                 self.scrollToBottom()
                 self.oldOffsetY = self.chatTableView.contentOffset.y
                 self.isKeyboardShowed = false
+                }
             })
         }
     }
@@ -389,11 +417,11 @@ class ChatViewController: LFBaseViewController, UITableViewDelegate, UITableView
         
         if let data = message as? NSDictionary {
             //{"code":0,"msg":"connected","data":{"client_id":"7f0000010fa000000001"}}//自己登录
-            let my = data["msg"] as? String
-            if my == "connected" {
-                let id = (data["data"] as! NSDictionary)["client_id"] as! String
-                socket.model.client_id = id
-            }
+//            let my = data["msg"] as? String
+//            if my == "connected" {
+//                let id = (data["data"] as! NSDictionary)["client_id"] as! String
+//                socket.model.client_id = id
+//            }
             //{"type":"login","client_id":"7f0000010fa700000002","client_name":"ch","time":"2019-07-03 18:25:20","client_list":{"7f0000010fa600000001":"ch","7f0000010fa600000002":"lf","7f0000010fa700000002":"ch"}}
             if let type = data["type"] as? String {
                 
@@ -401,6 +429,11 @@ class ChatViewController: LFBaseViewController, UITableViewDelegate, UITableView
                 case "ping":
                     //                    socket.send(["type":"pong"])
                     return
+                case "connect":
+                    let id = data["client_id"] as! String
+                    LFLog("login id \(id)")
+                    socket.model.client_id = id
+                    
                 case "login":
                     let id = data["client_id"] as! String
                     LFLog("login id \(id)")
@@ -419,6 +452,8 @@ class ChatViewController: LFBaseViewController, UITableViewDelegate, UITableView
                     reloadTableView()
                     
                 case "history":
+                    let x: Array<Any> = (data["data"]) as! Array<Any>
+                    if x.count != 0 {
                     if let m = BF_ChatModel.deserialize(from: data) {
                         m.data.forEach { (model) in
                             let who = model.from_user_id == GVUserDefaults.standard().uid ? false : true
@@ -429,7 +464,7 @@ class ChatViewController: LFBaseViewController, UITableViewDelegate, UITableView
                         }
                     }
                     reloadTableView(animated: false)
-                    
+                    }
                 default:
                     break
                 }

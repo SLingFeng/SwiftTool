@@ -10,9 +10,9 @@ import UIKit
 import SocketRocket
 
 
-enum DDisConnectType : Int {
-    case disConnectByUser
-    case disConnectByServer
+enum LFConnectType : Int {
+    case disConnectByUser = 1
+    case disConnectByServer = 2
 }
 
 typealias DidReceiveMessage = (LFResponseModel) -> Void
@@ -42,6 +42,8 @@ class LFSocket: NSObject, SRWebSocketDelegate {
     //未发送的
     var noSendArray: [String] = []
     
+    var connectType = LFConnectType.disConnectByServer
+    
     private override init() {
         super.init()
         
@@ -58,12 +60,13 @@ class LFSocket: NSObject, SRWebSocketDelegate {
         }
         socket.delegate = self
         //  设置代理线程queue
-//        let queue = OperationQueue()
-//        queue.maxConcurrentOperationCount = 1
-//        socket.setDelegateDispatchQueue(queue)
+        let queue = OperationQueue()
+        queue.maxConcurrentOperationCount = 1
+        socket.setDelegateOperationQueue(queue)
         
         //  连接
         socket.open()
+        connectType = LFConnectType.disConnectByServer
     }
     
     func webSocket(_ webSocket: SRWebSocket!, didReceiveMessage message: Any!) {
@@ -71,7 +74,9 @@ class LFSocket: NSObject, SRWebSocketDelegate {
         let data = LFSocket.dictionaryWithJsonString(message as? String)
         delegates.forEach { (delegate) in
             if let dg = delegate as? LFSocketDelegate {
-                dg.lfSocketDidReceiveMessage(data)
+                DispatchQueue.main.async {
+                    dg.lfSocketDidReceiveMessage(data)
+                }                
             }
         }
     }
@@ -100,13 +105,13 @@ class LFSocket: NSObject, SRWebSocketDelegate {
     
     func webSocket(_ webSocket: SRWebSocket!, didCloseWithCode code: Int, reason: String!, wasClean: Bool) {
         //如果是被用户自己中断的那么直接断开连接，否则开始重连
-        if code == DDisConnectType.disConnectByUser.rawValue {
+        if connectType == LFConnectType.disConnectByUser {
             disConnect()
         }else {
             reConnect()
         }
         destoryHeartBeat()
-        reConnect()
+//        reConnect()
         LFLog(reason)
     }
     
@@ -309,7 +314,8 @@ class LFSocket: NSObject, SRWebSocketDelegate {
         initSocket()
     }
     //   断开连接
-    func disConnect() {
+    func disConnect(type:LFConnectType = LFConnectType.disConnectByServer) {
+        self.connectType = type
         if (socket != nil) {
             socket.close()
             socket = nil
