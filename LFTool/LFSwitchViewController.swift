@@ -41,29 +41,34 @@ class LFSwitchViewController: LFBaseViewController {
     var lastVC: UIViewController?
     ///当前显示第几个vc
     var showIndex = 0
-//    {
-//        didSet {
-//            showIndexSubject.onNext(showIndex)
-//        }
-//    }
+    
+    var sw: UISwipeGestureRecognizer?
+
+    var sw1: UISwipeGestureRecognizer?
+
+    
     var showIndexSubject = PublishSubject<Int>()
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        currentVC = self.children.first
-        selIndexVC(num: 0)
+        if currentVC == nil && showIndex == 0 {
+            currentVC = self.children.first
+            selIndexVC(num: 0)
+        }
     }
     
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        
-//        self.addChild(UIViewController())
         let sw = UISwipeGestureRecognizer(target: self, action: #selector(switchVC(sw:)))
+        
+        let sw1 = UISwipeGestureRecognizer(target: self, action: #selector(switchVC(sw:)))
+//        self.addChild(UIViewController())
         sw.direction = .left
         self.view.addGestureRecognizer(sw)
-        let sw1 = UISwipeGestureRecognizer(target: self, action: #selector(switchVC(sw:)))
         self.view.addGestureRecognizer(sw1)
+        self.sw = sw
+        self.sw1 = sw1
     }
     
     @objc func switchVC(sw: UISwipeGestureRecognizer) {

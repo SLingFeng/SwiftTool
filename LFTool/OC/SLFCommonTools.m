@@ -612,6 +612,9 @@ static SLFCommonTools * tools = nil;
 #pragma mark - 清除缓存
 +(NSString *)clearMsg {
     float tmpSize = [[SDImageCache sharedImageCache] getSize];
+    if (tmpSize == 0) {
+        return @"0M";
+    }
     return [NSString stringWithFormat:@"%@", tmpSize >= 1 ? [NSString stringWithFormat:@"%.1fM",tmpSize/1024.0/1024.0] : [NSString stringWithFormat:@"%.1fK",tmpSize/1024.0/1024.0/1024.0]];
 }
 
@@ -1107,7 +1110,7 @@ static SLFCommonTools * tools = nil;
 +(int)compareOneDay:(NSDate *)oneDay withAnotherDay:(NSDate *)anotherDay {
     NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
     
-    [dateFormatter setDateFormat:@"dd-MM-yyyy"];
+    [dateFormatter setDateFormat:@"MM-dd-yyyy"];
     
     NSString *oneDayStr = [dateFormatter stringFromDate:oneDay];
     
@@ -1160,10 +1163,27 @@ static SLFCommonTools * tools = nil;
 
 //时间戳 转 时间
 +(NSString *)timestamp:(NSTimeInterval)timeTemp formart:(NSString *)mart {
-    NSDate * beDate = [NSDate dateWithTimeIntervalSince1970:timeTemp];
+    NSString * str = [NSString stringWithFormat:@"%f", timeTemp];
+    NSDate * beDate;
+    if (str.length > 11) {
+        beDate = [NSDate dateWithTimeIntervalInMilliSecondSince1970:timeTemp];
+    }else {
+        beDate = [NSDate dateWithTimeIntervalSince1970:timeTemp];
+    }
     NSDateFormatter * df = [[NSDateFormatter alloc]init];
     [df setDateFormat:mart];
     return [df stringFromDate:beDate];
+}
++ (NSDate *)dateWithTimeIntervalInMilliSecondSince1970:(double)timeIntervalInMilliSecond {
+    NSDate *ret = nil;
+    double timeInterval = timeIntervalInMilliSecond;
+    // judge if the argument is in secconds(for former data structure).
+    if(timeIntervalInMilliSecond > 140000000000) {
+        timeInterval = timeIntervalInMilliSecond / 1000;
+    }
+    ret = [NSDate dateWithTimeIntervalSince1970:timeInterval];
+    
+    return ret;
 }
 //dat e 转 时间
 +(NSString *)timeWithData:(NSDate*)data formart:(NSString *)mart {

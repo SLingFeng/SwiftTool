@@ -150,7 +150,7 @@ class SelectView: UIView {
                             strongSelf.tapTwoNum = 0
                         }
                         
-                        if toIndex == n || toIndex == -1 {
+                        if toIndex <= n || toIndex != -1 {
                             //UIView.animate(withDuration: 0, animations: {
                             var p = strongSelf.arrowIV.center
                             p.x = btn.centerX + btn.width/4
@@ -206,7 +206,7 @@ class SelectView: UIView {
         
         ///箭头判断
         if isFilter {
-            if toIndex == btn.tag - 10 || toIndex == -1 {
+            if toIndex <= btn.tag - 10 || toIndex != -1 {
 //            UIView.animate(withDuration: 0.3, animations: {
                 var p = self.arrowIV.center
                 p.x = btn.centerX + btn.width/4
