@@ -69,7 +69,7 @@ class LF_EditIVTableViewCell: LFBaseRTableViewCell {
                 tf.enterType = model!.enterType!
             }
             tf.enterNumber = model!.enterNumber
-            
+            tf.regex = model!.regex
             tf.backgroundColor = .clear
             if model!.type == 0 || model!.type == 31 {
                 tf.isUserInteractionEnabled = false

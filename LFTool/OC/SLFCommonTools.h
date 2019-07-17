@@ -413,6 +413,8 @@
 +(NSString *)getYearMonth;
 //时间戳 转 时间
 +(NSString *)timestamp:(NSTimeInterval)timeTemp formart:(NSString *)mart;
+//13位时间戳
++ (NSDate *)dateWithTimeIntervalInMilliSecondSince1970:(double)timeIntervalInMilliSecond;
 //dat e 转 时间
 +(NSString *)timeWithData:(NSDate*)data formart:(NSString *)mart;
 //时间 转 时间戳
@@ -438,6 +440,8 @@
  *  @return yes是邮箱 no不是邮箱
  */
 +(BOOL)isValidateEmail:(NSString *)email;
++ (BOOL)isValidateUserName:(NSString *)userName;
++ (BOOL)isValidateCustomize:(NSString *)customize text:(NSString *)text;
 /**
  *  @author LingFeng, 2016-06-08 11:06:08
  *

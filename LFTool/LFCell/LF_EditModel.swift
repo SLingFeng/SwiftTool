@@ -45,6 +45,7 @@ class LF_EditModel: NSObject {
     var cellDidClick: ((_ cell: UITableViewCell?) -> Void)?
     var textFieldChange: ((_ tf: BaseTextField?) -> Void)?
     var textFieldEditingDidEnd: ((_ tf: BaseTextField?) -> Void)?
+    var regex = ""
 //    var tfSet: ((_ tf: BaseTextField?) -> Void)?
 //    var fsTextViewHandler: ((_ textView: FSTextView?) -> Void)?
 //    var selectIDBlock: ((_ ids: String?) -> Void)?

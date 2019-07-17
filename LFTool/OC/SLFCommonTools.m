@@ -1264,6 +1264,21 @@ static SLFCommonTools * tools = nil;
     return [emailTest evaluateWithObject:email];
 }
 
++ (BOOL)isValidateCustomize:(NSString *)customize text:(NSString *)text {
+    
+    NSPredicate *emailTest = [NSPredicate predicateWithFormat:@"SELF MATCHES %@", customize];
+    
+    return [emailTest evaluateWithObject:text];
+}
+
++ (BOOL)isValidateUserName:(NSString *)userName {
+    NSString *emailRegex = @"/^[\u4E00-\u9FA5A-Za-z0-9_]{1,7}$/";
+    
+    NSPredicate *emailTest = [NSPredicate predicateWithFormat:@"SELF MATCHES %@", emailRegex];
+    
+    return [emailTest evaluateWithObject:userName];
+}
+
 +(BOOL)isMobileNumber:(NSString *)mobileNum {
     //    移动号段：
     //    134 135 136 137 138 139 147 150 151 152 157 158 159 178 182 183 184 187 188

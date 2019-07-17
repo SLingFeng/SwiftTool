@@ -189,6 +189,8 @@ static SLFHUD * _HUD = nil;
 
 + (void)showHint:(NSString *)hint delay:(NSTimeInterval)delay completion:(completionBlock)block {
     MBProgressHUD * hud = [SLFHUD Hud];
+    //        UIView *view = [[UIApplication sharedApplication].delegate window];
+    //        hud = [MBProgressHUD showHUDAddedTo:view animated:YES];
     hud.delegate = [SLFHUD share];
     hud.mode = MBProgressHUDModeText;
     hud.label.text = hint;

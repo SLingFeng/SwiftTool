@@ -15,6 +15,8 @@ typedef void (^completionBlock)(void);
 
 @property (nonatomic, copy) completionBlock completion;
 
+@property (nonatomic, retain) MBProgressHUD * lastHud;
+
 /**
  单例
 

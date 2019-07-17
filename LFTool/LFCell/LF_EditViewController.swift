@@ -131,26 +131,26 @@ class LF_EditViewController: LFBaseTableViewController {
 //        let model = cellArr![indexPath.section][indexPath.row]
 //
 //        if model.type == 3 || model.type == 31 {
-            let cell = cell as? LFBaseRTableViewCell
+        if let cell = cell as? LFBaseRTableViewCell {
             
             if indexPath.row == 0 && indexPath.row == tableView.numberOfRows(inSection: indexPath.section) - 1 {
                 //只有一个
-                cell?.changeShow(type: .one)
-                cell?.line.isHidden = true
+                cell.changeShow(type: .one)
+                cell.line.isHidden = true
             } else if indexPath.row == 0 {
                 //最顶端的Cell（两个向下圆弧和一条线）
-                cell?.line.isHidden = false
-                cell?.changeShow(type: .top)
+                cell.line.isHidden = false
+                cell.changeShow(type: .top)
             } else if indexPath.row == tableView.numberOfRows(inSection: indexPath.section) - 1 {
                 //最底端的Cell（两个向上的圆弧和一条线）
-                cell?.line.isHidden = true
-                cell?.changeShow(type: .botton)
+                cell.line.isHidden = true
+                cell.changeShow(type: .botton)
             } else {
                 //中间的Cell
-                cell?.changeShow(type: .middin)
-                cell?.line.isHidden = false
+                cell.changeShow(type: .middin)
+                cell.line.isHidden = false
                 return
             }
-//        }
+        }
     }
 }
