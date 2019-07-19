@@ -123,10 +123,10 @@
             return [SLFCommonTools matchStringFormat:string];
         }
             break;
-//        case BaseTextFieldEnterCN:{
-//            return [SLFCommonTools matchStringFormatCN:string];
-//        }
-//            break;
+        case BaseTextFieldEnterCustomize:{
+            return [SLFCommonTools isValidateCustomize:self.regex text:string];
+        }
+            break;
             
         case BaseTextFieldEnterNumberAndCN:{
             return [SLFCommonTools matchStringNumberAndCN:string];

@@ -129,4 +129,10 @@ class LFBaseLineRTableViewController: LFBaseTableViewController {
         cell?.backView.setNeedsDisplay()
     }
     
+    override func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
+        if section == 0 {
+            return 10
+        }
+        return 0.001
+    }
 }

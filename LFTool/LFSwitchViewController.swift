@@ -119,7 +119,11 @@ class LFSwitchViewController: LFBaseViewController {
                 vc.view.removeFromSuperview()
             }
             lastVC?.view.removeFromSuperview()
-            showIndex = num
+            if num < 0 {
+                showIndex = 0
+            }else {
+                showIndex = num
+            }
             self.currentVC = self.children[showIndex]
             self.contentView.addSubview(self.currentVC!.view)
             self.contentView.sendSubviewToBack(self.currentVC!.view)

@@ -18,6 +18,7 @@ class LFLabel: UILabel {
     lazy var bacView: LFLineRView = {
         let bacView = LFLineRView()
         self.addSubview(bacView)
+        self.sendSubviewToBack(bacView)
         bacView.snp_makeConstraints({ (make) in
             make.edges.equalTo(UIEdgeInsets.zero)
         })

@@ -54,6 +54,42 @@ class LFTool: NSObject {
         return isX
     }
     
+    public class func scale(num: Float) -> Float {
+        var f = num
+        
+        //判断iPHoneXr
+        if (UIScreen.main.preferredMode?.size.equalTo(CGSize.init(width: 828, height: 1792)))! {
+            f = f * 1.2
+        }
+        //判断iPhoneXs iPHoneX
+        if (UIScreen.main.preferredMode?.size.equalTo(CGSize.init(width: 1125, height: 2436)))! {
+            f = f * 1.2
+        }
+        //判断iPhoneXs Max
+        if (UIScreen.main.preferredMode?.size.equalTo(CGSize.init(width: 1242, height: 2688)))! {
+            f = f * 1.2
+        }
+        //判断iPhone4s
+        if (UIScreen.main.preferredMode?.size.equalTo(CGSize.init(width: 640, height: 960)))! {
+            f = f * 0.85
+        }
+        //判断iPhone5
+        if (UIScreen.main.preferredMode?.size.equalTo(CGSize.init(width: 640, height: 1136)))! {
+            f = f * 0.85
+        }
+        //判断iPhone6
+        if (UIScreen.main.preferredMode?.size.equalTo(CGSize.init(width: 750, height: 1334)))! {
+            f = f * 1
+        }
+        //判断iPhone6p
+        if (UIScreen.main.preferredMode?.size.equalTo(CGSize.init(width: 1242, height: 2208)))! {
+            f = f * 1.1
+        }
+        
+        //        print(isX)
+        return f
+    }
+    
     public class func Height_StatusBar() -> CGFloat {
         return LFTool.isIPHONEXLAST() ? 44.0 : 20.0
     }
@@ -369,6 +405,19 @@ extension String {
     
     func empty() -> Bool {
         return self.isEmpty && self == ""
+    }
+    
+    func transformToPinYin() -> String {
+        
+        let mutableString = NSMutableString(string: self)
+        //把汉字转为拼音
+        CFStringTransform(mutableString, nil, kCFStringTransformToLatin, false)
+        //去掉拼音的音标
+        CFStringTransform(mutableString, nil, kCFStringTransformStripDiacritics, false)
+        
+        let string = String(mutableString)
+        //去掉空格
+        return string.replacingOccurrences(of: " ", with: "")
     }
     
     subscript(start:Int, length:Int) -> String

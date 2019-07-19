@@ -26,7 +26,7 @@ class LFLoadView: UIView {
 //        self.addSubview(title)
         self.addSubview(load)
         self.addSubview(contentView)
-//        contentView.isHidden = true
+        contentView.isHidden = true
 //
         let pathForFile = Bundle.main.path(forResource: gifName, ofType: "gif") ?? ""
         let dataOfGif = NSData(contentsOfFile: pathForFile) as Data?
@@ -35,11 +35,6 @@ class LFLoadView: UIView {
         load.snp.makeConstraints({ (make) in
            make.edges.equalTo(UIEdgeInsets.zero)
         })
-//
-//        title.snp.makeConstraints({ (make) in
-//            make.top.equalTo(load.snp.bottom).offset(10)
-//            make.centerX.equalTo(self.snp.centerX)
-//        })
         
         contentView.snp.makeConstraints({ (make) in
             make.edges.equalTo(UIEdgeInsets.zero)

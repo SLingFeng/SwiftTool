@@ -37,6 +37,8 @@ enum Api {
     case common_checkCode([String : String])
     case common_sendCode([String : String])
     case user_rePwd([String : String])
+    case user_getMyInfo
+    case user_getUserImg
     case article_getArticleInfo([String : String])
     case user_showBalance
     case user_uploadImg(img: Data, name: String)
@@ -48,36 +50,10 @@ enum Api {
     case user_issetWDPwd
     case user_resetPhone([String : String])
     case user_checkOldPhone([String : String])
-    case user_getUserCapital([String : String])
-    case user_getWithdrawList([String : String])
-    case pay_userPay([String : String])
-    case user_getDepositList([String : String])
     case config_getConfigData
-    case trade_searchTradeOrder([String : String])
-    case trade_submitTrade([String : String])
-    case pay_userWithdraw([String : String])
-    case fin_getFinOrderList([String : String])
-    case fin_applySettlement([String : String])
-    case fin_addMoney([String : String])
-    case fin_getFinOrderInfo([String : String])
-    case trade_getTradeOrder([String : String])
-    case fin_finType
-    case fin_getFinSpecs([String : String])
-    case fin_getLines
-    case fin_applyFin([String : String])
-    case trade_selectTradeInfo([String : String])
-    case user_showMargin
-    case user_showTradeMoney
-    case ws_getKlineHistory([String : String])
-    case trade_getPromptOrder([String : String])
-    case fin_addMargin([String : String])
-    case trade_delTradeOrder([String : String])
-    case fin_fOList
-    case trade_countCommissCharge([String : String])
+    case pay_applyWithdraw([String : String])
     case config_getConfigValue([String : String])
     case article_getArticleDetail([String : String])
-    case fin_getFinSpeFromId([String : String])
-    case fin_enLargeFin([String : String])
     case user_reLoginPwd([String : String])
     case user_getUserMessage([String : String])
     case user_isNewMessage
@@ -89,7 +65,7 @@ enum Api {
     case fin_getEnFinFee([String : String])
     case common_sendCodeWithPic([String : String])
     case user_creatqrcode([String : String])
-    case user_loginOut_token
+    case user_loginOut
     case user_searchTrade([String : String])
     case user_addMyChoose([String : String])
     case user_delMyChoose([String : String])
@@ -98,9 +74,58 @@ enum Api {
     case user_windowClose
     case user_windowOpen
     case user_applyAgentIncome
+    
+    //2019-6-25
+    case user_myFollowList([String : String])
+    case user_applyExpert
+    //27
+    case user_editMyInfo([String : String])
+    case user_delMyFollow([String : String])
+    //29
+    case match_getMatchList([String : String])
+    case user_addRecommend([String : String])
+    
+    case user_getRecommOrder([String : String])
+    case user_getRecommList([String : String])
+    case user_getRecommInfo([String : String])
+    case user_addMyFollow([String : String])
+    case user_getMyRecomm([String : String])
+    case user_applyExpertStatus
+    case user_getFollowInfo([String : String])
+    
+    case Score_ongoing([String : Any])
+    case Score_schedule([String : Any])
+    case Score_afterGame([String : Any])
+    case Score_focus([String : Any])
+    case match_getTeamInfo([String : String])
+    
+    case match_getPlayerInfo([String : String])
+    case match_getPlayerStatInfo([String : String])
+    case match_countTeamStat([String : String])
+    case match_getCwayList([String : String])
+    case match_countAE([String : String])
+    case match_getShooterList([String : String])
+    case Score_recommendEvent([String : String])
+    case match_getTeamStatInfo([String : String])
+    case Score_integral([String : String])
+    case Score_dynamic([String : String])
+    case match_countHomeAE([String : String])
+    case match_countAEInfo([String : String])
+    case match_getCompetitionList([String : String])
+    case match_getAEScoreList([String : String])
+    case match_getGrList([String : String])
+    case match_getGameInfo([String : String])
+    case Score_scheduleDb([String : String])
+    case score_leagueSelect([String : String])
+    case match_teamScoreOrder([String : String])
+    case Score_companyIndex([String : String])
+    case match_getNextDayMatch([String : String])
+    case match_getRAEScore([String : String])
+    case Score_getFocusStatus([String : String])
+    
 }
 //cs.flyy789.com
-let ApiUrl = "http://cs.flyy789.com"
+let ApiUrl = "http://cs.flyv888.com"
 let WsUrl = "wss://w.sinajs.cn/wskt"
 
 extension Api: TargetType {
@@ -118,155 +143,250 @@ extension Api: TargetType {
     
     var path: String {
         switch self {
-            ///配置
+        ///配置
         case .config_getConfigData:
             return "/api/config/getConfigData"
-            //登录图形验证码
-        case .commonverify:
-            return "/api/common/verify"
-            //登录
-        case .user_login:
-            return "/api/user/login"
-            //注册接口
+        //注册接口
         case .user_register:
             return "/api/user/register"
-            //检验图形验证码
+        //登录
+        case .user_login:
+            return "/api/user/login"
+        //登录图形验证码
+        case .commonverify:
+            return "/api/common/verify"
+        //检验图形验证码
         case .common_checkCode:
             return "/api/common/checkCode"
-            //短信验证码
-        case .common_sendCode:
-            return "/api/common/sendCode"
-            ///重制密码
-        case .user_rePwd(_):
+        ///重制密码
+        case .user_rePwd:
             return "/api/user/rePwd"
-            ///资讯 共用
-        case .article_getArticleInfo(_):
-            return "/api/article/getArticleInfo"
-            ///显示余额
-        case .user_showBalance:
-            return "/api/user/showBalance"
-            ///上传身份证
-        case .user_uploadImg(_):
+        ///个人资料
+        case .user_getMyInfo:
+            return "/api/user/getMyInfo"
+        ///上传身份证
+        case .user_uploadImg:
             return "/api/user/uploadImg"
-            ///实名认证
+        ///获取身份证图片
+        case .user_getUserImg:
+            return "/api/user/getUserImg"
+        ///实名认证
         case .user_realNameAuth(_):
             return "/api/user/realNameAuth"
-            ///实名认证状态
+        ///实名认证状态
         case .user_getRealNameStatus:
             return "/api/user/getRealNameStatus"
-            ///设置银行卡
-        case .user_setBankCard:
-            return "/api/user/setBankCard"
-            ///检查银行卡
-        case .user_bankCardInfo:
-            return "/api/user/bankCardInfo"
-            ///设置密码
-        case .user_setWDPwd:
-            return "/api/user/setWDPwd"
-            ///查询密码设置状态
-        case .user_issetWDPwd:
-            return "/api/user/issetWDPwd"
-            ///重新设置手机号
-        case .user_resetPhone:
-            return "/api/user/resetPhone"
+            ///验证旧手机
         case .user_checkOldPhone:
             return "/api/user/checkOldPhone"
-            
-            ///用户资金流水接口
-        case .user_getUserCapital:
-            return "/api/user/getUserCapital"
-            ///提现记录
-        case .user_getWithdrawList:
-            return "/api/user/getWithdrawList"
-            ///支付
-        case .pay_userPay:
-            return "/api/pay/userPay"
-            ///充值记录
-        case .user_getDepositList:
-            return "/api/user/getDepositList"
-            ///我的持仓 position_data持仓中数据 /获取用户股票订单信息-撤单 commission_data委托中数据
-        case .trade_searchTradeOrder:
-            return "/api/trade/searchTradeOrder"
-            /// 买入/卖出
-        case .trade_submitTrade:
-            return "/api/trade/submitTrade"
-            ///申请提现
-        case .pay_userWithdraw:
-            return "/api/pay/userWithdraw"
-            ///合约
-        case .fin_getFinOrderList:
-            return "/api/fin/getFinOrderList"
-            ///用户申请结算接口
-        case .fin_applySettlement:
-            return "/api/fin/applySettlement"
-            ///追加资金
-        case .fin_addMoney:
-            return "/api/fin/addMoney"
-            ///股票详情
-        case .fin_getFinOrderInfo:
-            return "/api/fin/getFinOrderInfo"
-            ///综合查询
-        case .trade_getTradeOrder:
-            return "/api/trade/getTradeOrder"
-            ///配资方式
-        case .fin_finType:
-            return "/api/fin/finType"
-            ///配资规格
-        case .fin_getFinSpecs:
-            return "/api/fin/getFinSpecs"
-            ///平仓线&&预警线
-        case .fin_getLines:
-            return "/api/fin/getLines"
-            ///配资申请
-        case .fin_applyFin:
-            return "/api/fin/applyFin"
-            ///模糊查询获取股票行情数据
-        case .trade_selectTradeInfo:
-            return "/api/trade/selectTradeInfo"
-            
-            ///配资账户余额=操盘金额-保证金余额
-            ///保证金
-        case .user_showMargin:
-            return "/api/user/showMargin"
-            ///操盘金额
-        case .user_showTradeMoney:
-            return "/api/user/showTradeMoney"
-        ///获取历史K线
-        case .ws_getKlineHistory:
-            return "/api/ws/getKlineHistory"
-          ///交割单接口
-        case .trade_getPromptOrder:
-            return "/api/trade/getPromptOrder"
-            ///追加保证金
-        case .fin_addMargin:
-            return "/api/fin/addMargin"
-            ///删除交易订单
-        case .trade_delTradeOrder:
-            return "/api/trade/delTradeOrder"
-        ///合约列表
-        case .fin_fOList:
-            return "/api/fin/fOList"
-        ///计算股票交易手续费
-        case .trade_countCommissCharge:
-            return "/api/trade/countCommissCharge"
-            ///重要通知
-        case .config_getConfigValue:
-            return "/api/config/getConfigValue"
-            ///文章详情
-        case .article_getArticleDetail:
-            return "/api/article/getArticleDetail"
-             ///获取配资规格
-        case .fin_getFinSpeFromId:
-            return "/api/fin/getFinSpeFromId"
-        ///扩大配资
-        case .fin_enLargeFin:
-            return "/api/fin/enLargeFin"
+        ///重新设置手机号
+        case .user_resetPhone:
+            return "/api/user/resetPhone"
         ///重置登录密码
         case .user_reLoginPwd:
             return "/api/user/reLoginPwd"
+        ///设置密码
+        case .user_setWDPwd:
+            return "/api/user/setWDPwd"
+        ///查询密码设置状态
+        case .user_issetWDPwd:
+            return "/api/user/issetWDPwd"
+        ///设置银行卡
+        case .user_setBankCard:
+            return "/api/user/setBankCard"
+        ///检查银行卡
+        case .user_bankCardInfo:
+            return "/api/user/bankCardInfo"
+            //MARK: 2019-6-25
+        ///申请提现
+        case .pay_applyWithdraw:
+            return "/api/pay/applyWithdraw"
+        ///获取我的关注列表
+        case .user_myFollowList:
+            return "/api/user/myFollowList"
         ///获取消息通知
         case .user_getUserMessage:
             return "/api/user/getUserMessage"
+        ///获取新闻资讯 共用
+        case .article_getArticleInfo(_):
+            return "/api/article/getArticleInfo"
+        ///新闻详情
+        case .article_getArticleDetail:
+            return "/api/article/getArticleDetail"
+        ///申请专家
+        case .user_applyExpert:
+            return "/api/user/applyExpert"
+        ///推广
+        case .user_getInvitationInfo:
+            return "/api/user/getInvitationInfo"
+            
+        ///获取验证码（账户安全
+        case .common_sendCodeWithPic:
+            return "/api/common/sendCodeWithPic"
+            //2019-06-27
+            
+        ///修改个人资料
+        case .user_editMyInfo:
+            return "/api/user/editMyInfo"
+        ///删除我的关注
+        case .user_delMyFollow:
+            return "/api/user/delMyFollow"
+            //2019-06-29
+        ///我要推介的赛事列表
+        case .match_getMatchList:
+            return "/api/match/getMatchList"
+        ///申请推介
+        case .user_addRecommend:
+            return "/api/user/addRecommend"
+        ///退出登录
+        case .user_loginOut:
+            return "/api/user/loginOut"
+            
+            //7-1
+            
+        ///推介列表 排行 首页
+        case .user_getRecommOrder:
+            return "/api/user/getRecommOrder"
+        ///推介列表
+        case .user_getRecommList:
+            return "/api/user/getRecommList"
+        ///推介详情
+        case .user_getRecommInfo:
+            return "/api/user/getRecommInfo"
+            
+            //7-7
+        ///添加我的关注
+        case .user_addMyFollow:
+            return "/api/user/addMyFollow"
+        ///我的推介
+        case .user_getMyRecomm:
+            return "/api/user/getMyRecomm"
+           //7-5
+        ///申请专家的状态0申请中 2 失败
+        case .user_applyExpertStatus:
+            return "/api/user/applyExpertStatus"
+        ///我的关注-个人信息
+        case .user_getFollowInfo:
+            return "/api/user/getFollowInfo"
+            //7-9
+        ///即时比分
+        case .Score_ongoing:
+            return "/api/Score/ongoing"
+        ///赛程
+        case .Score_schedule:
+            return "/api/Score/schedule"
+        ///完场
+        case .Score_afterGame:
+            return "/api/Score/afterGame"
+        ///关注赛事和关注赛事展示
+        case .Score_focus:
+            return "/api/Score/focus"
+        ///球队信息
+        case .match_getTeamInfo:
+            return "/api/match/getTeamInfo"
+            //7-10
+        ///球员信息
+        case .match_getPlayerInfo:
+            return "/api/match/getPlayerInfo"
+        ///获取球员数据统计
+        case .match_getPlayerStatInfo:
+            return "/api/match/getPlayerStatInfo"
+        ///获取球队统计
+        case .match_countTeamStat:
+            return "/api/match/countTeamStat"
+        ///盘路统计
+        case .match_getCwayList:
+            return "/api/Match/getCwayList"
+        ///比分-统计
+        case .match_countAE:
+            return "/api/match/countAE"
+        ///资料库的射手榜
+        case .match_getShooterList:
+            return "/api/match/getShooterList"
+            
+            //7-11
+        ///资料库 赛区+地区
+        case .Score_recommendEvent:
+            return "/api/Score/recommendEvent"
+        ///球队往绩
+        case .match_getTeamStatInfo:
+            return "/api/match/getTeamStatInfo"
+        ///资料库 积分表
+        case .Score_integral:
+            return "/api/Score/integral"
+        ///获取比赛动态
+        case .Score_dynamic:
+            return "/api/Score/dynamic"
+        ///实时数据
+        case .match_countHomeAE:
+            return "/api/match/countHomeAE"
+        ///走地数据
+        case .match_countAEInfo:
+            return "/api/match/countAEInfo"
+        ///球队-赛程
+        case .match_getCompetitionList:
+            return "/api/match/getCompetitionList"
+            //7-12
+        ///球队-赛程
+        case .match_getAEScoreList:
+            return "/api/match/getAEScoreList"
+        ///球队-推介
+        case .match_getGrList:
+            return "/api/match/getGrList"
+        ///比赛信息
+        case .match_getGameInfo:
+            return "/api/match/getGameInfo"
+//            7-13
+        ///资料库 赛程
+        case .Score_scheduleDb:
+            return "/api/Score/scheduleDb"
+        ///联赛筛选
+        case .score_leagueSelect:
+            return "/api/Score/leagueSelect"
+//            7-15
+        ///比赛详情-数据分析
+        case .match_teamScoreOrder:
+            return "/api/match/teamScoreOrder"
+        ///筛选指数
+        case .Score_companyIndex:
+            return "/api/Score/companyIndex"
+            
+        ///统计 赛程
+        case .match_getNextDayMatch:
+            return "/api/match/getNextDayMatch"
+        ///我要推介 获取
+        case .match_getRAEScore:
+            return "/api/match/getRAEScore"
+        ///获取关注状态
+        case .Score_getFocusStatus:
+            return "/api/Score/getFocusStatus"
+            //MARK: - 暂无
+            
+           
+            
+            
+            
+            //短信验证码
+        case .common_sendCode:
+            return "/api/common/sendCode"
+            
+            
+            ///显示余额
+        case .user_showBalance:
+            return "/api/user/showBalance"
+            
+            
+            
+            
+            
+        
+            
+            ///重要通知
+        case .config_getConfigValue:
+            return "/api/config/getConfigValue"
+            
+        
+        
             ///新消息
         case .user_isNewMessage:
             return "/api/user/isNewMessage"
@@ -276,9 +396,7 @@ extension Api: TargetType {
             ///获取栏目列表
         case .article_getColumnInfo:
             return "/api/article/getColumnInfo"
-        ///推广
-        case .user_getInvitationInfo:
-            return "/api/user/getInvitationInfo"
+        
             ///推广人员列表
         case .user_getInvitationList:
             return "/api/user/getInvitationList"
@@ -288,15 +406,10 @@ extension Api: TargetType {
         ///扩大利息
         case .fin_getEnFinFee:
             return "/api/fin/getEnFinFee"
-        ///获取验证码（账号安全
-        case .common_sendCodeWithPic:
-            return "/api/common/sendCodeWithPic"
             ///生成二维码
         case .user_creatqrcode:
             return "/api/user/creatqrcode"
-            ///推出登录
-        case .user_loginOut_token:
-            return "/api/user/loginOut/token"
+            
         ///模糊查询股票
         case .user_searchTrade:
             return "/api/user/searchTrade"
@@ -354,31 +467,10 @@ extension Api: TargetType {
              var .user_realNameAuth(par),
              var .user_resetPhone(par),
              var .user_setWDPwd(par),
-             var .user_getUserCapital(par),
-             var .user_getWithdrawList(par),
-             var .pay_userPay(par),
-             var .user_getDepositList(par),
-             var .trade_submitTrade(par),
-             var .pay_userWithdraw(par),
-             var .fin_getFinOrderList(par),
-             var .fin_applySettlement(par),
-             var .fin_addMoney(par),
-             var .fin_getFinOrderInfo(par),
-             var .trade_getTradeOrder(par),
-             var .fin_getFinSpecs(par),
-             var .fin_applyFin(par),
-             var .trade_selectTradeInfo(par),
-             var .ws_getKlineHistory(par),
-             var .trade_getPromptOrder(par),
-             var .fin_addMargin(par),
-             var .trade_delTradeOrder(par),
+             var .pay_applyWithdraw(par),
              var .user_checkOldPhone(par),
-             var .trade_searchTradeOrder(par),
-             var .trade_countCommissCharge(par),
              var .config_getConfigValue(par),
              var .article_getArticleDetail(par),
-             var .fin_getFinSpeFromId(par),
-             var .fin_enLargeFin(par),
              var .user_reLoginPwd(par),
              var .fin_getApplyFinFee(par),
              var .article_getColumnInfo(par),
@@ -392,7 +484,52 @@ extension Api: TargetType {
              var .user_addMyChoose(par),
              var .user_delMyChoose(par),
              var .user_myChooseList(par),
-             var .trade_getTradeInfo(par):
+             var .trade_getTradeInfo(par),
+            //2019-6-25
+            var .user_myFollowList(par),
+            var .user_editMyInfo(par),
+            var .user_delMyFollow(par),
+            var .user_addRecommend(par),
+            var .match_getMatchList(par),
+            var .user_getRecommOrder(par),
+            var .user_getRecommInfo(par),
+            var .user_getRecommList(par),
+            var .user_addMyFollow(par),
+            var .user_getMyRecomm(par),
+            var .user_getFollowInfo(par),
+            var .match_getTeamInfo(par),
+            var .match_getPlayerInfo(par),
+            var .match_getPlayerStatInfo(par),
+            var .match_countTeamStat(par),
+            var .match_getCwayList(par),
+            var .match_countAE(par),
+            var .match_getShooterList(par),
+            var .Score_recommendEvent(par),
+            var .match_getTeamStatInfo(par),
+            var .Score_integral(par),
+            var .Score_dynamic(par),
+            var .match_countHomeAE(par),
+            var .match_countAEInfo(par),
+            var .match_getCompetitionList(par),
+            var .match_getAEScoreList(par),
+            var .match_getGrList(par),
+            var .match_getGameInfo(par),
+            var .Score_scheduleDb(par),
+            var .score_leagueSelect(par),
+            var .match_teamScoreOrder(par),
+            var .Score_companyIndex(par),
+            var .match_getNextDayMatch(par),
+            var .match_getRAEScore(par),
+            var .Score_getFocusStatus(par)
+            :
+            
+            par["token"] = Environment().token ?? ""
+            return .requestParameters(parameters: par, encoding: URLEncoding.queryString)
+            
+        case var .Score_ongoing(par),
+             var .Score_schedule(par),
+             var .Score_afterGame(par),
+             var .Score_focus(par):
             
             par["token"] = Environment().token ?? ""
             return .requestParameters(parameters: par, encoding: URLEncoding.queryString)
@@ -506,18 +643,19 @@ public final class RequestLoadingPlugin:PluginType{
 }
 
 
-func apiRequset(_ a: Any) -> Single<LFResponseModel> {
-    
-    return Single<LFResponseModel>.create(subscribe: { (se) -> Disposable in
-        let api = apiProvider.rx.request(a as! Api).asObservable().share(replay: 1, scope: .forever).mapModel(LFResponseModel.self).subscribe(onNext: { (model) in
+func apiRequset<T: LFResponseModel>(_ a: Api, modelType: T.Type = T.self) -> Single<T> {
+
+    return Single<T>.create(subscribe: { (se) -> Disposable in
+        let api = apiProvider.rx.request(a).asObservable().share(replay: 1, scope: .forever).mapModel(modelType).subscribe(onNext: { (model) in
+            LFLog("\(model.msg)+\(a)")
             if model.code == 0 {
                 se(.success(model))
-            }else if model.code == 2 {
+            }else if model.code == 2 || model.msg == "令牌不能为空" {
 //                SLFHUD.showHint(model.msg)
                 SLFHUD.hide()
                 Environment.shared.remove()
                 GVUserDefaults.standard().removeUserInfo()
-//                _ = LoginCoordinator(str: model.msg).start().subscribe()
+                _ = LoginCoordinator(str: model.msg).start().subscribe()
 //                let appCoordinator = AppCoordinator(window: UIApplication.shared.keyWindow!)
 //                _ = appCoordinator.start()
 //                    .subscribe()
@@ -532,7 +670,7 @@ func apiRequset(_ a: Any) -> Single<LFResponseModel> {
             se(.error(e))
             var str = e.localizedDescription
             if ne.code == 6 {
-                str = "请检查您的网络设置"
+                str = "当前网络不稳定，请稍后重试"
             }
             SLFHUD.showHint(str)
         }, onCompleted: {
@@ -542,22 +680,23 @@ func apiRequset(_ a: Any) -> Single<LFResponseModel> {
         }
         return Disposables.create{
             api.dispose()
+//            SLFHUD.hide()
         }
     })
 }
 
-func apiRequsetNo(_ a: Any) -> Single<LFResponseModel> {
+func apiRequsetNo(_ a: Api) -> Single<LFResponseModel> {
     
     return Single<LFResponseModel>.create(subscribe: { (se) -> Disposable in
-        let api = apiProviderNo.rx.request(a as! Api).asObservable().share(replay: 1, scope: .forever).mapModel(LFResponseModel.self).subscribe(onNext: { (model) in
+        let api = apiProviderNo.rx.request(a).asObservable().share(replay: 1, scope: .forever).mapModel(LFResponseModel.self).subscribe(onNext: { (model) in
             if model.code == 0 {
                 se(.success(model))
-            }else if model.code == 2 {
+            }else if model.code == 2 || model.msg == "令牌不能为空" {
 //                SLFHUD.showHint(model.msg)
                 SLFHUD.hide()
                 Environment.shared.remove()
                 GVUserDefaults.standard().removeUserInfo()
-//                _ = LoginCoordinator(str: model.msg).start().subscribe()
+                _ = LoginCoordinator(str: model.msg).start().subscribe()
                 se(.error(NSError(domain: model.msg, code: model.code, userInfo: nil)))
             }else {
                 se(.error(NSError(domain: model.msg, code: model.code, userInfo: nil)))
@@ -568,7 +707,7 @@ func apiRequsetNo(_ a: Any) -> Single<LFResponseModel> {
             se(.error(e))
             var str = e.localizedDescription
             if ne.code == 6 {
-                str = "请检查您的网络设置"
+                str = "当前网络不稳定，请稍后重试"
             }
             SLFHUD.showHint(str)
         }, onCompleted: {
@@ -578,9 +717,53 @@ func apiRequsetNo(_ a: Any) -> Single<LFResponseModel> {
         }
         return Disposables.create{
             api.dispose()
+//            SLFHUD.hide()
         }
     })
 }
+//数组
+func apiRequsetArray<T: LFResponseArrayModel>(_ a: Api, modelType: T.Type = T.self, no: Bool = false) -> Single<T> {
+    
+    let nowApiProvider = no ? apiProvider : apiProviderNo
+    
+    return Single<T>.create(subscribe: { (se) -> Disposable in
+        let api = nowApiProvider.rx.request(a).asObservable().share(replay: 1, scope: .forever).mapModel(modelType).subscribe(onNext: { (model) in
+            if model.code == 0 {
+                se(.success(model))
+            }else if model.code == 2 || model.msg == "令牌不能为空" {
+                SLFHUD.hide()
+                Environment.shared.remove()
+                GVUserDefaults.standard().removeUserInfo()
+                _ = LoginCoordinator(str: model.msg).start().subscribe()
+                se(.error(NSError(domain: model.msg, code: model.code, userInfo: nil)))
+            }else {
+                se(.success(model))
+            }
+        }, onError: { (e) in
+            let ne = e as NSError
+            SLFHUD.hide()
+            se(.error(e))
+            var str = e.localizedDescription
+            if ne.code == 6 {
+                str = "当前网络不稳定，请稍后重试"
+            }
+            SLFHUD.showHint(str)
+        }, onCompleted: {
+            //            SLFHUD.hide()
+        }) {
+            
+        }
+        return Disposables.create{
+            api.dispose()
+            //            SLFHUD.hide()
+        }
+    })
+}
+func apiRequsetArrayNo<T: LFResponseArrayModel>(_ a: Api, modelType: T.Type = T.self) -> Single<T> {
+    return apiRequsetArray(a, modelType: modelType, no: true)
+}
+
+
 //MARK: - 网络状态
 let NetworkStatus = NSNotification.Name.init(rawValue:"networkStatus")
 

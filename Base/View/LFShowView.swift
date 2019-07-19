@@ -12,7 +12,7 @@ import RxSwift
 import RxGesture
 
 ///消失通知
-let Noti_LFShowViewHidden = NSNotification.Name("Not_LFShowViewHidden")
+let Noti_LFShowViewHidden = NSNotification.Name("Noti_LFShowViewHidden")
 ///让self消失 的通知
 let Noti_LFShowViewDoHidden = NSNotification.Name("Noti_LFShowViewDoHidden")
 
@@ -29,6 +29,10 @@ class LFShowView: NSObject {
             let _backgroundView = UIView(frame: kScreen)
 //            _backgroundView.tag = 67893
 //            _backgroundView.alpha = 0.3
+            
+//            let v = UIView(frame: CGRect.init(x: tapPoint.x - 5, y: tapPoint.y - 10, width: 10, height: 10))
+//            v.backgroundColor = .red
+//            _backgroundView.addSubview(v)            
             
             UIApplication.shared.keyWindow?.addSubview(_backgroundView)
             
@@ -53,7 +57,7 @@ class LFShowView: NSObject {
                 make.top.equalTo(tapPoint.y)
                 make.left.right.equalTo(0)
                 if (contentView != nil) {
-                    make.height.equalTo(spH + contentView!.frame.size.height)
+                    make.height.equalTo(contentView!.frame.size.height)
                 }else {
                     make.height.equalTo(325)
                 }
@@ -69,12 +73,14 @@ class LFShowView: NSObject {
             }
             
             let d1 = NotificationCenter.default.rx.notification(Noti_LFShowViewDoHidden).subscribe(onNext: { (_) in
-                UIView.animate(withDuration: 0.1, animations: {
+                UIView.animate(withDuration: 0.1, delay: 0.21, options: [], animations: {
                     _backgroundView.alpha = 0
-                }) { (_) in
-                    LFShowView.hiddenView()
-                    _backgroundView.removeFromSuperview()
-                }
+                }, completion: { (b) in
+                    if b {
+                        LFShowView.hiddenView()
+                        _backgroundView.removeFromSuperview()
+                    }
+                })
                 single(.success(0))
             })
             

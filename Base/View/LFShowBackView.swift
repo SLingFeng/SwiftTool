@@ -12,6 +12,11 @@ import RxCocoa
 
 typealias lfShowBackClickIndex = (Int) -> Void
 
+///消失通知
+let Noti_LFShowBackViewHidden = NSNotification.Name("Noti_LFShowBackViewHidden")
+///让self消失 的通知
+let Noti_LFShowBackViewDoHidden = NSNotification.Name("Noti_LFShowBackViewDoHidden")
+
 class LFShowBackView: UIView {
     
     let backgroundView = UIView(frame: kScreen)
@@ -25,6 +30,19 @@ class LFShowBackView: UIView {
         self.addSubview(backgroundView)
         
         backgroundView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(hide)))
+        
+//        let d1 = NotificationCenter.default.rx.notification(Noti_LFShowViewDoHidden).subscribe(onNext: { (_) in
+//            UIView.animate(withDuration: 0.1, animations: {
+//                _backgroundView.alpha = 0
+//            }) { (_) in
+//                LFShowView.hiddenView()
+//                _backgroundView.removeFromSuperview()
+//            }
+//            single(.success(0))
+//        })
+        NotificationCenter.default.rx.notification(Noti_LFShowBackViewDoHidden).takeUntil(self.rx.deallocated).subscribe(onNext: {[weak self] (_) in
+            self?.hide()
+        }).disposed(by: rx.disposeBag)
     }
     
     required init?(coder aDecoder: NSCoder) {

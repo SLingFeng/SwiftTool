@@ -45,13 +45,13 @@ static SLFHUD * _HUD = nil;
 //}
 
 + (MBProgressHUD *)Hud {
-    UIViewController *vc = [SLFCommonTools currentViewController];
+//    UIViewController *vc = [SLFCommonTools currentViewController];
     UIView *view;
-    if (vc != nil) {
-        view = vc.view;
-    }else {
+//    if (vc != nil) {
+//        view = vc.view;
+//    }else {
         view = [[UIApplication sharedApplication].delegate window];
-    }
+//    }
     MBProgressHUD *hud = [MBProgressHUD HUDForView:view];
     if (hud == nil) {
         hud = [MBProgressHUD showHUDAddedTo:view animated:YES];

@@ -46,7 +46,7 @@ class LFAlert: NSObject {
                 alertView.addSubview(titleLabel!)
                 titleLabel!.font = UIFont.boldSystemFont(ofSize: 19)
                 titleLabel!.textAlignment = .center
-                
+                titleLabel!.numberOfLines = 3
                 titleLabel!.snp.makeConstraints({ (make) in
                     make.left.right.equalTo(0)
                     make.top.equalTo(20)
@@ -203,8 +203,15 @@ class LFAlert: NSObject {
             
             let rightBtn = UIButton(fontSize: 19, fontColor: .white, text: btnTitle)
             alertView.addSubview(rightBtn)
-            rightBtn.backgroundColor = kMainColor
+
+            rightBtn.backgroundColor = .white
             rightBtn.cornerRadius = 22
+            rightBtn.shadowOffset = CGSize(width: 0, height: 3)
+            rightBtn.shadowOpacity = 0.33
+            rightBtn.shadowRadius = 12
+            rightBtn.shadowColor = UIColor.hexAlpha(hex: "#057A26", talpha: 0.3)
+            rightBtn.setBackgroundImage(UIImage.gradient(size: CGSize(width: 160, height: 44), colors: [UIColor("#A1C73B"), UIColor("#11A23C")]), for: .normal)
+            rightBtn.setBackgroundImage(UIImage.createImage(with: UIColor("#A1C73B")), for: .highlighted)
             
             if backImg != nil {
                 alertView.snp.makeConstraints({ (make) in
@@ -212,7 +219,7 @@ class LFAlert: NSObject {
                     make.right.equalTo(-40).priorityMedium()
                     make.centerX.equalTo(_backgroundView)
                     make.centerY.equalTo(_backgroundView).offset(-50)
-                    make.size.equalTo(CGSize(width: 290, height: 370))
+                    make.size.equalTo(CGSize(width: 290, height: 320))
                 })
             }else {
                 alertView.snp.makeConstraints({ (make) in
@@ -274,7 +281,7 @@ class LFAlert: NSObject {
             
             titleLabel.snp.makeConstraints({ (make) in
                 make.left.right.equalTo(0)
-                make.bottom.equalTo(rightBtn.snp_top).offset(-25)
+                make.bottom.equalTo(rightBtn.snp_top).offset(-50)
             })
             
 //            rightBtn.snp.makeConstraints({ (make) in

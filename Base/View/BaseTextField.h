@@ -17,6 +17,7 @@ typedef enum : NSUInteger {
     BaseTextFieldEnterNumberAndCN,
     BaseTextFieldEnterNumberAndEN,
     BaseTextFieldEnterNumberD5,
+    BaseTextFieldEnterCustomize,
 } BaseTextFieldEnterType;
 
 @interface BaseTextField : UITextField
@@ -43,6 +44,8 @@ typedef enum : NSUInteger {
 @property (nonatomic, copy) void(^textFieldChange)(BaseTextField *tf);
 
 @property (nonatomic, copy) void(^textFieldEditingDidEnd)(BaseTextField *tf);
+
+@property (nonatomic, copy) NSString* regex;
 
 //Placeholder文字颜色
 - (void)setupPlaceholderColor:(UIColor *)placeholderColor;

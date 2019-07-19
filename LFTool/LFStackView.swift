@@ -85,7 +85,7 @@ class LFStackView: UIView {
                 if noLayout.count <= 0 {
                     v.snp.makeConstraints({ (make) in
                         if axis == .horizontal {
-                            make.width.equalTo(sv).multipliedBy(wh)
+                            make.width.equalTo(sv).multipliedBy(wh).priority(999)
                             make.height.equalTo(sv)
                         }
                         if axis == .vertical {

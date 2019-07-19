@@ -59,7 +59,7 @@
 -(MJRefreshAutoNormalFooter *)footerSetup {
     MJRefreshAutoNormalFooter *footer = [MJRefreshAutoNormalFooter footerWithRefreshingTarget:self refreshingAction:@selector(footerR)];
 //    footer.automaticallyChangeAlpha = YES;
-//    footer.automaticallyHidden = YES;
+    footer.automaticallyHidden = YES;
     [footer setTitle:@"点击或上拉加载更多" forState:MJRefreshStateIdle];
     [footer setTitle:@"正在加载更多的数据" forState:MJRefreshStateRefreshing];
     [footer setTitle:@"没有更多数据" forState:MJRefreshStateNoMoreData];
@@ -259,17 +259,17 @@
     }
 }
 
-- (CGFloat)verticalOffsetForEmptyDataSet:(UIScrollView *)scrollView {
-    CGFloat h = -((kScreenH - self.height) / 2);//150;
-    if (IS_IPHONE_Xs_Max || IS_IPHONE_Xr || IS_IPHONE_X || IS_IPHONE_Xs || kiPhone6Plus) {
-
-    }else if (kiPhone5 || kiPhone6) {
-        h = -80;
-    }else {
-        
-    }
-    return h;
-}
+//- (CGFloat)verticalOffsetForEmptyDataSet:(UIScrollView *)scrollView {
+//    CGFloat h = -((kScreenH - self.height) / 2);//150;
+//    if (IS_IPHONE_Xs_Max || IS_IPHONE_Xr || IS_IPHONE_X || IS_IPHONE_Xs || kiPhone6Plus) {
+//
+//    }else if (kiPhone5 || kiPhone6) {
+//        h = -80;
+//    }else {
+//        
+//    }
+//    return h;
+//}
 //-(CGFloat)spaceHeightForEmptyDataSet:(UIScrollView *)scrollView {
 //    return -300;
 //}

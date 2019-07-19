@@ -412,5 +412,6 @@ class LFSocketModel: NSObject {
     
     var client_id = ""
     
+    var userIcon = ""
     
 }

@@ -13,6 +13,7 @@ enum LFBaseRShowType {
     case top
     case middin
     case botton
+    case none
 }
 
 class LFBaseRTableViewCell: LFBaseTableViewCell {
@@ -45,6 +46,7 @@ class LFBaseRTableViewCell: LFBaseTableViewCell {
     }
     
     func changeShow(type: LFBaseRShowType) {
+        radiusView.isHidden = false
         if type == .top {
             radiusView.image = UIImage(named: "home_shape_1")
             radiusView.snp.remakeConstraints({ (make) in
@@ -68,6 +70,8 @@ class LFBaseRTableViewCell: LFBaseTableViewCell {
             radiusView.snp.makeConstraints({ (make) in
                 make.edges.equalTo(UIEdgeInsets(top: 2.3, left: 8.2, bottom: 2.3, right: 8.3))
             })
+        }else if type == .none {
+            radiusView.isHidden = true
         }
         
         

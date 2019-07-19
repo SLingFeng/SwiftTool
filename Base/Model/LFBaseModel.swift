@@ -33,7 +33,7 @@ class LFResponseModel: NSObject, HandyJSON {
      */
     var msg = ""
     
-    var data = [AnyHashable : Any]()
+    var data: [String : Any] = [String : Any]()
     
     var success: Bool = false
     

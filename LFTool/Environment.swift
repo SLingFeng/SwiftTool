@@ -10,6 +10,23 @@ import Foundation
 import KeychainAccess
 import RxSwift
 
+func doUDID() {
+    var e = Environment()
+    LFLog("star:" + e.udid!)
+    if e.udid?.empty() == true {
+        e.udid = OpenUDID.value()
+    }
+    LFLog("end:" + e.udid!)
+    //        guard let str = try! self.keychainService.get(forKey: KeychainKeys.Udid.rawValue) else {
+    //            return
+    //        }
+    //        LFLog(str)
+    //        if str.isEmpty || str == "" {
+    //            try? self.keychainService.set(key: KeychainKeys.Udid.rawValue, value: OpenUDID.value())
+    //        }
+    
+}
+
 struct Environment {
     
     static let shared = Environment()
@@ -72,15 +89,18 @@ struct Environment {
     }
     
     func setUDID() {
+        
         guard let str = try! self.keychainService.get(forKey: KeychainKeys.Udid.rawValue) else {
             return
         }
-        LFLog(str)
+        
         if str.isEmpty || str == "" {
             try? self.keychainService.set(key: KeychainKeys.Udid.rawValue, value: OpenUDID.value())
         }
         
     }
+    
+    
     
     func remove()  {
         self.keychainService.remove()

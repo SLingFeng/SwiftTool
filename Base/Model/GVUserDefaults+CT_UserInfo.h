@@ -16,35 +16,56 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, copy) NSString *edition_number;
 
-//@property (nonatomic, copy) NSString *balance;
-/////操盘金额
-//@property (nonatomic, copy) NSString *tradeMoney;
-/////保证金
-//@property (nonatomic, copy) NSString *margin;
-//
+@property (nonatomic, assign) NSInteger expertStatus;
+//积分
+@property (nonatomic, copy) NSString *integral;
+//提现须知
+@property (nonatomic, copy) NSString *withdraw_konw;
+
+@property (nonatomic, copy) NSString * integral_to_rmb;
+@property (nonatomic, copy) NSString * least_withdraw_integral;
+@property (nonatomic, copy) NSString * look_integral_level3;
+@property (nonatomic, copy) NSString * look_integral_level2;
+@property (nonatomic, copy) NSString * look_integral_level1;
+@property (nonatomic, copy) NSString * level2_level3_winrate;
+@property (nonatomic, copy) NSString * level2_level3_integral;
+@property (nonatomic, copy) NSString * level1_level2_winrate;
+@property (nonatomic, copy) NSString * apply_win_probability;
+@property (nonatomic, copy) NSString * apply_guess_num;
+@property (nonatomic, copy) NSString * expert_recommend_integral_3;
+@property (nonatomic, copy) NSString * expert_recommend_integral_2;
+@property (nonatomic, copy) NSString * expert_recommend_integral_1;
+@property (nonatomic, copy) NSString * level1_level2_integral;
+@property (nonatomic, copy) NSString * ordinary_recommend_integral;
+@property (nonatomic, copy) NSString * kefu_online;
+
+
 @property (nonatomic, copy) NSString *auditStatusStr;
 //@property (nonatomic, copy) NSString *qqStatusStr;
 //@property (nonatomic, copy) NSString *weichatStatusStr;
 /////0:未认证, 1:审核中，2:已认证，3:认证失败
 @property (nonatomic, assign) NSInteger auditStatus;
 /////0未提交
-//@property (nonatomic, assign) NSInteger bankCardStatus;
-//@property (nonatomic, copy) NSString *bankCardNumUser;
-//@property (nonatomic, copy) NSString *bankNameUser;
+@property (nonatomic, assign) NSInteger bankCardStatus;
+@property (nonatomic, copy) NSString *bankCardNumUser;
+@property (nonatomic, copy) NSString *bankNameUser;
 ////是否设置：0、已设置 1、未设置
 @property (nonatomic, assign) NSInteger pwdStatus;
 //
 //@property (nonatomic, assign) BOOL isShowLoginVC;
-//    @property (nonatomic, copy) NSString *user_phone;
+    @property (nonatomic, copy) NSString *user_phone;
 //@property (nonatomic, copy) NSString *user_auth;
-//    @property (nonatomic, copy) NSString *username;
+    @property (nonatomic, copy) NSString *username;
+    @property (nonatomic, copy) NSString *nick_name;
+    @property (nonatomic, copy) NSString *image_path;
+    @property (nonatomic, copy) NSString *uid;
 //
 //    
 //
 //@property (nonatomic, copy) NSString *web_title;
 //@property (nonatomic, copy) NSString *service_hotline;
 //@property (nonatomic, copy) NSString *work_time;
-//@property (nonatomic, copy) NSString *app_web_logo;
+@property (nonatomic, copy) NSString *app_logo;
 //@property (nonatomic, copy) NSString *trade_code;
 //@property (nonatomic, copy) NSString *flat_line;
 //@property (nonatomic, copy) NSString *notice_line;
@@ -56,10 +77,10 @@ NS_ASSUME_NONNULL_BEGIN
 ////@property (nonatomic, copy) NSString *transfer_fee;
 //@property (nonatomic, copy) NSString *stamp_tax;
 //@property (nonatomic, copy) NSString *gague_fee;
-//@property (nonatomic, copy) NSString *service_qq;
-//@property (nonatomic, copy) NSString *home_banner1;
-//@property (nonatomic, copy) NSString *home_banner2;
-//@property (nonatomic, copy) NSString *home_banner3;
+@property (nonatomic, copy) NSString *app_name;
+@property (nonatomic, copy) NSString *home_banner1;
+@property (nonatomic, copy) NSString *home_banner2;
+@property (nonatomic, copy) NSString *home_banner3;
 //@property (nonatomic, copy) NSString *android_app_down;
 //@property (nonatomic, copy) NSString *ios_app_down;
 //@property (nonatomic, copy) NSString *weixin_pay;
