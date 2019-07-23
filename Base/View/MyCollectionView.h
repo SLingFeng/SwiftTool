@@ -7,7 +7,7 @@
 
 #import <UIKit/UIKit.h>
 #import "LF_OCHead.h"
-#import "MyTableView.h"
+//#import "MyTableView.h"
 
 typedef enum : NSUInteger {
     MyCollectionViewStateNormal,//正常状态
@@ -49,7 +49,7 @@ typedef enum : NSUInteger {
  */
 @property (copy, nonatomic) void(^stateOnClickBlock)(void);
 
-@property (assign, nonatomic) MyTableViewStatus cState;
+@property (assign, nonatomic) MyCollectionViewState cState;
 #pragma mark -
 /**
  设置头刷新（必须先调用
