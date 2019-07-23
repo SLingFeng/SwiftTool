@@ -10,7 +10,7 @@ import UIKit
 
 class LFCollectionViewController: LFBaseViewController, UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
 
-    var collectionView: UICollectionView!
+    var collectionView: MyCollectionView!
     
     
     override func viewDidLoad() {
@@ -24,7 +24,7 @@ class LFCollectionViewController: LFBaseViewController, UICollectionViewDelegate
         let layout = UICollectionViewFlowLayout()
         layout.scrollDirection = (direction)
         
-        collectionView = UICollectionView(frame: CGRect(x: 0, y: 0, width: 0, height: 0), collectionViewLayout: layout)
+        collectionView = MyCollectionView(frame: CGRect(x: 0, y: 0, width: 0, height: 0), collectionViewLayout: layout)
         collectionView.delegate = self
         collectionView.dataSource = self
         collectionView.backgroundColor = .white

@@ -18,7 +18,7 @@ class LFBaseRTableViewController: LFBaseTableViewController {
     }
     
     
-    func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
+    override func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
 
         let cell = cell as? LFBaseRTableViewCell
 
@@ -70,7 +70,7 @@ class LFBaseLineRTableViewController: LFBaseTableViewController {
     }
     
     
-    func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
+    override func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
         
         let cell = cell as? LFBaseLineRTableViewCell
         

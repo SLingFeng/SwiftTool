@@ -39,7 +39,8 @@ class LFBaseTableViewController: LFBaseViewController, UITableViewDelegate, UITa
         self.tableView.estimatedSectionHeaderHeight = 0;
         self.tableView.estimatedSectionFooterHeight = 0;
         self.tableView.estimatedRowHeight = 0
-
+        tableView.loadImage = UIImage(named: "me_img_none")
+        tableView.loadTitle = "暂无数据"
     }
     
     func numberOfSections(in tableView: UITableView) -> Int {
@@ -75,6 +76,14 @@ class LFBaseTableViewController: LFBaseViewController, UITableViewDelegate, UITa
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        
+    }
+    
+    func tableView(_ tableView: UITableView, viewForFooterInSection section: Int) -> UIView? {
+        return nil
+    }
+    
+    func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
         
     }
     
