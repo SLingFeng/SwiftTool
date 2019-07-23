@@ -54,7 +54,7 @@ class LFTool: NSObject {
         return isX
     }
     
-    public class func scale(num: Float) -> Float {
+    public class func scale(num: CGFloat) -> CGFloat {
         var f = num
         
         //判断iPHoneXr

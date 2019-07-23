@@ -102,10 +102,10 @@ static SLFHUD * _HUD = nil;
 }
 
 + (void)showLoading {
-    MBProgressHUD * hud = [SLFHUD Hud];
+    MBProgressHUD * hud;// = [SLFHUD Hud];
 //    if (hud == nil) {
-//        UIView *view = [[UIApplication sharedApplication].delegate window];
-//        hud = [MBProgressHUD showHUDAddedTo:view animated:YES];
+        UIView *view = [[UIApplication sharedApplication].delegate window];
+        hud = [MBProgressHUD showHUDAddedTo:view animated:YES];
 //    }
     [hud showAnimated:YES];
     [hud hideAnimated:YES afterDelay:30];
