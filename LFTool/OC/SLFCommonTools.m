@@ -1166,7 +1166,7 @@ static SLFCommonTools * tools = nil;
     NSString * str = [NSString stringWithFormat:@"%f", timeTemp];
     NSDate * beDate;
     if (str.length > 11) {
-        beDate = [NSDate dateWithTimeIntervalInMilliSecondSince1970:timeTemp];
+        beDate = [SLFCommonTools dateWithTimeIntervalInMilliSecondSince1970:timeTemp];
     }else {
         beDate = [NSDate dateWithTimeIntervalSince1970:timeTemp];
     }
@@ -1174,6 +1174,7 @@ static SLFCommonTools * tools = nil;
     [df setDateFormat:mart];
     return [df stringFromDate:beDate];
 }
+
 + (NSDate *)dateWithTimeIntervalInMilliSecondSince1970:(double)timeIntervalInMilliSecond {
     NSDate *ret = nil;
     double timeInterval = timeIntervalInMilliSecond;
@@ -1827,6 +1828,10 @@ static SLFCommonTools * tools = nil;
 
 
 
-
++ (NSString *)_859ToUTF8:(NSString *)oldStr {
+    NSStringEncoding enc = CFStringConvertEncodingToNSStringEncoding(kCFStringEncodingISOLatin1);
+//    const char * s = [oldStr cStringUsingEncoding:enc];
+    return [NSString stringWithUTF8String:[oldStr cStringUsingEncoding:enc]];
+}
 
 @end

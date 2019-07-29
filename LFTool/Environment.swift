@@ -64,7 +64,7 @@ struct Environment {
     }
     
     var tokenExists: Bool {
-        if token!.isEmpty {
+        if token?.empty() ?? true {
             return false
         }
         return true
@@ -76,14 +76,18 @@ struct Environment {
 
     func isLogin() -> Observable<Bool>  {
         return Observable<Bool>.create({(observer) -> Disposable in
-            guard let _ = try! self.keychainService.get(forKey: KeychainKeys.Token.rawValue) else {
+            guard let s = try! self.keychainService.get(forKey: KeychainKeys.Token.rawValue) else {
                 observer.onNext(false)
                 observer.onCompleted()
-                return Disposables.create()
+                return Disposables.create {
+                    
+                }
             }
-             observer.onNext(true)
+            observer.onNext(!s.empty())
              observer.onCompleted()
-            return Disposables.create()
+            return Disposables.create {
+                
+            }
         })
         
     }
