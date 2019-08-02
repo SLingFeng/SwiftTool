@@ -12,10 +12,13 @@ class LFCountDownView: UIView {
 
     let cd = CountDown()
     
-    let dayLabel =  UILabel(fontSize: 17, fontColor: .white, text: "00")
+    let dayLabel =  UILabel(fontSize: 17, fontColor: .white, text: "0")
     let hourLabel =  UILabel(fontSize: 17, fontColor: .white, text: "00")
     let minuteLabel =  UILabel(fontSize: 17, fontColor: .white, text: "00")
     let secondLabel =  UILabel(fontSize: 17, fontColor: .white, text: "00")
+    
+    typealias endBlock = () -> ()
+    var timeEndBlock: endBlock?
     
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -27,19 +30,23 @@ class LFCountDownView: UIView {
             make.top.equalTo(self)
             make.width.equalTo(30)
             make.height.equalTo(self)
-            
+
         })
         hourLabel.snp_makeConstraints({ make in
+            make.centerY.equalTo(self)
+            make.top.equalTo(self)
+            make.width.equalTo(30)
+            make.height.equalTo(self)
             make.left.equalTo(dayLabel.snp_right).offset(0)
-            make.size.equalTo(self.dayLabel)
+//            make.size.equalTo(self.dayLabel)
         })
         minuteLabel.snp_makeConstraints({ make in
             make.left.equalTo(hourLabel.snp_right).offset(0)
-            make.size.equalTo(self.dayLabel)
+            make.size.equalTo(self.hourLabel)
         })
         secondLabel.snp_makeConstraints({ make in
             make.left.equalTo(minuteLabel.snp_right).offset(0)
-            make.size.equalTo(self.dayLabel)
+            make.size.equalTo(self.hourLabel)
         })
     }
     
@@ -60,10 +67,17 @@ class LFCountDownView: UIView {
     }
     
     func refreshUIDay(_ day: Int, hour: Int, minute: Int, second: Int) {
+        if day == 0 && hour == 0 && minute == 0 && second == 0 {
+            if timeEndBlock != nil {
+                timeEndBlock!()
+            }
+        }
+//        var tHour = hour
         if day == 0 {//天
-            dayLabel.text = "0:"
+            dayLabel.text = ""
         } else {
-            dayLabel.text = String(format: "%ld:", day)
+            dayLabel.text = String(format: "%ld天", day)
+//            tHour += (day * 24)
         }
         if hour < 10 && hour != 0 {//小时
             hourLabel.text = String(format: "0%ld:", hour)

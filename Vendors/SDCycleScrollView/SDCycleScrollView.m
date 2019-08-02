@@ -42,7 +42,7 @@ NSString * const ID = @"cycleCell";
 
 @interface SDCycleScrollView () <UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout>
 
-@property (nonatomic, weak) UICollectionViewFlowLayout *flowLayout;
+
 @property (nonatomic, strong) NSArray *imagePathsGroup;
 @property (nonatomic, weak) NSTimer *timer;
 @property (nonatomic, assign) NSInteger totalItemsCount;
@@ -134,9 +134,11 @@ NSString * const ID = @"cycleCell";
     UICollectionViewFlowLayout *flowLayout = [[UICollectionViewFlowLayout alloc] init];
     flowLayout.minimumLineSpacing = 0;
     flowLayout.scrollDirection = UICollectionViewScrollDirectionHorizontal;
+//    flowLayout.minimumInteritemSpacing = 30;
+    
     _flowLayout = flowLayout;
     
-    UICollectionView *mainView = [[UICollectionView alloc] initWithFrame:self.bounds collectionViewLayout:flowLayout];
+    UICollectionView *mainView = [[UICollectionView alloc] initWithFrame:CGRectMake(0, 10, self.bounds.size.width, self.bounds.size.height - 10) collectionViewLayout:flowLayout];
     mainView.backgroundColor = [UIColor clearColor];
     mainView.pagingEnabled = YES;
     mainView.showsHorizontalScrollIndicator = NO;
@@ -477,7 +479,8 @@ NSString * const ID = @"cycleCell";
         _flowLayout.itemSize = CGSizeMake(MaxWidth, MaxHeight);
     }
     
-    _mainView.frame = self.bounds;
+//    _mainView.frame = self.bounds;
+    _mainView.frame = CGRectMake(0, 10, self.bounds.size.width, self.bounds.size.height - 10);
     
     if (_mainView.contentOffset.x == 0 &&  _totalItemsCount) {
         int targetIndex = 0;
@@ -500,31 +503,37 @@ NSString * const ID = @"cycleCell";
     self.contentOffsetX = self.mainView.contentOffset.x;
     
     CGSize size = CGSizeZero;
-//    if ([self.pageControl isKindOfClass:[EllipsePageControl class]]) {
-////        EllipsePageControl *pageControl = (EllipsePageControl *)_pageControl;
+    if ([self.pageControl isKindOfClass:[EllipsePageControl class]]) {
+        EllipsePageControl *pageControl = (EllipsePageControl *)_pageControl;
 ////        if (!(self.pageDotImage && self.currentPageDotImage && CGSizeEqualToSize(kCycleScrollViewInitialPageControlDotSize, self.pageControlDotSize))) {
 ////            pageControl.dotSize = self.pageControlDotSize;
 ////        }
-////        size = [pageControl sizeForNumberOfPages:self.imagePathsGroup.count];
+        size = CGSizeMake((self.pageControlDotSize.width + pageControl.controlSpacing) * self.imagePathsGroup.count - pageControl.controlSpacing , self.pageControlDotSize.height);
+//        size = [pageControl sizeForNumberOfPages:self.imagePathsGroup.count];
 //        size = self.pageControlDotSize;
-//    } else {
+    } else {
         size = CGSizeMake(self.imagePathsGroup.count * self.pageControlDotSize.width * 1.5, self.pageControlDotSize.height);
-//    }
+    }
     CGFloat x = (self.sd_width - size.width) * 0.5;
     if (self.pageControlAliment == SDCycleScrollViewPageContolAlimentRight) {
-        x = self.mainView.sd_width - size.width - 10;
+        x = self.mainView.sd_width - size.width;
     }
-    CGFloat y = self.mainView.sd_height - size.height - 10;
+    CGFloat y = self.mainView.sd_height - size.height;
     
     if ([self.pageControl isKindOfClass:[EllipsePageControl class]]) {
         EllipsePageControl *pageControl = (EllipsePageControl *)_pageControl;
         [pageControl sizeToFit];
     }
-    
+
     CGRect pageControlFrame = CGRectMake(x, y, size.width, size.height);
     pageControlFrame.origin.y -= self.pageControlBottomOffset;
     pageControlFrame.origin.x -= self.pageControlRightOffset;
     self.pageControl.frame = pageControlFrame;
+//    [self.pageControl mas_remakeConstraints:^(MASConstraintMaker *make) {
+//        make.centerX.equalTo(self);
+//        make.top.offset(y);
+//        make.width.offset(100);
+//    }];
     self.pageControl.hidden = !_showPageControl;
     
     if (self.backgroundImageView) {

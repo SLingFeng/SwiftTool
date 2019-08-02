@@ -17,7 +17,7 @@ class CT_ExpandView: UIView {
         var last: UILabel?
         for i in 0..<titles.count {
             
-            let t = UILabel(fontSize: 16, fontColor: k333333, text: titles[i])
+            let t = UILabel(fontSize: 16, fontColor: k1A1A1A, text: titles[i])
             self.addSubview(t)
             
             let tw = SLFCommonTools.textSize(t.text, font: t.font).width + 1
@@ -45,7 +45,7 @@ class CT_ExpandView: UIView {
                     })
                 }
             }else {
-                let s = UILabel(fontSize: 16, fontColor: k666666, text: subs[i])
+                let s = UILabel(fontSize: 16, fontColor: k393939, text: subs[i])
                 self.addSubview(s)
                 s.tag = i + 20
                 s.textAlignment = .right

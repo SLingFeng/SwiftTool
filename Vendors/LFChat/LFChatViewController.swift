@@ -101,11 +101,11 @@ class LFChatViewController: LFBaseViewController, ChatDataSource, UITextFieldDel
         
         oldOffsetY = tableView.contentOffset.y
         
-        toolBarView.imageBtn.rx.tap.subscribe(onNext: {[weak self] (_) in
-            if let strongSelf = self {
-                strongSelf.showSheet()
-            }
-        }).disposed(by: dig)
+//        toolBarView.imageBtn.rx.tap.subscribe(onNext: {[weak self] (_) in
+//            if let strongSelf = self {
+//                strongSelf.showSheet()
+//            }
+//        }).disposed(by: dig)
         
         selImgSubject.subscribe(onNext: {[weak self] (img) in
             if let strongSelf = self {

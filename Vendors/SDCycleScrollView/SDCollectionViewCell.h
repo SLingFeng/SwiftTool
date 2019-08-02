@@ -34,8 +34,8 @@
 
 #define MaxWidth (Screen_Width-30)
 #define MinWidth (Screen_Width-40)
-#define MaxHeight 153
-#define MinHeight 138
+#define MaxHeight [SLFCommonTools scale:140]
+#define MinHeight [SLFCommonTools scale:128]
 #define Screen_Width [[UIScreen mainScreen] bounds].size.width
 #define Screen_Height [[UIScreen mainScreen] bounds].size.height
 

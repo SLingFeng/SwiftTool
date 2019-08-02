@@ -14,6 +14,9 @@ class Message {
     var name = ""
     var text = ""
     var avatar = ""
+    var image: UIImage?
+    var imageUrl: URL?
+    var imageView: UIImageView?
     
     var time: String = {
         let calender = Calendar(identifier: .gregorian)
@@ -30,4 +33,27 @@ class Message {
         self.avatar = avatar
         self.name = name
     }
+    
+    init(incoming: Bool, image: UIImage?, avatar: String, name: String) {
+        self.incoming = incoming
+        self.image = image
+        self.avatar = avatar
+        self.name = name
+    }
+    
+    init(incoming: Bool, imageUrl: URL?, avatar: String, name: String) {
+        self.incoming = incoming
+        self.imageUrl = imageUrl
+        imageView = UIImageView()
+        imageView!.layer.cornerRadius = 7.0
+        imageView!.layer.masksToBounds = true
+        imageView!.contentMode = .scaleAspectFit
+        imageView!.sd_setImage(with: imageUrl) {[weak self] (image, e, type, url) in
+            self?.image = image
+        }
+        self.avatar = avatar
+        self.name = name
+    }
+    
+    
 }

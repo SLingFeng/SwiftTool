@@ -9,7 +9,7 @@
 import UIKit
 import RxCocoa
 import RxSwift
-//import PPStickerInputView
+import HandyJSON
 
 
 enum AnimateType {
@@ -19,7 +19,7 @@ enum AnimateType {
 }
 
 class ChatViewController: LFBaseViewController, UITableViewDelegate, UITableViewDataSource, UITextViewDelegate, LFSocketDelegate, PPStickerInputViewDelegate {
-    
+//
     let toolBarHeight: CGFloat = 56
     let fitBlank: CGFloat = 15
     let SCREEN_WIDTH = UIScreen.main.bounds.size.width
@@ -44,10 +44,14 @@ class ChatViewController: LFBaseViewController, UITableViewDelegate, UITableView
     var animateOption: UIView.AnimationOptions = []
     var oldOffsetY: CGFloat = 0
     var isKeyboardShowed = false
+    var isEmojiKeyboardShowed = false
 
     let socket = LFSocket.shared
     
     let selImgSubject = PublishSubject<UIImage>()
+    
+    //聊天图片上传
+    let chatVM = CT_VerifiedVM()
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -103,21 +107,61 @@ class ChatViewController: LFBaseViewController, UITableViewDelegate, UITableView
         
         oldOffsetY = chatTableView.contentOffset.y
         
+        
         toolBarView.imageBtn.rx.tap.subscribe(onNext: {[weak self] (_) in
             if let strongSelf = self {
+//                strongSelf.toolBarView.textView.resignFirstResponder()
+//                strongSelf.view.endEditing(true)
+//                strongSelf.hideKeyboard()
                 strongSelf.showSheet()
+            }
+        }).disposed(by: dig)
+        
+        toolBarView.sendBtn.rx.tap.subscribe(onNext: {[weak self] (_) in
+            if let strongSelf = self {
+                if !strongSelf.toolBarView.textView.text.empty() {
+                    let s = NSAttributedString(string: strongSelf.toolBarView.textView.text!)
+                    strongSelf.socket.send(["type" : "say", "from_client_id" : strongSelf.socket.model.client_id, "to_client_id" : "all/client_id", "content" : s])
+                    strongSelf.toolBarView.textView.text = ""
+                }
             }
         }).disposed(by: dig)
         
         selImgSubject.subscribe(onNext: {[weak self] (img) in
             if let strongSelf = self {
+                CT_VerifiedVM.upLoadImgMsg(api: Api.user_uploadImg(img: strongSelf.chatVM.chatImage!, name: "chatImage")).subscribe(onNext: { (str) in
+                    
+//                }, onError: <#T##((Error) -> Void)?##((Error) -> Void)?##(Error) -> Void#>, onCompleted: <#T##(() -> Void)?##(() -> Void)?##() -> Void#>, onDisposed: <#T##(() -> Void)?##(() -> Void)?##() -> Void#>)
+                    if let strongSelf = self {
+                        if !str.empty() {
+//                            strongSelf.socket.send(["type" : "say", "from_client_id" : strongSelf.socket.model.client_id, "to_client_id" : "all/client_id", "pic" : str, "content" : "", "face" : ""])
+                            let m = LFSocketSendModel()
+                            m.type = "say"
+                            m.from_client_id = strongSelf.socket.model.client_id
+                            m.pic = str
+                            strongSelf.socket.send(m)
+                        }
+                    }
+                }).disposed(by: strongSelf.dig)
+                
+//                let m = Message(incoming: false, image: img, avatar: GVUserDefaults.standard().image_path, name: GVUserDefaults.standard().nick_name)
+//                strongSelf.msgList.append(m)
+//                strongSelf.reloadTableView()
 //                let second =  MessageItem(image:img,user:strongSelf.me, date:Date(), mtype:.mine)
 //                strongSelf.Chats.append(second)
 //                strongSelf.reloadTableView()
             }
         }).disposed(by: dig)
+        
         socket.initSocket()
-        socket.send(["type" : "login", "client_name" : GVUserDefaults.standard().nick_name, "room_id" : "1", "token" : Environment().token!])
+        
+        let m = LFSocketSendModel()
+        m.type = "login"
+        m.from_client_id = socket.model.client_id
+        m.token = Environment().token!
+        m.client_name = GVUserDefaults.standard().nick_name
+        socket.send(m)
+//        socket.send(["type" : "login", "client_name" : GVUserDefaults.standard().nick_name, "room_id" : "1", "token" : Environment().token!])
     }
     
     override func viewDidDisappear(_ animated: Bool) {
@@ -156,8 +200,22 @@ class ChatViewController: LFBaseViewController, UITableViewDelegate, UITableView
         let cell = ChatTextCell(style: .default, reuseIdentifier: "chat")
         let message = msgList[indexPath.row]
         cell.setUpWithModel(message: message)
+        
+        cell.cellChange = {[weak cell] in
+            cell?.setNeedsLayout()
+//            tableView.visibleCells.forEach({ (tc) in
+//                if tc == cell {
+                    tableView.reloadRows(at: [indexPath], with: .automatic)
+//                }
+//            })
+            
+        }
         return cell
     }
+    
+//    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+//        return tableView .cellHeight(for: indexPath, cellContentViewWidth: kScreenW, tableView: tableView)
+//    }
     
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
         if scrollView.contentOffset.y > oldOffsetY {
@@ -190,28 +248,75 @@ class ChatViewController: LFBaseViewController, UITableViewDelegate, UITableView
             //            msgList.append(messageOut)
             //            let messageIn = Message(incoming: true, text: msgText, avatar: "chris")
             //            msgList.append(messageIn)
-            socket.send(["type" : "say", "from_client_id" : socket.model.client_id, "to_client_id" : "all/client_id", "content" : textView.text!])
+//                        toolBarView.sendBtn.isEnabled = true
+            let m = LFSocketSendModel()
+            m.type = "say"
+            m.from_client_id = socket.model.client_id
+            m.content = textView.text
+//            socket.send(["type" : "say", "from_client_id" : socket.model.client_id, "to_client_id" : "all/client_id", "content" : textView.text!])
+            socket.send(m)
             textView.text = ""
+
             return false
         }
         
         return true
     }
     
-    func stickerInputViewDidClickSendButton(_ inputView: PPStickerInputView!) {
-        
-        let text = inputView.plainText
-        if text?.count == 0 {
+    func textViewDidChange(_ textView: UITextView) {
+        if textView.text.empty() {
+//            toolBarView.sendBtn.isEnabled = true
+            toolBarView.sendBtn.alpha = 0.5
+        }else {
+//            toolBarView.sendBtn.isEnabled = false
+            toolBarView.sendBtn.alpha = 1
+        }
+    }
+    //MARK:
+    func stickerInputViewDidClickEmoji(_ emojiStr: String!, inputView: PPStickerInputView!) {
+        if emojiStr.empty() {
             return
         }
+//        socket.send(["type" : "say", "from_client_id" : socket.model.client_id, "to_client_id" : "all/client_id", "content" : emojiStr])
+        let m = LFSocketSendModel()
+        m.type = "say"
+        m.from_client_id = socket.model.client_id
+        m.face = emojiStr
+        socket.send(m)
+        inputView.textView.text = ""
+    }
+    func stickerInputViewDidClickSendButton(_ inputView: PPStickerInputView!) {
+
+        let text = inputView.plainText
+        if text?.count == 0 {
+//            toolBarView.sendBtn.isEnabled = true
+            toolBarView.sendBtn.alpha = 0.5
+            return
+        }
+//        toolBarView.sendBtn.isEnabled = false
+        toolBarView.sendBtn.alpha = 1
         
-        let s = NSAttributedString(string: text!)
-        LFLog(s)
-        
+//        let s = NSAttributedString(string: text!)
+//        LFLog(s)
+//        socket.send(["type" : "say", "from_client_id" : socket.model.client_id, "to_client_id" : "all/client_id", "content" : text!])
+        let m = LFSocketSendModel()
+        m.type = "say"
+        m.from_client_id = socket.model.client_id
+        m.face = text!
+        socket.send(m)
+        inputView.textView.text = ""
     }
     
     func stickerInputViewDidChange(_ inputView: PPStickerInputView!) {
-        LFLog(inputView)
+        LFLog(inputView.textView.inputView)
+        
+        isEmojiKeyboardShowed = true
+        
+        let keyBoardHeight = inputView.textView.inputView?.size.height ?? 0
+        mKeyBoardHeight = keyBoardHeight - LFTool.Height_HomeBar()
+        inputView.textView.becomeFirstResponder()
+        // 得到键盘高度
+        
 //        let keyBoardHeight = inputView.frame.size.height - 56
 //        mKeyBoardHeight = (keyBoardHeight - LFTool.Height_HomeBar())
 //
@@ -241,7 +346,7 @@ class ChatViewController: LFBaseViewController, UITableViewDelegate, UITableView
         let keyBoardRect = value.cgRectValue
         // 得到键盘高度
         let keyBoardHeight = keyBoardRect.size.height
-        mKeyBoardHeight = keyBoardHeight
+        mKeyBoardHeight = keyBoardHeight - LFTool.Height_HomeBar()
         // 得到键盘弹出所需时间
         let duration = userInfo[UIResponder.keyboardAnimationDurationUserInfoKey] as! NSNumber
         mKeyBoardAnimateDuration = duration.doubleValue
@@ -250,6 +355,10 @@ class ChatViewController: LFBaseViewController, UITableViewDelegate, UITableView
     }
     
     func showKeyboard() {
+        
+//        var selfFrame = self.view.frame
+//        let textViewHeight = isEmojiKeyboardShowed ? self.toolBarView.heightThatFits() : mKeyBoardHeight
+        
         var animate: (()->Void) = {
             self.toolBarView.transform = CGAffineTransform(translationX: 0, y: -self.mKeyBoardHeight)
         }
@@ -263,6 +372,10 @@ class ChatViewController: LFBaseViewController, UITableViewDelegate, UITableView
             let distance1 = SCREEN_HEIGHT - toolBarHeight - mKeyBoardHeight - LFTool.Height_HomeBar()
             let distance2 = SCREEN_HEIGHT - toolBarHeight - 2 * fitBlank
             let difY = cellDistance - distance1
+            
+            NSLog("showKeyboard:%f--", self.view.transform.ty)
+            
+//            selfFrame.size.height = distance1
             
             if cellDistance <= distance1 {
                 animate = {
@@ -278,7 +391,9 @@ class ChatViewController: LFBaseViewController, UITableViewDelegate, UITableView
                 animateType = .animate2
             } else {
                 animate = {
+//                    self.view.transform = CGAffineTransform.identity
                     self.view.transform = CGAffineTransform(translationX: 0, y: -self.mKeyBoardHeight)
+//                    self.view.frame = selfFrame
                 }
                 animateType = .animate3
             }
@@ -302,7 +417,7 @@ class ChatViewController: LFBaseViewController, UITableViewDelegate, UITableView
             var animate: (() -> Void) = {
                 
             }
-            
+            NSLog("hideKeyboard:%f--", self.view.transform.ty)
             // 返回 view 或 toolBarView 或 chatTableView 到原有状态
             switch animateType {
             case .animate1:
@@ -324,9 +439,9 @@ class ChatViewController: LFBaseViewController, UITableViewDelegate, UITableView
             
             UIView.animate(withDuration: mKeyBoardAnimateDuration, delay: 0, options: options, animations: animate, completion: { (finish) in
                 if finish {
-                self.scrollToBottom()
-                self.oldOffsetY = self.chatTableView.contentOffset.y
-                self.isKeyboardShowed = false
+                    self.scrollToBottom()
+                    self.oldOffsetY = self.chatTableView.contentOffset.y
+                    self.isKeyboardShowed = false
                 }
             })
         }
@@ -378,24 +493,29 @@ class ChatViewController: LFBaseViewController, UITableViewDelegate, UITableView
                 scrollToBottom(animated: animated)
             }
         }
-        LFLog("end lastDifY:\(lastDifY)")
+//        LFLog("end lastDifY:\(lastDifY)")
     }
     
     // 滚动最后一条消息到列表界面底部
     func scrollToBottom(animated: Bool = true) {
         if msgList.count > 0 {
+            CATransaction.begin() // 1
+            CATransaction.setDisableActions(true) // 2 关闭layer隐式动画
+
             chatTableView.scrollToRow(at: IndexPath(row: msgList.count - 1, section: 0), at: .bottom, animated: animated)
+            
+            CATransaction.commit() // 3
         }
     }
     
     // 清空消息
-    @objc func clearMessage() {
-        removeKeyBoard()
-        msgList.removeAll()
-        chatTableView.reloadData()
-        animateType = .animate1
-        lastDifY = 0
-    }
+//    @objc func clearMessage() {
+//        removeKeyBoard()
+//        msgList.removeAll()
+//        chatTableView.reloadData()
+//        animateType = .animate1
+//        lastDifY = 0
+//    }
     
     // 点击消息列表键盘消失
     @objc func tapRemoveBottomView(recognizer: UITapGestureRecognizer) {
@@ -415,7 +535,93 @@ class ChatViewController: LFBaseViewController, UITableViewDelegate, UITableView
     func lfSocketDidReceiveMessage(_ message: Any?) {
         //        LFLog(message)
         
+        
         if let data = message as? NSDictionary {
+            if let model = BF_ChatDataModel.deserialize(from: data) {
+                switch model.type {
+                case "ping":
+                    //socket.send(["type":"pong"])
+                    return
+                case "connect":
+                    let id = data["client_id"] as! String
+                    LFLog("login id \(id)")
+                    socket.model.client_id = id
+                    
+                    //                case "login":
+                    //                    let id = data["client_id"] as! String
+                    //                    LFLog("login id \(id)")
+                //                    socket.model.client_id = id
+                case "say":
+                    //                    {"type":"say","from_client_id":"7f0000010fa100000001","from_client_name":"lyl123456","to_client_id":"all","content":"\u5404\u4f4d\u597d","time":"2019-07-04 09:47:02"}
+//                    let from_client_id = data["from_client_id"] as! String
+//                    let name = (data["from_client_name"] as? String) ?? ""
+//                    let text = (data["content"] as? String) ?? ""
+//                    let time = (data["time"] as? String) ?? ""
+                    let who = model.from_client_id == socket.model.client_id ? false : true
+//                    let userImage = model.from_client_id == socket.model.client_id ? GVUserDefaults.standard().image_path : model
+                    //                    LFLog("sayid \(from_client_id)")
+                    var m: Message?
+                    if !model.content.empty() {
+                        //内容
+                        m = Message(incoming: who, text: model.content, avatar: model.image_path, name: model.nick_name)
+                    }
+                    if !model.face.empty() {
+                        //内容
+                        m = Message(incoming: who, text: model.face, avatar: model.image_path, name: model.nick_name)
+                    }
+                    if !model.pic.empty() {
+                        //内容
+                        
+                        m = Message(incoming: who, imageUrl: URL(string: model.pic), avatar: model.image_path, name: model.nick_name)
+                    }
+                    if m != nil {
+                        m!.time = model.time
+                        msgList.append(m!)
+                        reloadTableView()
+                    }
+                    
+                    //                    {"type":"say","from_client_id":"7f0000010fa200000008","from_client_name":"lyl123456","to_client_id":"all","nick_name":"\u5bd3\u610f\u6df1\u957f\u7684\u540d\u5b57","image_path":"http:\/\/cs.flyv888.com\/upload\/20190720\/be6d9cf9a026ca086269203a00664d08.png","content":"","face":"","pic":"http:\/\/cs.flyv888.com\/upload\/20190720\/d7865df701f75a4a777720058f5bb018.jpg","time":"2019-07-20 16:22:26"}
+                    
+                case "history":
+                    let x: Array<Any> = (data["data"]) as! Array<Any>
+                    if x.count != 0 {
+                        if let m = BF_ChatModel.deserialize(from: data) {
+                            m.data.forEach { (model) in
+                                let who = model.from_user_id == GVUserDefaults.standard().uid ? false : true
+                                
+//                                let m = Message(incoming: who, text: model.content, avatar: model.image_path, name: model.nick_name)
+//                                msgList.insert(m, at: 0)
+//                                let who = model.from_client_id == socket.model.client_id ? false : true
+                                //                    let userImage = model.from_client_id == socket.model.client_id ? GVUserDefaults.standard().image_path : model
+                                //                    LFLog("sayid \(from_client_id)")
+                                var message: Message?
+                                if !model.content.empty() {
+                                    //内容
+                                    message = Message(incoming: who, text: model.content, avatar: model.image_path, name: model.nick_name)
+                                }
+                                if !model.face.empty() {
+                                    //内容
+                                    message = Message(incoming: who, text: model.face, avatar: model.image_path, name: model.nick_name)
+                                }
+                                if !model.pic.empty() {
+                                    //内容
+                                    
+                                    message = Message(incoming: who, imageUrl: URL(string: model.pic), avatar: model.image_path, name: model.nick_name)
+                                }
+                                if message != nil {
+                                    message!.time = SLFCommonTools.timestamp(Double(model.create_time) ?? 0, formart: "YYYY-MM-dd hh:mm:ss")
+                                    msgList.insert(message!, at: 0)
+//                                    msgList.append(message!)
+//                                    reloadTableView()
+                                }
+                            }
+                        }
+                        reloadTableView(animated: false)
+                    }
+                default:
+                    break
+                }
+            }
             //{"code":0,"msg":"connected","data":{"client_id":"7f0000010fa000000001"}}//自己登录
 //            let my = data["msg"] as? String
 //            if my == "connected" {
@@ -423,53 +629,11 @@ class ChatViewController: LFBaseViewController, UITableViewDelegate, UITableView
 //                socket.model.client_id = id
 //            }
             //{"type":"login","client_id":"7f0000010fa700000002","client_name":"ch","time":"2019-07-03 18:25:20","client_list":{"7f0000010fa600000001":"ch","7f0000010fa600000002":"lf","7f0000010fa700000002":"ch"}}
-            if let type = data["type"] as? String {
-                
-                switch type {
-                case "ping":
-                    //                    socket.send(["type":"pong"])
-                    return
-                case "connect":
-                    let id = data["client_id"] as! String
-                    LFLog("login id \(id)")
-                    socket.model.client_id = id
-                    
-                case "login":
-                    let id = data["client_id"] as! String
-                    LFLog("login id \(id)")
-                    socket.model.client_id = id
-                case "say":
-                    //                    {"type":"say","from_client_id":"7f0000010fa100000001","from_client_name":"lyl123456","to_client_id":"all","content":"\u5404\u4f4d\u597d","time":"2019-07-04 09:47:02"}
-                    let from_client_id = data["from_client_id"] as! String
-                    let name = (data["from_client_name"] as? String) ?? ""
-                    let text = (data["content"] as? String) ?? ""
-                    let time = (data["time"] as? String) ?? ""
-                    let who = from_client_id == socket.model.client_id ? false : true
-                    //                    LFLog("sayid \(from_client_id)")
-                    let m = Message(incoming: who, text: text, avatar: GVUserDefaults.standard().image_path, name: name)
-                    m.time = time
-                    msgList.append(m)
-                    reloadTableView()
-                    
-                case "history":
-                    let x: Array<Any> = (data["data"]) as! Array<Any>
-                    if x.count != 0 {
-                    if let m = BF_ChatModel.deserialize(from: data) {
-                        m.data.forEach { (model) in
-                            let who = model.from_user_id == GVUserDefaults.standard().uid ? false : true
-                            
-                            let m = Message(incoming: who, text: model.content, avatar: model.image_path, name: model.nick_name)
-                            m.time = SLFCommonTools.timestamp(Double(model.create_time) ?? 0, formart: "YYYY-dd-MM hh:mm:ss")
-                            msgList.insert(m, at: 0)
-                        }
-                    }
-                    reloadTableView(animated: false)
-                    }
-                default:
-                    break
-                }
-                
-            }
+//            if let type = data["type"] as? String {
+//
+//
+//
+//            }
             
             
         }
@@ -491,11 +655,14 @@ class ChatViewController: LFBaseViewController, UITableViewDelegate, UITableView
             ac.addAction(UIAlertAction(title: "拍照", style: .default) { [weak self](_) in
                 if let strongSelf = self {
                     UIImagePickerController.rx.createWithParent(strongSelf) { picker in
-                        picker.sourceType = .photoLibrary
+                        picker.sourceType = .camera
                         //picker.allowsEditing = true
                         }
                         .flatMap { $0.rx.didFinishPickingMediaWithInfo }.map { info -> UIImage in
                             let img = info["UIImagePickerControllerOriginalImage"] as! UIImage
+                            if let strongSelf = self {
+                                strongSelf.chatVM.chatImage = img.jpegData(compressionQuality: 0.1)
+                            }
                             return img
                         }
                         .subscribe(onNext: { (img) in
@@ -516,6 +683,9 @@ class ChatViewController: LFBaseViewController, UITableViewDelegate, UITableView
                     }
                     .flatMap { $0.rx.didFinishPickingMediaWithInfo }.map { info -> UIImage in
                         let img = info["UIImagePickerControllerOriginalImage"] as! UIImage
+                        if let strongSelf = self {
+                            strongSelf.chatVM.chatImage = img.jpegData(compressionQuality: 0.5)
+                        }
                         return img
                     }
                     .subscribe(onNext: { (img) in
@@ -538,3 +708,34 @@ class ChatViewController: LFBaseViewController, UITableViewDelegate, UITableView
     
 }
 
+//class ChatModel: LFBaseModel {
+//    ///Optional()
+//    var face : String = ""
+//    
+//    ///Optional(2019-07-20 16:22:26)
+//    var time : String = ""
+//    
+//    ///Optional(7f0000010fa200000008)
+//    var from_client_id : String = ""
+//    
+//    ///Optional(all)
+//    var to_client_id : String = ""
+//    
+//    ///Optional(say)
+//    var type : String = ""
+//    
+//    ///Optional(http://cs.flyv888.com/upload/20190720/d7865df701f75a4a777720058f5bb018.jpg)
+//    var pic : String = ""
+//    
+//    ///Optional(http://cs.flyv888.com/upload/20190720/be6d9cf9a026ca086269203a00664d08.png)
+//    var image_path : String = ""
+//    
+//    ///Optional()
+//    var content : String = ""
+//    
+//    ///Optional(寓意深长的名字)
+//    var nick_name : String = ""
+//    
+//    ///Optional(lyl123456)
+//    var from_client_name : String = ""
+//}

@@ -214,6 +214,7 @@
 
 - (void)setProgress:(float)progress animated:(BOOL)animated {
     if (_progress == progress) return;
+    if (progress < 0) return;
     _progress = progress > 1.0 ? 1.0 : progress < 0.0 ? 0.0 : progress;
     XDProgressLayer *layer = (XDProgressLayer *)self.layer;
     layer.progress = _progress;

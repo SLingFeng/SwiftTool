@@ -8,10 +8,15 @@
 
 import UIKit
 class ChatBaseCell: UITableViewCell {
+    
+    typealias cellChangeBlock = () -> ()
+    
     var avatarImageView: UIImageView!
     let timeLabel = UILabel(fontSize: 12, fontColor: UIColor("#A3A3A3"), text: "")
     
     let userName = UILabel(fontSize: 12, fontColor: k858585, text: "昵称")
+    
+    var cellChange: cellChangeBlock?
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
@@ -42,7 +47,7 @@ class ChatBaseCell: UITableViewCell {
         timeLabel.snp.makeConstraints { (make) in
             make.left.equalTo(10)
             make.right.equalTo(-10)
-            make.top.equalTo(10)
+            make.top.equalTo(2)
             make.height.equalTo(10)
         }
         
@@ -57,7 +62,7 @@ class ChatBaseCell: UITableViewCell {
         }
         
         userName.snp_makeConstraints({ (make) in
-            make.top.equalTo(timeLabel.snp.bottom).offset(10)
+            make.top.equalTo(timeLabel.snp.bottom).offset(17)
             if message.incoming {
                 make.left.equalTo(avatarImageView.snp.right).offset(10)
             } else {
