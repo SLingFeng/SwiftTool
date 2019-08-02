@@ -11,6 +11,8 @@ import RxSwift
 import RxCocoa
 import SDAutoLayout
 
+//let SelectViewGoTitleChange = Notification.Name("SelectViewGoTitleChange")
+
 class SelectView: UIView {
 
     let line = UIImageView()
@@ -19,6 +21,36 @@ class SelectView: UIView {
     let btnTapTwo = PublishSubject<Int>()
     var lastBtn: UIButton?
     let dig = DisposeBag()
+    
+    var isZoom = false
+    
+//    typealias GoTitleChange = (Int, String) -> ()
+//
+//    var goTitleChange: GoTitleChange!
+    
+    var noTextColor: UIColor? = k000000 {
+        didSet {
+            btnArr.forEach { (btn) in
+                if !btn.isSelected {
+                    btn.titleLabel?.textColor = noTextColor
+                }
+//                btn.setTitleColor(noTextColor, for: .normal)
+            }
+        }
+    }
+    
+    var selTextColor: UIColor? = kMainColor {
+        didSet {
+            btnArr.forEach { (btn) in
+                if btn.isSelected {
+                    btn.titleLabel?.textColor = selTextColor
+                }
+//                btn.setTitleColor(selTextColor, for: .selected)
+            }
+        }
+    }
+    
+    var selNum = 0
     
     lazy var arrowIV: UIImageView = {
         let arrowIV = UIImageView(image: UIImage(named: "score_ic_up"))
@@ -37,28 +69,46 @@ class SelectView: UIView {
     //释放显示箭头
     var isFilter: Bool = false
     //箭头只能移动到哪个为止
-    var toIndex = 0
+    var toIndex: [Bool] = []
     
-    init(frame: CGRect, titles: Array<String>) {
+    init(frame: CGRect, titles: Array<String>, isZoom: Bool = false) {
         super.init(frame: frame)
-        
+        self.isZoom = isZoom
         craetr(titles: titles)
         
+//        goTitleChange = {[weak self] num, str in
+//            self?.change(num: num, str: str)
+//        }
+        
+//        NotificationCenter.default.addObserver(self, selector: SelectViewGoTitleChange, name: <#T##NSNotification.Name?#>, object: <#T##Any?#>)
+    }
+//
+//    deinit {
+//        NotificationCenter.default.removeObserver(self)
+//    }
+//
+    func change(num: Int,str: String) {
+        let btn = btnArr[num]
+        btn.titleLabel?.attributedText = NSAttributedString(string: str)
+        btn.setAttributedTitle(NSAttributedString(string: str), for: .normal)
+        btn.setNeedsLayout()
     }
     
-    init(frame: CGRect, titles: Array<String>, isFilter: Bool, toIndex: Int) {
+    init(frame: CGRect, titles: Array<String>, isFilter: Bool, toIndex: [Bool]) {
         super.init(frame: frame)
         
         craetr(titles: titles, isFilter: isFilter, toIndex: toIndex)
         
     }
     
-    func craetr(titles: Array<String>, isFilter: Bool = false, toIndex: Int = -1) {
+    func craetr(titles: Array<String>, isFilter: Bool = false, toIndex: [Bool] = []) {
         
-        self.shadowColor = UIColor.hexAlpha(hex: "#000000", talpha: 0.37)
-        self.shadowOffset = CGSize(width: 0, height: 3)
-        self.shadowOpacity = 0.33
-        self.shadowRadius = 12
+        if !isZoom {
+            self.shadowColor = UIColor.hexAlpha(hex: "#000000", talpha: 0.37)
+            self.shadowOffset = CGSize(width: 0, height: 3)
+            self.shadowOpacity = 0.33
+            self.shadowRadius = 12
+        }
         self.backgroundColor = UIColor.white
 //        self.cornerRadius = 22
         
@@ -74,8 +124,10 @@ class SelectView: UIView {
 //        })
         
         self.addSubview(self.line)
-        self.line.backgroundColor = kMainColor
+        self.line.backgroundColor = selTextColor
         line.layer.cornerRadius = 2
+        line.layer.masksToBounds = true
+        line.image = UIImage.gradient(size: CGSize(width: 16, height: 4), colors: [UIColor("#A1C73B"), UIColor("#11A23C")])
         
         let styleTo = ["tj" : UIImage(named: "score_icon_tj")]
         
@@ -83,16 +135,22 @@ class SelectView: UIView {
         let w = (kScreenW/CGFloat(titles.count))
         for i in 0..<titles.count  {
             
-            let btn = UIButton(fontSize: 17, fontColor: k000000, text: titles[i])
+            let btn = UIButton(fontSize: 17, fontColor: noTextColor, text: titles[i])
             self.addSubview(btn)
             btn.tag = i + 10
             btnArr.append(btn)
             
             btn.setAttributedTitle(NSString(string: titles[i]).attributedString(withStyleBook: styleTo as [AnyHashable : Any]), for: .normal)
-            btn.setTitleColor(kMainColor, for: .selected)
+            btn.setTitleColor(selTextColor, for: .selected)
+            
+//            btn.titleLabel?.font = isZoom ? .boldSystemFont(ofSize: 20) : .systemFont(ofSize: 17)
 
             btn.snp.makeConstraints({ (make) in
-                make.width.equalTo(w)
+                if self.isZoom {
+                    make.width.equalTo(self).multipliedBy(1.0 / Float(titles.count))
+                }else {
+                    make.width.equalTo(w)
+                }
                 make.top.bottom.equalTo(0)
                 if i==0 {
                     make.left.equalTo(0)
@@ -103,7 +161,8 @@ class SelectView: UIView {
             
             if i==0 {
                 btn.isSelected = true
-                btn.titleLabel?.textColor = kMainColor
+                btn.titleLabel?.textColor = selTextColor
+                btn.titleLabel?.font = isZoom ? .boldSystemFont(ofSize: 20) : .systemFont(ofSize: 17)
                 self.lastBtn = btn
                 line.snp.makeConstraints({ (make) in
                     make.size.equalTo(CGSize(width: 16, height: 4))
@@ -119,7 +178,7 @@ class SelectView: UIView {
                     arrowIV.isHidden = false
                     arrowIV.snp.makeConstraints({ (make) in
                         make.size.equalTo(CGSize(width: 10, height: 7))
-                        make.centerX.equalTo(btn.snp_centerX).offset(w/4)
+                        make.centerX.equalTo(btn.snp_centerX).offset(w/4 + 10)
                         make.centerY.equalTo(btn.snp.centerY)
                     })
                     
@@ -131,15 +190,26 @@ class SelectView: UIView {
             btn.rx.tap.map{ i }.subscribe(onNext: { [weak self] n in
                 if let strongSelf = self {
                     strongSelf.lastBtn?.isSelected = false
-                    strongSelf.lastBtn?.titleLabel?.textColor = k000000
+                    strongSelf.lastBtn?.titleLabel?.textColor = strongSelf.noTextColor
+                    strongSelf.lastBtn?.titleLabel?.font = .systemFont(ofSize: 17)
+                    strongSelf.selNum = n
+                    
                     btn.isSelected = true
-                    btn.titleLabel?.textColor = kMainColor
+                    btn.titleLabel?.textColor = strongSelf.selTextColor
+                    btn.titleLabel?.font = strongSelf.isZoom ? .boldSystemFont(ofSize: 20) : .systemFont(ofSize: 17)
                     
                     UIView.animate(withDuration: 0.3, animations: {
-                        var p = strongSelf.line.center
-                        p.x = btn.centerX
-                        strongSelf.line.center = p
+                        strongSelf.line.snp.remakeConstraints({ (make) in
+                            make.size.equalTo(CGSize(width: 16, height: 4))
+                            make.bottom.equalTo(-1)
+                            make.centerX.equalTo(btn.snp.centerX)
+                        })
                     })
+//                    UIView.animate(withDuration: 0.3, animations: {
+//                        var p = strongSelf.line.center
+//                        p.x = btn.centerX
+//                        strongSelf.line.center = p
+//                    })
                     ///箭头判断
                     if isFilter {
                         if strongSelf.lastBtn?.tag == btn.tag {
@@ -150,10 +220,10 @@ class SelectView: UIView {
                             strongSelf.tapTwoNum = 0
                         }
                         
-                        if toIndex <= n || toIndex != -1 {
+                        if toIndex[n] == true {
                             //UIView.animate(withDuration: 0, animations: {
                             var p = strongSelf.arrowIV.center
-                            p.x = btn.centerX + btn.width/4
+                            p.x = btn.centerX + btn.width/4 + 10
                             p.y = btn.centerY
                             strongSelf.arrowIV.center = p
                             //})
@@ -187,29 +257,40 @@ class SelectView: UIView {
 //        btn.isSelected = true
 //        self.lastBtn = btn
 //
+        selNum = index
         self.lastBtn?.isSelected = false
-        self.lastBtn?.titleLabel?.textColor = k000000
+        self.lastBtn?.titleLabel?.textColor = noTextColor
+        self.lastBtn?.titleLabel?.font = .systemFont(ofSize: 17)
+        
         self.btnArr.forEach { (btn) in
             btn.isSelected = false
-            btn.titleLabel?.textColor = k000000
+            btn.titleLabel?.textColor = noTextColor
+            btn.titleLabel?.font = .systemFont(ofSize: 17)
         }
         let btn = btnArr[index]
         btn.isSelected = true
-        btn.titleLabel?.textColor = kMainColor
+        btn.titleLabel?.textColor = selTextColor
+        btn.titleLabel?.font = isZoom ? .boldSystemFont(ofSize: 20) : .systemFont(ofSize: 17)
 
-        
         UIView.animate(withDuration: 0.3, animations: {
-            var p = self.line.center
-            p.x = btn.centerX
-            self.line.center = p
+            self.line.snp.remakeConstraints({ (make) in
+                make.size.equalTo(CGSize(width: 16, height: 4))
+                make.bottom.equalTo(-1)
+                make.centerX.equalTo(btn.snp.centerX)
+            })
         })
+//        UIView.animate(withDuration: 0.3, animations: {
+//            var p = self.line.center
+//            p.x = btn.centerX
+//            self.line.center = p
+//        })
         
         ///箭头判断
         if isFilter {
-            if toIndex <= btn.tag - 10 || toIndex != -1 {
+            if toIndex[btn.tag - 10] == true {
 //            UIView.animate(withDuration: 0.3, animations: {
                 var p = self.arrowIV.center
-                p.x = btn.centerX + btn.width/4
+                p.x = btn.centerX + btn.width/4 + 10
                 p.y = btn.centerY
                 self.arrowIV.center = p
 //            })
@@ -245,7 +326,7 @@ class SelectScrollView: SelectView {
     var titles: Array<String> = []
     
     
-    override func craetr(titles: Array<String>, isFilter: Bool = false, toIndex: Int = -1) {
+    override func craetr(titles: Array<String>, isFilter: Bool = false, toIndex: [Bool] = []) {
         self.titles = titles
         
         self.addSubview(scroll)
@@ -274,7 +355,7 @@ class SelectScrollView: SelectView {
         //        })
         
         scroll.addSubview(self.line)
-        self.line.backgroundColor = kMainColor
+        self.line.backgroundColor = selTextColor
         line.layer.cornerRadius = 2
         
         self.addSubview(leftBtn)
@@ -305,13 +386,13 @@ class SelectScrollView: SelectView {
         let w = (kScreenW/4)
         for i in 0..<titles.count  {
             
-            let btn = UIButton(fontSize: 17, fontColor: k000000, text: titles[i])
+            let btn = UIButton(fontSize: 17, fontColor: noTextColor, text: titles[i])
             scroll.addSubview(btn)
             btn.tag = i + 10
             btnArr.append(btn)
             
             btn.setAttributedTitle(NSString(string: titles[i]).attributedString(withStyleBook: styleTo as [AnyHashable : Any]), for: .normal)
-            btn.setTitleColor(kMainColor, for: .selected)
+            btn.setTitleColor(selTextColor, for: .selected)
             
             let bx = LFTool.JGG_X(0, w, 0, CGFloat(i), CGFloat(titles.count))
             let by = LFTool.JGG_Y(0, self.frame.height, 0, i, titles.count)
@@ -328,7 +409,7 @@ class SelectScrollView: SelectView {
             
             if i==0 {
                 btn.isSelected = true
-                btn.titleLabel?.textColor = kMainColor
+                btn.titleLabel?.textColor = selTextColor
                 self.lastBtn = btn
                 line.frame = CGRect(x: 0, y: btn.bottom_sd - 7, width: 16, height: 4)
                 var p = line.center
@@ -348,7 +429,7 @@ class SelectScrollView: SelectView {
                     arrowIV.isHidden = false
                     arrowIV.snp.makeConstraints({ (make) in
                         make.size.equalTo(CGSize(width: 10, height: 7))
-                        make.centerX.equalTo(btn.snp_centerX).offset(w/4)
+                        make.centerX.equalTo(btn.snp_centerX).offset(w/4 + 10)
                         make.centerY.equalTo(btn.snp.centerY)
                     })
                     
@@ -360,9 +441,9 @@ class SelectScrollView: SelectView {
             btn.rx.tap.map{ i }.subscribe(onNext: { [weak self] n in
                 if let strongSelf = self {
                     strongSelf.lastBtn?.isSelected = false
-                    strongSelf.lastBtn?.titleLabel?.textColor = k000000
+                    strongSelf.lastBtn?.titleLabel?.textColor = strongSelf.noTextColor
                     btn.isSelected = true
-                    btn.titleLabel?.textColor = kMainColor
+                    btn.titleLabel?.textColor = strongSelf.selTextColor
                     
                     UIView.animate(withDuration: 0.3, animations: {
                         var p = strongSelf.line.center
@@ -379,10 +460,10 @@ class SelectScrollView: SelectView {
                             strongSelf.tapTwoNum = 0
                         }
                         
-                        if toIndex == n || toIndex == -1 {
+                        if toIndex[n] {
                             //UIView.animate(withDuration: 0, animations: {
                             var p = strongSelf.arrowIV.center
-                            p.x = btn.centerX + btn.width/4
+                            p.x = btn.centerX + btn.width/4 + 10
                             p.y = btn.centerY
                             strongSelf.arrowIV.center = p
                             //})
