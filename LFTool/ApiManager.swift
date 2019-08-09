@@ -18,12 +18,16 @@ import MBProgressHUD
 
 //let token = Environment().token
 //let authPlugin = AccessTokenPlugin { token ?? "" }
+#if DEBUG
 
-//let apiProvider = MoyaProvider<Api>(manager: WebService.manager(), plugins: [RequestLoadingPlugin(), AuthPlugin()])
-//let apiProviderNo = MoyaProvider<Api>(manager: WebService.manager(), plugins: [AuthPlugin()])
+let apiProvider = MoyaProvider<Api>(manager: WebService.manager(), plugins: [RequestLoadingPlugin(), AuthPlugin()])
+let apiProviderNo = MoyaProvider<Api>(manager: WebService.manager(), plugins: [AuthPlugin()])
 
+#else
 let apiProvider = MoyaProvider<Api>(plugins: [RequestLoadingPlugin(), AuthPlugin()])
 let apiProviderNo = MoyaProvider<Api>(plugins: [AuthPlugin()])
+
+#endif
 
 
 enum Api {
@@ -86,7 +90,7 @@ enum Api {
     case user_addRecommend([String : String])
     
     case user_getRecommOrder([String : String])
-    case user_getRecommList([String : String])
+    case user_getRecommList([String : Any])
     case user_getRecommInfo([String : String])
     case user_addMyFollow([String : String])
     case user_getMyRecomm([String : String])
@@ -111,7 +115,7 @@ enum Api {
     case Score_dynamic([String : String])
     case match_countHomeAE([String : String])
     case match_countAEInfo([String : String])
-    case match_getCompetitionList([String : String])
+    case match_getTeamFixturesInfo([String : String])
     case match_getAEScoreList([String : String])
     case match_getGrList([String : String])
     case match_getGameInfo([String : String])
@@ -122,6 +126,10 @@ enum Api {
     case match_getNextDayMatch([String : String])
     case match_getRAEScore([String : String])
     case Score_getFocusStatus([String : String])
+    case user_getIsApplyExpert
+    case user_getRecommLeagues([String : String])
+    case match_getEUScoreLog([String : String])
+    case user_payRecomm([String : String])
     
 }
 //cs.flyy789.com
@@ -324,8 +332,8 @@ extension Api: TargetType {
         case .match_countAEInfo:
             return "/api/match/countAEInfo"
         ///球队-赛程
-        case .match_getCompetitionList:
-            return "/api/match/getCompetitionList"
+        case .match_getTeamFixturesInfo:
+            return "/api/match/getTeamFixturesInfo"
             //7-12
         ///球队-赛程
         case .match_getAEScoreList:
@@ -360,6 +368,25 @@ extension Api: TargetType {
         ///获取关注状态
         case .Score_getFocusStatus:
             return "/api/Score/getFocusStatus"
+        ///申请专家判断
+        case .user_getIsApplyExpert:
+            return "/api/user/getIsApplyExpert"
+            
+            
+        ///筛选推介
+        case .user_getRecommLeagues:
+            return "/api/user/getRecommLeagues"
+            
+        ///欧指 变化
+        case .match_getEUScoreLog:
+            return "/api/match/getEUScoreLog"
+        ///支付专家推介
+        case .user_payRecomm:
+            return "/api/user/payRecomm"
+            
+            
+            
+            
             //MARK: - 暂无
             
            
@@ -493,7 +520,6 @@ extension Api: TargetType {
             var .match_getMatchList(par),
             var .user_getRecommOrder(par),
             var .user_getRecommInfo(par),
-            var .user_getRecommList(par),
             var .user_addMyFollow(par),
             var .user_getMyRecomm(par),
             var .user_getFollowInfo(par),
@@ -510,7 +536,7 @@ extension Api: TargetType {
             var .Score_dynamic(par),
             var .match_countHomeAE(par),
             var .match_countAEInfo(par),
-            var .match_getCompetitionList(par),
+            var .match_getTeamFixturesInfo(par),
             var .match_getAEScoreList(par),
             var .match_getGrList(par),
             var .match_getGameInfo(par),
@@ -520,7 +546,10 @@ extension Api: TargetType {
             var .Score_companyIndex(par),
             var .match_getNextDayMatch(par),
             var .match_getRAEScore(par),
-            var .Score_getFocusStatus(par)
+            var .Score_getFocusStatus(par),
+            var .user_getRecommLeagues(par),
+            var .match_getEUScoreLog(par),
+            var .user_payRecomm(par)
             :
             
             par["token"] = Environment().token ?? ""
@@ -528,7 +557,8 @@ extension Api: TargetType {
             
         case var .Score_ongoing(par),
              var .Score_schedule(par),
-             var .Score_afterGame(par),
+             var .Score_afterGame(par),             
+             var .user_getRecommList(par),
              var .Score_focus(par):
             
             par["token"] = Environment().token ?? ""
@@ -659,7 +689,7 @@ func apiRequset<T: LFResponseModel>(_ a: Api, modelType: T.Type = T.self) -> Sin
 //                let appCoordinator = AppCoordinator(window: UIApplication.shared.keyWindow!)
 //                _ = appCoordinator.start()
 //                    .subscribe()
-                se(.error(NSError(domain: model.msg, code: model.code, userInfo: nil)))
+                se(.error(NSError(domain: "登录失效", code: model.code, userInfo: nil)))
 //                SLFHUD.hide()
             }else {
                 se(.success(model))
@@ -699,7 +729,7 @@ func apiRequsetNo(_ a: Api) -> Single<LFResponseModel> {
                 _ = LoginCoordinator(str: model.msg).start().subscribe()
                 se(.error(NSError(domain: model.msg, code: model.code, userInfo: nil)))
             }else {
-                se(.error(NSError(domain: model.msg, code: model.code, userInfo: nil)))
+                se(.error(NSError(domain: "登录失效", code: model.code, userInfo: nil)))
             }
         }, onError: { (e) in
             let ne = e as NSError
@@ -849,4 +879,28 @@ func AlamofiremonitorNet() {
 
     }
     manager?.startListening()//开始监听网络
+}
+
+func monitorNetwork() {
+    
+    if let manager = NetworkReachabilityManager(host: "https://www.baidu.com") {
+        
+        manager.listener = { (status) in
+            switch status {
+            case .notReachable:
+            // 无网络
+                LFLog("无网络")
+            case .reachable(NetworkReachabilityManager.ConnectionType.ethernetOrWiFi):
+            // wifi
+                LFLog("wifi")
+            case .reachable(NetworkReachabilityManager.ConnectionType.wwan):
+            // 数据流量
+                LFLog("数据流量")
+            default:
+                // 未知
+                LFLog("未知")
+            }
+        }
+        manager.startListening()
+    }
 }
