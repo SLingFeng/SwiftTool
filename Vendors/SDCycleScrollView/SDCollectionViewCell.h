@@ -31,6 +31,7 @@
 
 
 #import <UIKit/UIKit.h>
+#import "FLAnimatedImageView.h"
 
 #define MaxWidth (Screen_Width-30)
 #define MinWidth (Screen_Width-40)
@@ -43,6 +44,8 @@
 
 @property (weak, nonatomic) UIImageView *imageView;
 @property (copy, nonatomic) NSString *title;
+
+@property (retain, nonatomic) FLAnimatedImageView *load;
 
 @property (nonatomic, strong) UIColor *titleLabelTextColor;
 @property (nonatomic, strong) UIFont *titleLabelTextFont;

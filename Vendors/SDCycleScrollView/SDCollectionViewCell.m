@@ -32,7 +32,7 @@
 
 #import "SDCollectionViewCell.h"
 #import "UIView+SDExtension.h"
-
+#import "FLAnimatedImage.h"
 
 @implementation SDCollectionViewCell
 {
@@ -45,6 +45,7 @@
     if (self = [super initWithFrame:frame]) {
         [self setupImageView];
         [self setupTitleLabel];
+        [self setupLoad];
     }
     
     return self;
@@ -92,6 +93,27 @@
     if (_titleLabel.hidden) {
         _titleLabel.hidden = NO;
     }
+}
+
+- (void)setupLoad
+{
+    FLAnimatedImageView *load = [[FLAnimatedImageView alloc] init];
+    _load = load;
+//    let pathForFile = Bundle.main.path(forResource: gifName, ofType: "gif") ?? ""
+//    let dataOfGif = NSData(contentsOfFile: pathForFile) as Data?
+//    let gif = FLAnimatedImage(animatedGIFData: dataOfGif)
+//    load.animatedImage = gif
+    NSString * pathForFile = [NSBundle.mainBundle pathForResource:@"bannerGifLoad" ofType:@"gif"];
+    NSData* dataOfGif = [NSData dataWithContentsOfFile:pathForFile];
+    FLAnimatedImage* gif = [FLAnimatedImage animatedImageWithGIFData:dataOfGif];
+    _load.animatedImage = gif;
+//    _load.hidden = YES;
+    [self.contentView addSubview:load];
+    [self.contentView bringSubviewToFront:_load];
+//    [load mas_makeConstraints:^(MASConstraintMaker *make) {
+//        make.edges.insets(UIEdgeInsetsZero);
+//    }];
+//    load.backgroundColor = [UIColor redColor];
 }
 
 

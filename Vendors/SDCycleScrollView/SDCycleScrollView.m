@@ -35,6 +35,7 @@
 #import "EllipsePageControl.h"
 #import "UIImageView+WebCache.h"
 #import "SDImageCache.h"
+#import "FLAnimatedImageView.h"
 
 #define kCycleScrollViewInitialPageControlDotSize CGSizeMake(10, 10)
 
@@ -584,6 +585,7 @@ NSString * const ID = @"cycleCell";
 - (UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath
 {
     SDCollectionViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:ID forIndexPath:indexPath];
+//    [cell setBackgroundColor:[UIColor redColor]];
     
     long itemIndex = [self pageControlIndexWithCurrentCellIndex:indexPath.item];
     
@@ -591,7 +593,17 @@ NSString * const ID = @"cycleCell";
     
     if (!self.onlyDisplayText && [imagePath isKindOfClass:[NSString class]]) {
         if ([imagePath hasPrefix:@"http"]) {
-            [cell.imageView sd_setImageWithURL:[NSURL URLWithString:imagePath] placeholderImage:self.placeholderImage];
+//            [cell.imageView sd_setImageWithURL:[NSURL URLWithString:imagePath] placeholderImage:self.placeholderImage];
+            kWeakObj(weakObj, cell);
+            [cell.imageView sd_setImageWithURL:[NSURL URLWithString:imagePath] placeholderImage:self.placeholderImage completed:^(UIImage * _Nullable image, NSError * _Nullable error, SDImageCacheType cacheType, NSURL * _Nullable imageURL) {
+                if (error) {
+                    [weakObj.load setHidden:NO];
+                    [weakObj.load startAnimating];
+                }else {
+                    [weakObj.load setHidden:YES];
+                    [weakObj.load stopAnimating];
+                }
+            }];
         } else {
             UIImage *image = [UIImage imageNamed:imagePath];
             if (!image) {
@@ -622,11 +634,14 @@ NSString * const ID = @"cycleCell";
     if (self.zoomType) {
         if ([self currentIndex] == indexPath.item) {
             cell.imageView.frame = CGRectMake(0, 0, MaxWidth, MaxHeight);
+            cell.load.frame = CGRectMake(0, 0, MaxWidth, MaxHeight);
         } else {
             cell.imageView.frame = CGRectMake(0, 0, MinWidth, MinHeight);
+            cell.load.frame = CGRectMake(0, 0, MinWidth, MinHeight);
         }
         
         cell.imageView.center = cell.contentView.center;
+        cell.load.center = cell.contentView.center;
     }
     
     return cell;

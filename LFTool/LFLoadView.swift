@@ -10,7 +10,7 @@ import UIKit
 
 class LFLoadView: UIView {
 
-    let contentView : UIView?
+    var contentView : UIView?
     
     let title = UILabel(fontSize: 16, fontColor: k666666, text: "图片加载中...")
     
@@ -19,9 +19,9 @@ class LFLoadView: UIView {
     
     
     init(_ contentView: UIView, gifName: String) {
-        self.contentView = contentView
         super.init(frame: CGRect.zero)
-        
+        self.contentView = contentView
+
         load.startAnimating()
 //        self.addSubview(title)
         self.addSubview(load)
