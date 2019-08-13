@@ -47,8 +47,90 @@ class LFBaseNavigationViewController: UINavigationController {
     }
 
 }
+//extension UINavgationController: UInavigationControllerDelegate{
+//
+////    var hairLineView: UIImageView? {
+////        get {
+////            return objc_getAssociatedObject(self, &hairLine) as? UIImageView
+////        }
+////        set {
+////            objc_setAssociatedObject(self, &hairLine, newValue, objc_AssociationPolicy.OBJC_ASSOCIATION_RETAIN_NONATOMIC)
+////        }
+////    }
+////
+////
+////    ///查找分割线
+////    public func findHairLine(view: UIView) -> UIImageView?{
+////
+////        if view.isKind(of: UIImageView.self) && view.frame.size.height <= 1.0{
+////            return view as? UIImageView
+////        }
+////
+////        for subView in view.subviews {
+////            let imageView = findHairLine(view: subView)
+////            if let imageView = imageView{
+////                return imageView
+////            }
+////        }
+////
+////        return nil
+////
+////    }
+////
+////
+////    public func setHairLine(hidden: Bool){
+////        if let hairLineView = hairLineView{
+////            hairLineView.isHidden = hidden
+////        }else{
+////            hairLineView = findHairLine(view: navigationBar)
+////            hairLineView?.isHidden = hidden
+////        }
+////    }
+//    public func navigationController(_ navigationController: UINavigationController, willShow viewController: UIViewController, animated: Bool) {
+//
+//        if let topVC = viewController,
+//            let coor = topVC.transitionCoordinator, coor.initiallyInteractive {
+//            if #available(iOS 10.0, *) {
+//                coor.notifyWhenInteractionChanges({[weak self] (context) in
+//                    self?.dealInteractionChanges(context)
+//                })
+//            } else {
+//                coor.notifyWhenInteractionEnds({[weak self] (context) in
+//                    self?.dealInteractionChanges(context)
+//                })
+//            }
+//        }
+//
+//
+//    }
+//
+//
+//    private func dealInteractionChanges(_ context: UIViewControllerTransitionCoordinatorContext){
+//
+//        if context.isCancelled{
+//            let cancelDuration = context.transitionDuration * TimeInterval(context.percentComplete)
+//            let fromVc = context.viewController(forKey: .from)
+//            let nowAlpha = fromVc?.navBarBackgroundAlpha ?? 1.0
+//            UIView.animate(withDuration: cancelDuration) {[weak self] in
+//                self?.setBackgroundAlpha(alpha: nowAlpha)
+//            }
+//        }else{
+//            let finishDuration = context.transitionDuration * TimeInterval(1 - context.percentComplete)
+//            UIView.animate(withDuration: finishDuration) {[weak self] in
+//                let nowAlpha = context.viewController(forKey: .to)?.navBarBackgroundAlpha ?? 1.0
+//                self?.setBackgroundAlpha(alpha: nowAlpha)
+//            }
+//        }
+//
+//    }
+//
+//
+//
+//}
 
 extension UINavigationController {
+    
+    
     
     func lfPopToVC(vcc : AnyClass) {
         
@@ -61,6 +143,21 @@ extension UINavigationController {
                 vc?.navigationController?.popToViewController(v, animated: true)
             }
         }
+    }
+    
+    func lfPushOrPopToVC(vcc : AnyClass) -> Bool {
+        
+        let vc = SLFCommonTools.currentViewController()
+        
+        var iss = false
+        
+        for v in vc!.navigationController!.viewControllers {
+            if v.isKind(of: vcc) {
+                iss = true
+            }
+        }
+        
+        return iss
     }
     
 //    func pushViewController(_ viewController: UIViewController, animated: Bool) {
