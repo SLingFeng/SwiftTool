@@ -533,6 +533,10 @@
 ///判断当前时间是否在某个时间段if ([self isBetweenFromHour:9 toHour:10]) {}
 + (BOOL)isBetweenFromHour:(NSInteger)fromHour toHour:(NSInteger)toHour;
 
++ (NSString *)_859ToUTF8:(NSString *)oldStr;
+
++(CGFloat)scale:(CGFloat)num;
+
 @end
 
 

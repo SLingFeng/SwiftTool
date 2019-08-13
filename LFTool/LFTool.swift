@@ -389,7 +389,16 @@ class LFTool: NSObject {
             return ""
         }
     }
-    
+    //MARK: 转
+    func decodeISO88591(str:String) -> String {
+        
+        if let utfData = str.data(using: String.Encoding.isoLatin1) {
+            if let utf = String(data: utfData, encoding: String.Encoding.utf8) {
+                return utf
+            }
+        }
+        return str
+    }
 }
 
 //var str = "hangge.com"

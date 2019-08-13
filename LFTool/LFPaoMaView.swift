@@ -11,7 +11,7 @@ import RxSwift
 
 class LFPaoMaView: UIView {
 
-    let title = UILabel(fontSize: 15, fontColor: UIColor("#379AFF"), text: "")
+    let title = UILabel(fontSize: 14, fontColor: UIColor("#5F5F5F"), text: "")
     
     var timer : Observable<Int>?
     var timerDib : Disposable?

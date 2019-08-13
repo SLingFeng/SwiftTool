@@ -182,6 +182,18 @@ static SLFCommonTools * tools = nil;
 //    }
 }
 
++(CGFloat)scale:(CGFloat)num {
+    //        return width*(kScreenW/375);
+    if (IS_IPHONE_Xs_Max || IS_IPHONE_Xr || IS_IPHONE_X || IS_IPHONE_Xs || kiPhone6Plus) {
+        return num * 1.2;
+    }else if (kiPhone5 || kiPhone6) {
+        return num;
+    }else {
+        return num * 0.8;
+    }
+}
+
+
 #pragma mark - 比例
 +(CGFloat)heightScale4_3:(CGFloat)width {
     return width/4*3;

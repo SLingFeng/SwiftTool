@@ -8,7 +8,7 @@
 
 import UIKit
 import SocketRocket
-
+import HandyJSON
 
 enum LFConnectType : Int {
     case disConnectByUser = 1
@@ -125,7 +125,7 @@ class LFSocket: NSObject, SRWebSocketDelegate {
     ///   - parameters: 需要的参数
     ///   - message: 返回数据
     ///   - fail: 返回失败
-    func send(_ parameters: [AnyHashable : Any]) {
+    func send(_ parameters: [String : Any]) {
 //        , didReceive message: DidReceiveMessage, fail: DidFailWithError
         LFLog(parameters)
         var par = parameters
@@ -175,6 +175,33 @@ class LFSocket: NSObject, SRWebSocketDelegate {
 //        let jsonData = JSONSerialization.data(withJSONObject: parameters, options: .prettyPrinted) {
 //
 //        }
+        
+    }
+    func send(_ m: LFSocketSendModel) {
+    
+        let jsonString = m.toJSONString()
+        if let jsonString = jsonString {
+            if (socket != nil) {
+                
+                if socket.readyState == .OPEN {
+                    self.socket.send(jsonString)
+                }else if socket.readyState == .CONNECTING {
+                    noSendArray.append(jsonString)
+                    //                        self.socket.send(jsonString)
+                    
+                    //                        reConnect()
+                }else if socket.readyState == .CLOSING || socket.readyState == .CLOSED {
+                    //断开了，调用 reConnect 方法重连
+                    reConnect()
+                }
+                
+            }else {
+                //                    NSLog(@"没网络，发送失败，一旦断网 socket 会被我设置 nil 的");
+                //                    NSLog(@"其实最好是发送前判断一下网络状态比较好，我写的有点晦涩，socket==nil来表示断网");
+                destoryHeartBeat()
+                reConnect()
+            }
+        }
         
     }
 //    - (void)sendForParameters:(NSDictionary *)parameters didReceive:(DidReceiveMessage)message fail:(DidFailWithError)fail {
@@ -414,4 +441,22 @@ class LFSocketModel: NSObject {
     
     var userIcon = ""
     
+}
+
+class LFSocketSendModel: NSObject, HandyJSON {
+    
+    var type: String?// "say"
+    var from_client_id: String?// strongSelf.socket.model.client_id
+    var to_client_id = "1"//String?// "all/client_id"
+    var pic: String = ""
+    var content: String = ""
+    var face: String = ""
+    var client_name: String?// GVUserDefaults.standard().nick_name
+    var room_id: String = "1"
+    var token: String?// Environment().token!
+    var time = SLFCommonTools.timestamp(Date().timeIntervalSince1970, formart: "YYYY-MM-dd HH:mm:ss")
+    
+    required override init() {
+        super.init()
+    }
 }

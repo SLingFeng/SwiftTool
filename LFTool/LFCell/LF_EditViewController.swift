@@ -95,7 +95,7 @@ class LF_EditViewController: LFBaseTableViewController {
         return 10
     }
     
-    func tableView(_ tableView: UITableView, viewForFooterInSection section: Int) -> UIView? {
+    override func tableView(_ tableView: UITableView, viewForFooterInSection section: Int) -> UIView? {
         if section == cellArr!.count - 1 {
             
             let view = UIView()
@@ -127,7 +127,7 @@ class LF_EditViewController: LFBaseTableViewController {
         return 55
     }
     
-    func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
+    override func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
 //        let model = cellArr![indexPath.section][indexPath.row]
 //
 //        if model.type == 3 || model.type == 31 {
