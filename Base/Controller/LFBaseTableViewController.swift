@@ -14,7 +14,10 @@ import RxSwift
 class LFBaseTableViewController: LFBaseViewController, UITableViewDelegate, UITableViewDataSource {
 
     var tableView: MyTableView!
-    
+//    lazy var tableView: MyTableView = {
+//        let tableView = MyTableView(frame: .zero, style: .plain)
+//        return tableView
+//    }()
     
     func needTableView(style: UITableView.Style) {
         self.tableView = MyTableView(frame: .zero, style: style)
@@ -23,24 +26,24 @@ class LFBaseTableViewController: LFBaseViewController, UITableViewDelegate, UITa
         self.tableView.tableHeaderView = UIView(frame: .init(x: 0, y: 0, width: 0, height: CGFloat.leastNormalMagnitude))
         self.tableView.tState = MyTableViewStatusNormal
         self.view.addSubview(self.tableView)
-        if  #available(iOS 11.0, *) {
-            self.tableView.estimatedSectionHeaderHeight = 0.01
-            self.tableView.estimatedSectionFooterHeight = 0.01
-            self.tableView.estimatedRowHeight = 0.01;
-//            self.tableView.estimatedSectionHeaderHeight = 0;
-//            self.tableView.estimatedSectionFooterHeight = 0;
-        }
+        setEstimatedSectionHeight(num: 0.01)
 //        self.tableView.separatorInset = UIEdgeInsets(top: 0, left: 10, bottom: 0, right: 10)
         self.tableView.separatorStyle = .none
         self.tableView.backgroundColor = .white
         self.tableView.snp.makeConstraints({ (make) in
             make.edges.equalTo(self.view).inset(UIEdgeInsets.zero)
         })
-        self.tableView.estimatedSectionHeaderHeight = 0;
-        self.tableView.estimatedSectionFooterHeight = 0;
-        self.tableView.estimatedRowHeight = 0
+        setEstimatedSectionHeight(num: 0)
         tableView.loadImage = UIImage(named: "me_img_none")
         tableView.loadTitle = "暂无数据"
+    }
+    
+    func setEstimatedSectionHeight(num: CGFloat) {
+        if  #available(iOS 11.0, *) {
+            self.tableView.estimatedSectionHeaderHeight = num
+            self.tableView.estimatedSectionFooterHeight = num
+            self.tableView.estimatedRowHeight = num;
+        }
     }
     
     func numberOfSections(in tableView: UITableView) -> Int {
@@ -87,6 +90,10 @@ class LFBaseTableViewController: LFBaseViewController, UITableViewDelegate, UITa
         
     }
     
+    func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
+        return nil
+    }
+    
     ///统一设置table
     public class func setTableView(tableView: MyTableView, vc: UIViewController) {
         tableView.dataSource = vc as? UITableViewDataSource
@@ -105,10 +112,14 @@ class LFBaseTableViewController: LFBaseViewController, UITableViewDelegate, UITa
 //        tableView.snp.makeConstraints({ (make) in
 //            make.edges.equalTo(self.view).inset(UIEdgeInsets.zero)
 //        })
-        tableView.estimatedSectionHeaderHeight = 0;
-        tableView.estimatedSectionFooterHeight = 0;
-        tableView.estimatedRowHeight = 0
+        if  #available(iOS 11.0, *) {
+            tableView.estimatedSectionHeaderHeight = 0
+            tableView.estimatedSectionFooterHeight = 0
+            tableView.estimatedRowHeight = 0
+        }
         
+        tableView.loadImage = UIImage(named: "me_img_none")
+        tableView.loadTitle = "暂无数据"
     }
 }
 
@@ -126,25 +137,29 @@ class LFRxBaseTableViewController: LFBaseViewController, UITableViewDelegate {
         self.tableView.tableHeaderView = UIView(frame: .zero)
         self.tableView.tState = MyTableViewStatusNormal
         self.view.addSubview(self.tableView)
-        if  #available(iOS 11.0, *) {
-            self.tableView.estimatedSectionHeaderHeight = 0.01
-            self.tableView.estimatedSectionFooterHeight = 0.01
-            self.tableView.estimatedRowHeight = 0.01;
-//            self.tableView.estimatedSectionHeaderHeight = 0;
-//            self.tableView.estimatedSectionFooterHeight = 0;
-        }
+        
+        setEstimatedSectionHeight(num: 0.01)
 //        self.tableView.separatorInset = UIEdgeInsets(top: 0, left: 10, bottom: 0, right: 10)
         
         self.tableView.snp.makeConstraints({ (make) in
             make.edges.equalTo(self.view).inset(UIEdgeInsets.zero)
         })
         
-        self.tableView.estimatedSectionHeaderHeight = 0;
-        self.tableView.estimatedSectionFooterHeight = 0;
-        self.tableView.estimatedRowHeight = 0
+        setEstimatedSectionHeight(num: 0)
         
         self.tableView.headerSetup()
         self.tableView.footerSetup()
+        
+        tableView.loadImage = UIImage(named: "me_img_none")
+        tableView.loadTitle = "暂无数据"
+    }
+    
+    func setEstimatedSectionHeight(num: CGFloat) {
+        if  #available(iOS 11.0, *) {
+            self.tableView.estimatedSectionHeaderHeight = num
+            self.tableView.estimatedSectionFooterHeight = num
+            self.tableView.estimatedRowHeight = num;
+        }
     }
     
     func numberOfSections(in tableView: UITableView) -> Int {
