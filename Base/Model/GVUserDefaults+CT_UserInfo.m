@@ -35,7 +35,7 @@
     self.bankCardStatus = nil;
     self.bankNameUser = nil;
     self.nick_name = nil;
-    
+    self.userType = 0;
 //    self.user_auth = nil;
 }
 

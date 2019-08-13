@@ -15,7 +15,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, assign) NSInteger userType;
 
 @property (nonatomic, copy) NSString *edition_number;
-
+///审核状态：0、待审核，1、审核通过，2、审核不通过；
 @property (nonatomic, assign) NSInteger expertStatus;
 //积分
 @property (nonatomic, copy) NSString *integral;
@@ -62,7 +62,7 @@ NS_ASSUME_NONNULL_BEGIN
 //
 //    
 //
-//@property (nonatomic, copy) NSString *web_title;
+@property (nonatomic, copy) NSString *service_qq;
 //@property (nonatomic, copy) NSString *service_hotline;
 //@property (nonatomic, copy) NSString *work_time;
 @property (nonatomic, copy) NSString *app_logo;
@@ -81,6 +81,13 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, copy) NSString *home_banner1;
 @property (nonatomic, copy) NSString *home_banner2;
 @property (nonatomic, copy) NSString *home_banner3;
+@property (nonatomic, copy) NSString *home_banner4;
+
+@property (nonatomic, copy) NSString *home_banner1_link;
+@property (nonatomic, copy) NSString *home_banner2_link;
+@property (nonatomic, copy) NSString *home_banner3_link;
+@property (nonatomic, copy) NSString *home_banner4_link;
+
 //@property (nonatomic, copy) NSString *android_app_down;
 //@property (nonatomic, copy) NSString *ios_app_down;
 //@property (nonatomic, copy) NSString *weixin_pay;

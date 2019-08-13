@@ -24,6 +24,11 @@ class User: NSObject {
     ///推广总佣金
     var agentIncome : String = "0.00"
     
+    var goMainRecommendChange = -1
+    
+    //点击过关注
+    var doStar = false
+    
     private override init() {
         
     }

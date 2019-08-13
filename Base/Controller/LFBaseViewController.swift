@@ -82,13 +82,18 @@ class LFBaseViewController: UIViewController {
         LFLog("\(self.self)")
     }
     
-    func showLoginVC() {
-        SLFHUD.showHint("请先登录", delay: 1.5) {[weak self] in
-            if let strongSelf = self {
-                LoginCoordinator(str: "").start().subscribe().disposed(by: strongSelf.dig)
+    func showLoginVC(_ go: Bool = true) {
+        if go {
+            SLFHUD.showHint("请先登录", delay: 1.5) {[weak self] in
+                if let strongSelf = self {
+                    LoginCoordinator(str: "").start().subscribe().disposed(by: strongSelf.dig)
+                }
+                self?.tabBarController?.selectedIndex = 4
             }
-            self?.tabBarController?.selectedIndex = 0
+        }else {
+            SLFHUD.showHint("请先登录")
         }
+        
     }
     
     /*
