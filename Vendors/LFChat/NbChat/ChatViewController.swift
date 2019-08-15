@@ -91,19 +91,21 @@ class ChatViewController: LFBaseViewController, UITableViewDelegate, UITableView
         self.view.addSubview(toolBarView)
         
         // 添加约束
-        toolBarView.snp.makeConstraints { (make) in
-            make.left.equalTo(self.view.snp.left)
-            make.right.equalTo(self.view.snp.right)
-            make.height.equalTo(toolBarHeight)
-            make.bottom.equalTo(-LFTool.Height_HomeBar())
-        }
-        
-        chatTableView.snp.makeConstraints { (make) in
-            make.left.equalTo(self.view.snp.left)
-            make.right.equalTo(self.view.snp.right)
-            make.bottom.equalTo(toolBarView.snp.top)
-            make.top.equalTo(0)
-        }
+//        toolBarView.snp.makeConstraints { (make) in
+//            make.left.equalTo(self.view.snp.left)
+//            make.right.equalTo(self.view.snp.right)
+//            make.height.equalTo(toolBarHeight)
+//            make.bottom.equalTo(-LFTool.Height_HomeBar())
+//        }
+//
+//        chatTableView.snp.makeConstraints { (make) in
+//            make.left.equalTo(self.view.snp.left)
+//            make.right.equalTo(self.view.snp.right)
+//            make.bottom.equalTo(toolBarView.snp.top)
+//            make.top.equalTo(0)
+//        }
+        toolBarView.frame = toolBarViewFrame()
+        chatTableView.frame = chatTableViewFrame()
         
         oldOffsetY = chatTableView.contentOffset.y
         
@@ -120,8 +122,14 @@ class ChatViewController: LFBaseViewController, UITableViewDelegate, UITableView
         toolBarView.sendBtn.rx.tap.subscribe(onNext: {[weak self] (_) in
             if let strongSelf = self {
                 if !strongSelf.toolBarView.textView.text.empty() {
-                    let s = NSAttributedString(string: strongSelf.toolBarView.textView.text!)
-                    strongSelf.socket.send(["type" : "say", "from_client_id" : strongSelf.socket.model.client_id, "to_client_id" : "all/client_id", "content" : s])
+//                    let s = NSAttributedString(string: strongSelf.toolBarView.textView.text!)
+                    let m = LFSocketSendModel()
+                    m.type = "say"
+                    m.from_client_id = strongSelf.socket.model.client_id
+                    m.content = strongSelf.toolBarView.textView.text
+                    strongSelf.socket.send(m)
+
+//                    strongSelf.socket.send(["type" : "say", "from_client_id" : strongSelf.socket.model.client_id, "to_client_id" : "all/client_id", "content" : s])
                     strongSelf.toolBarView.textView.text = ""
                 }
             }
@@ -164,6 +172,14 @@ class ChatViewController: LFBaseViewController, UITableViewDelegate, UITableView
 //        socket.send(["type" : "login", "client_name" : GVUserDefaults.standard().nick_name, "room_id" : "1", "token" : Environment().token!])
     }
     
+    func toolBarViewFrame() -> CGRect {
+        return CGRect(x: 0, y: kScreenH - LFTool.Height_HomeBar() - toolBarHeight - LFTool.Height_NavBar(), width: kScreenW, height: toolBarHeight)
+    }
+    
+    func chatTableViewFrame() -> CGRect {
+        return CGRect(x: 0, y: 0, width: kScreenW, height: kScreenH - LFTool.Height_HomeBar() - toolBarHeight - LFTool.Height_NavBar())
+    }
+    
     override func viewDidDisappear(_ animated: Bool) {
         super.viewDidDisappear(animated)
         removeKeyBoard()
@@ -185,6 +201,20 @@ class ChatViewController: LFBaseViewController, UITableViewDelegate, UITableView
             NotificationCenter.default.addObserver(self, selector: #selector(keyBoardWillHide(notification:)), name: UIResponder.keyboardWillHideNotification, object: nil)
         }
         fisrtLoad = false
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        let v = UIApplication.shared.keyWindow?.viewWithTag(8901)
+        v?.isHidden = true
+        
+        navigationController?.setNavigationBarHidden(false, animated: animated)
+    }
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        let v = UIApplication.shared.keyWindow?.viewWithTag(8901)
+        v?.isHidden = false
     }
     
     deinit {
@@ -360,7 +390,7 @@ class ChatViewController: LFBaseViewController, UITableViewDelegate, UITableView
 //        let textViewHeight = isEmojiKeyboardShowed ? self.toolBarView.heightThatFits() : mKeyBoardHeight
         
         var animate: (()->Void) = {
-            self.toolBarView.transform = CGAffineTransform(translationX: 0, y: -self.mKeyBoardHeight)
+//            self.toolBarView.transform = CGAffineTransform(translationX: 0, y: -self.mKeyBoardHeight)
         }
         
         
@@ -369,30 +399,43 @@ class ChatViewController: LFBaseViewController, UITableViewDelegate, UITableView
             let rectCellView = chatTableView.rectForRow(at: lastIndex)
             let rect = self.view.convert(rectCellView, to: chatTableView.superview)
             let cellDistance = rect.origin.y + rect.height
-            let distance1 = SCREEN_HEIGHT - toolBarHeight - mKeyBoardHeight - LFTool.Height_HomeBar()
+            let distance1 = SCREEN_HEIGHT - mKeyBoardHeight - LFTool.Height_HomeBar()
             let distance2 = SCREEN_HEIGHT - toolBarHeight - 2 * fitBlank
             let difY = cellDistance - distance1
             
-            NSLog("showKeyboard:%f--", self.view.transform.ty)
+//            NSLog("showKeyboard:%f--", self.view.transform.ty)
             
 //            selfFrame.size.height = distance1
             
             if cellDistance <= distance1 {
                 animate = {
-                    self.toolBarView.transform = CGAffineTransform(translationX: 0, y: -self.mKeyBoardHeight)
+//                    self.toolBarView.transform = CGAffineTransform(translationX: 0, y: -self.mKeyBoardHeight)
+                    var r = self.toolBarView.frame
+                    r.origin.y = kScreenH - self.mKeyBoardHeight
+                    self.toolBarView.frame = r
                 }
                 animateType = .animate1
             } else if distance1 < cellDistance && cellDistance <= distance2 {
                 animate = {
-                    self.toolBarView.transform = CGAffineTransform(translationX: 0, y: -self.mKeyBoardHeight)
-                    self.chatTableView.transform = CGAffineTransform(translationX: 0, y: -difY)
+//                    self.toolBarView.transform = CGAffineTransform(translationX: 0, y: -self.mKeyBoardHeight)
+                    var r = self.toolBarView.frame
+                    r.origin.y = kScreenH - self.mKeyBoardHeight
+                    self.toolBarView.frame = r
+//                    self.chatTableView.transform = CGAffineTransform(translationX: 0, y: -difY)
+                    var r1 = self.chatTableView.frame
+                    r1.size.height = self.chatTableViewFrame().size.height - difY
+                    self.chatTableView.frame = r1
+                    
                     self.lastDifY = difY
                 }
                 animateType = .animate2
             } else {
                 animate = {
 //                    self.view.transform = CGAffineTransform.identity
-                    self.view.transform = CGAffineTransform(translationX: 0, y: -self.mKeyBoardHeight)
+//                    self.view.transform = CGAffineTransform(translationX: 0, y: -self.mKeyBoardHeight)
+                    var r = self.view.frame
+                    r.size.height = kScreenH - LFTool.Height_NavBar() - self.mKeyBoardHeight
+                    self.view.frame = r
 //                    self.view.frame = selfFrame
                 }
                 animateType = .animate3
@@ -414,28 +457,33 @@ class ChatViewController: LFBaseViewController, UITableViewDelegate, UITableView
             
             let options = UIView.AnimationOptions(rawValue: UInt((mUserInfo[UIResponder.keyboardAnimationCurveUserInfoKey] as! NSNumber).intValue << 16))
             
-            var animate: (() -> Void) = {
-                
+            let animate: (() -> Void) = {
+                self.toolBarView.frame = CGRect(x: 0, y: kScreenH - LFTool.Height_HomeBar() - self.toolBarHeight, width: kScreenW, height: self.toolBarHeight)//self.toolBarViewFrame()
+                self.chatTableView.frame = CGRect(x: 0, y: 0, width: kScreenW, height: kScreenH - LFTool.Height_HomeBar() - self.toolBarHeight)//self.chatTableViewFrame()
+                self.view.frame = CGRect(x: 0, y: 0, width: kScreenW, height: kScreenH)
             }
-            NSLog("hideKeyboard:%f--", self.view.transform.ty)
+            NSLog("hideKeyboard:%@--", self.toolBarView)
             // 返回 view 或 toolBarView 或 chatTableView 到原有状态
-            switch animateType {
-            case .animate1:
-                animate = {
-                    self.toolBarView.transform = CGAffineTransform.identity
-                    self.chatTableView.transform = CGAffineTransform.identity
-                }
-            case .animate2:
-                animate = {
-                    self.toolBarView.transform = CGAffineTransform.identity
-                    self.chatTableView.transform = CGAffineTransform.identity
-                }
-            case .animate3:
-                animate = {
-                    self.view.transform = CGAffineTransform.identity
-                }
-//                break
-            }
+//            switch animateType {
+//            case .animate1: break
+////                animate = {
+//////                    self.toolBarView.transform = CGAffineTransform.identity
+//////                    self.chatTableView.transform = CGAffineTransform.identity
+////                    self.toolBarView.frame = self.toolBarViewFrame()
+////                    self.chatTableView.frame = self.chatTableViewFrame()
+////                }
+//            case .animate2: break
+////                animate = {
+////                    self.toolBarView.transform = CGAffineTransform.identity
+////                    self.chatTableView.transform = CGAffineTransform.identity
+////                }
+//            case .animate3:
+//                animate = {
+////                    self.view.transform = CGAffineTransform.identity
+//                    self.view.frame = CGRect(x: 0, y: 0, width: kScreenW, height: kScreenH)
+//                }
+////                break
+//            }
             
             UIView.animate(withDuration: mKeyBoardAnimateDuration, delay: 0, options: options, animations: animate, completion: { (finish) in
                 if finish {
@@ -478,14 +526,20 @@ class ChatViewController: LFBaseViewController, UITableViewDelegate, UITableView
             if lastDifY + difY < mKeyBoardHeight {
                 lastDifY += difY
                 let animate: (()->Void) = {
-                    self.chatTableView.transform = CGAffineTransform(translationX: 0, y: -self.lastDifY)
+//                    self.chatTableView.transform = CGAffineTransform(translationX: 0, y: -self.lastDifY)
+                    var r1 = self.chatTableView.frame
+                    r1.size.height = self.chatTableViewFrame().size.height - self.lastDifY
+                    self.chatTableView.frame = r1
                 }
                 UIView.animate(withDuration: mKeyBoardAnimateDuration, delay: 0, options: animateOption, animations: animate)
                 
             } else if lastDifY + difY > mKeyBoardHeight {
                 if lastDifY != mKeyBoardHeight {
                      let animate: (()->Void) = {
-                        self.chatTableView.transform = CGAffineTransform(translationX: 0, y: -self.mKeyBoardHeight)
+//                        self.chatTableView.transform = CGAffineTransform(translationX: 0, y: -self.mKeyBoardHeight)
+//                        var r1 = self.chatTableView.frame
+//                        r1.size.height = kScreenH - self.toolBarHeight - self.mKeyBoardHeight
+//                        self.chatTableView.frame = r1
                     }
                     UIView.animate(withDuration: mKeyBoardAnimateDuration, delay: 0, options: animateOption, animations: animate)
                     lastDifY = mKeyBoardHeight
@@ -499,12 +553,12 @@ class ChatViewController: LFBaseViewController, UITableViewDelegate, UITableView
     // 滚动最后一条消息到列表界面底部
     func scrollToBottom(animated: Bool = true) {
         if msgList.count > 0 {
-            CATransaction.begin() // 1
-            CATransaction.setDisableActions(true) // 2 关闭layer隐式动画
+//            CATransaction.begin() // 1
+//            CATransaction.setDisableActions(true) // 2 关闭layer隐式动画
 
             chatTableView.scrollToRow(at: IndexPath(row: msgList.count - 1, section: 0), at: .bottom, animated: animated)
             
-            CATransaction.commit() // 3
+//            CATransaction.commit() // 3
         }
     }
     
@@ -526,7 +580,9 @@ class ChatViewController: LFBaseViewController, UITableViewDelegate, UITableView
     func removeKeyBoard() {
         if toolBarView.textView.isFirstResponder {
             toolBarView.textView.resignFirstResponder()
-            toolBarView.transform = CGAffineTransform.identity
+//            toolBarView.transform = CGAffineTransform.identity
+            self.toolBarView.frame = self.toolBarViewFrame()
+            self.chatTableView.frame = self.chatTableViewFrame()
         }
 
     }
