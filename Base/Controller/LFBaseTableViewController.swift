@@ -33,7 +33,7 @@ class LFBaseTableViewController: LFBaseViewController, UITableViewDelegate, UITa
         self.tableView.snp.makeConstraints({ (make) in
             make.edges.equalTo(self.view).inset(UIEdgeInsets.zero)
         })
-//        setEstimatedSectionHeight(num: 0)
+        setEstimatedSectionHeight(num: 0)
         tableView.loadImage = UIImage(named: "me_img_none")
         tableView.loadTitle = "暂无数据"
     }
@@ -112,11 +112,11 @@ class LFBaseTableViewController: LFBaseViewController, UITableViewDelegate, UITa
 //        tableView.snp.makeConstraints({ (make) in
 //            make.edges.equalTo(self.view).inset(UIEdgeInsets.zero)
 //        })
-//        if  #available(iOS 11.0, *) {
-//            tableView.estimatedSectionHeaderHeight = 0
-//            tableView.estimatedSectionFooterHeight = 0
-//            tableView.estimatedRowHeight = 0
-//        }
+        if  #available(iOS 11.0, *) {
+            tableView.estimatedSectionHeaderHeight = 0
+            tableView.estimatedSectionFooterHeight = 0
+            tableView.estimatedRowHeight = 0
+        }
         
         tableView.loadImage = UIImage(named: "me_img_none")
         tableView.loadTitle = "暂无数据"
@@ -145,7 +145,7 @@ class LFRxBaseTableViewController: LFBaseViewController, UITableViewDelegate {
             make.edges.equalTo(self.view).inset(UIEdgeInsets.zero)
         })
         
-//        setEstimatedSectionHeight(num: 0)
+        setEstimatedSectionHeight(num: 0)
         
         self.tableView.headerSetup()
         self.tableView.footerSetup()
