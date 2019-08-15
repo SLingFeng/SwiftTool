@@ -24,7 +24,7 @@ class LFBaseTableViewController: LFBaseViewController, UITableViewDelegate, UITa
         self.tableView.dataSource = self
         self.tableView.delegate = self
         self.tableView.tableHeaderView = UIView(frame: .init(x: 0, y: 0, width: 0, height: CGFloat.leastNormalMagnitude))
-        self.tableView.tState = MyTableViewStatusNormal
+//        self.tableView.tState = MyTableViewStatusNormal
         self.view.addSubview(self.tableView)
 //        setEstimatedSectionHeight(num: 0.01)
 //        self.tableView.separatorInset = UIEdgeInsets(top: 0, left: 10, bottom: 0, right: 10)
@@ -99,7 +99,7 @@ class LFBaseTableViewController: LFBaseViewController, UITableViewDelegate, UITa
         tableView.dataSource = vc as? UITableViewDataSource
         tableView.delegate = vc as? UITableViewDelegate
         tableView.tableHeaderView = UIView(frame: .init(x: 0, y: 0, width: 0, height: CGFloat.leastNormalMagnitude))
-        tableView.tState = MyTableViewStatusNormal
+//        tableView.tState = MyTableViewStatusNormal
         vc.view.addSubview(tableView)
 //        if  #available(iOS 11.0, *) {
 //            tableView.estimatedSectionHeaderHeight = 0.01
@@ -135,7 +135,7 @@ class LFRxBaseTableViewController: LFBaseViewController, UITableViewDelegate {
         self.tableView.separatorStyle = .none
         self.tableView.backgroundColor = .white
         self.tableView.tableHeaderView = UIView(frame: .zero)
-        self.tableView.tState = MyTableViewStatusNormal
+//        self.tableView.tState = MyTableViewStatusNormal
         self.view.addSubview(self.tableView)
         
 //        setEstimatedSectionHeight(num: 0.01)

@@ -66,8 +66,17 @@ class LFBaseViewController: UIViewController {
             self.navigationController?.navigationBar.backIndicatorTransitionMaskImage = UIImage(named: "")
             self.navigationItem.backBarButtonItem = item
 
+        }else if  #available(iOS 10.0, *) {
+        //自定义返回按钮
+        var backButtonImage: UIImage? = nil
+            backButtonImage = UIImage(named: "me_icon_back")?.resizableImage(withCapInsets: UIEdgeInsets(top: 0, left: 10, bottom: 0, right: 0))
+        UINavigationBar.appearance().backIndicatorImage = backButtonImage
+        UINavigationBar.appearance().backIndicatorTransitionMaskImage = backButtonImage
+        
+        //将返回按钮的文字position设置不在屏幕上显示
+            UIBarButtonItem.appearance().setBackButtonTitlePositionAdjustment(UIOffset(horizontal: CGFloat(NSInteger.min), vertical: CGFloat(NSInteger.min)), for: .default)
         }
-
+        
     }
     
     @objc func backTap() {
