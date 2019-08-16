@@ -48,7 +48,8 @@
 
     [self addTarget:self action:@selector(editingDidEnd) forControlEvents:(UIControlEventEditingDidEnd)];
 //    self addTarget:self action:@selector(shouldRrturnKeyClick:) forControlEvents:(UIControlEvent)
-    
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(greetingTextFieldChanged:) name:@"UITextFieldTextDidChangeNotification" object:self];
+
 }
 
 - (void)editingDidEnd {
@@ -218,11 +219,7 @@
 //        }else {
 //            self.keyboardType = _oldKeyboardType;
 //        }
-        if (enterType == BaseTextFieldEnterCN) {
-            [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(greetingTextFieldChanged:) name:@"UITextFieldTextDidChangeNotification" object:self];
-        }else {
-//            [[NSNotificationCenter defaultCenter] removeObserver:self name:@"UITextFieldTextDidChangeNotification" object:self];
-        }
+        
     }
 }
 //textField内容改变通知响应
@@ -231,20 +228,48 @@
     UITextRange *selectedRange = self.markedTextRange;
     UITextPosition *position = [self positionFromPosition:selectedRange.start offset:0];
     
-    if (!position) { //// 没有高亮选择的字
-        //过滤非汉字字符
-        self.text = [self filterCharactor:self.text withRegex:@"[^\u4e00-\u9fa5]"];
-        
-        if (self.enterNumber == 0) {
-            
-        }else {
-            if (self.text.length >= self.enterNumber) {
-                self.text = [self.text substringToIndex:self.enterNumber];
+    switch (_enterType) {
+        case BaseTextFieldEnterCN:
+            if (!position) { //// 没有高亮选择的字
+                //过滤非汉字字符
+                self.text = [self filterCharactor:self.text withRegex:@"[^\u4e00-\u9fa5]"];
+                
+                if (self.enterNumber == 0) {
+                    
+                }else {
+                    if (self.text.length >= self.enterNumber) {
+                        self.text = [self.text substringToIndex:self.enterNumber];
+                    }
+                }
+            }else { //有高亮文字
+                //do nothing
             }
-        }
-    }else { //有高亮文字
-        //do nothing
+            break;
+        case BaseTextFieldEnterNumberCNEN:
+            if (!position) { //// 没有高亮选择的字
+                //过滤非汉字字符
+//                http://www.voidcn.com/article/p-oasmqlme-mm.html
+                self.text = [self filterCharactor:self.text withRegex:@"[^\\u0020-\\u007E\\u00A0-\\u00BE\\u2E80-\\uA4CF\\uF900-\\uFAFF\\uFE30-\\uFE4F\\uFF00-\\uFFEF\\u0080-\\u009F\\u2000-\\u201f\r\n]"];
+//                @"^[\\u0000-\\uFFFF]"
+//                @"[^\\u0020-\\u007E\\u00A0-\\u00BE\\u2E80-\\uA4CF\\uF900-\\uFAFF\\uFE30-\\uFE4F\\uFF00-\\uFFEF\\u0080-\\u009F\\u2000-\\u201f\r\n]"
+                if (self.enterNumber == 0) {
+                    
+                }else {
+                    if (self.text.length >= self.enterNumber) {
+                        self.text = [self.text substringToIndex:self.enterNumber];
+                    }
+                }
+            }else { //有高亮文字
+                //do nothing
+                self.text = [self filterCharactor:self.text withRegex:@"[^\\u0020-\\u007E\\u00A0-\\u00BE\\u2E80-\\uA4CF\\uF900-\\uFAFF\\uFE30-\\uFE4F\\uFF00-\\uFFEF\\u0080-\\u009F\\u2000-\\u201f\r\n]"];
+            }
+            break;
+            
+        default:
+            break;
     }
+    
+    
 }
 
 //根据正则，过滤特殊字符

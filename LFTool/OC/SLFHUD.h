@@ -34,6 +34,7 @@ typedef void (^completionBlock)(void);
  一直显示风火轮
  */
 + (void)showLoading;
++ (void)showLoading:(BOOL)tap;
 /**
  一直显示风火轮
 

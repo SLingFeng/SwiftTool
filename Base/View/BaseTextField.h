@@ -18,6 +18,7 @@ typedef enum : NSUInteger {
     BaseTextFieldEnterNumberAndEN,
     BaseTextFieldEnterNumberD5,
     BaseTextFieldEnterCustomize,
+    BaseTextFieldEnterNumberCNEN,
 } BaseTextFieldEnterType;
 
 @interface BaseTextField : UITextField

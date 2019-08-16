@@ -113,6 +113,18 @@ static SLFHUD * _HUD = nil;
     [[SLFHUD share] setHUD:hud];
 }
 
++ (void)showLoading:(BOOL)tap {
+    MBProgressHUD * hud;// = [SLFHUD Hud];
+    //    if (hud == nil) {
+    UIView *view = [[UIApplication sharedApplication].delegate window];
+    hud = [MBProgressHUD showHUDAddedTo:view animated:YES];
+    //    }
+    [hud showAnimated:YES];
+    [hud hideAnimated:YES afterDelay:30];
+    hud.userInteractionEnabled = tap;
+    [[SLFHUD share] setHUD:hud];
+}
+
 + (void)showHint:(NSString *)hint {
     MBProgressHUD * hud = [SLFHUD Hud];
     // Configure for text only and offset down
