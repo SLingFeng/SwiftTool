@@ -125,6 +125,21 @@ static SLFHUD * _HUD = nil;
     [[SLFHUD share] setHUD:hud];
 }
 
++ (void)showLoadingDelay:(NSTimeInterval)delay completion:(completionBlock)block {
+    MBProgressHUD * hud = [SLFHUD Hud];
+    //        UIView *view = [[UIApplication sharedApplication].delegate window];
+    //        hud = [MBProgressHUD showHUDAddedTo:view animated:YES];
+    hud.delegate = [SLFHUD share];
+    [hud showAnimated:YES];
+    [hud hideAnimated:YES afterDelay:delay];
+    [SLFHUD share].completion = ^() {
+        hud.delegate = nil;
+        if (block) {
+            block();
+        }
+    };
+}
+
 + (void)showHint:(NSString *)hint {
     MBProgressHUD * hud = [SLFHUD Hud];
     // Configure for text only and offset down

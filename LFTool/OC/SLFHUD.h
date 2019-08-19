@@ -41,6 +41,7 @@ typedef void (^completionBlock)(void);
  @param hint 提示文字
  */
 + (void)showLoadingHint:(NSString *)hint;
++ (void)showLoadingDelay:(NSTimeInterval)delay completion:(completionBlock)block;
 /**
  带文字的hud 2s消失
 

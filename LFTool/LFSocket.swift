@@ -71,12 +71,14 @@ class LFSocket: NSObject, SRWebSocketDelegate {
     
     func webSocket(_ webSocket: SRWebSocket!, didReceiveMessage message: Any!) {
         LFLog(message)
-        let data = LFSocket.dictionaryWithJsonString(message as? String)
-        delegates.forEach { (delegate) in
-            if let dg = delegate as? LFSocketDelegate {
-                DispatchQueue.main.async {
-                    dg.lfSocketDidReceiveMessage(data)
-                }                
+        DispatchQueue.main.async {[weak self] in
+            let data = LFSocket.dictionaryWithJsonString(message as? String)
+            self?.delegates.forEach { (delegate) in
+                if let dg = delegate as? LFSocketDelegate {
+                    DispatchQueue.main.async {
+                        dg.lfSocketDidReceiveMessage(data)
+                    }
+                }
             }
         }
     }
@@ -95,12 +97,17 @@ class LFSocket: NSObject, SRWebSocketDelegate {
     
     func webSocket(_ webSocket: SRWebSocket!, didFailWithError error: Error!) {
         reConnect()
-        delegates.forEach { (delegate) in
-            if let dg = delegate as? LFSocketDelegate {
-                dg.lfSocketDidFailWithError(error)
+        DispatchQueue.main.async {[weak self] in
+            self?.delegates.forEach { (delegate) in
+                if let dg = delegate as? LFSocketDelegate {
+                    dg.lfSocketDidFailWithError(error)
+                }
             }
+            LFLog(error)
+            SLFHUD.showHint("网络出小差了，请耐心等待")
         }
-        LFLog(error)
+        
+//        SLFHUD.showHint(error.localizedDescription)
     }
     
     func webSocket(_ webSocket: SRWebSocket!, didCloseWithCode code: Int, reason: String!, wasClean: Bool) {
