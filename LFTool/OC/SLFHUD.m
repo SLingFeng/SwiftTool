@@ -125,10 +125,11 @@ static SLFHUD * _HUD = nil;
     [[SLFHUD share] setHUD:hud];
 }
 
-+ (void)showLoadingDelay:(NSTimeInterval)delay completion:(completionBlock)block {
++ (void)showLoadingHint:(NSString *)hint delay:(NSTimeInterval)delay completion:(completionBlock)block {
     MBProgressHUD * hud = [SLFHUD Hud];
     //        UIView *view = [[UIApplication sharedApplication].delegate window];
     //        hud = [MBProgressHUD showHUDAddedTo:view animated:YES];
+    hud.label.text = hint;
     hud.delegate = [SLFHUD share];
     [hud showAnimated:YES];
     [hud hideAnimated:YES afterDelay:delay];
