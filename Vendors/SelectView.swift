@@ -178,7 +178,7 @@ class SelectView: UIView {
                     arrowIV.isHidden = false
                     arrowIV.snp.makeConstraints({ (make) in
                         make.size.equalTo(CGSize(width: 10, height: 7))
-                        make.centerX.equalTo(btn.snp_centerX).offset(w/4 + 10)
+                        make.right.equalTo(btn.snp_right).offset(-5)
                         make.centerY.equalTo(btn.snp.centerY)
                     })
                     
@@ -193,6 +193,12 @@ class SelectView: UIView {
                     strongSelf.lastBtn?.titleLabel?.textColor = strongSelf.noTextColor
                     strongSelf.lastBtn?.titleLabel?.font = .systemFont(ofSize: 17)
                     strongSelf.selNum = n
+                    
+                    strongSelf.btnArr.forEach { (btn) in
+                        btn.isSelected = false
+                        btn.titleLabel?.textColor = strongSelf.noTextColor
+                        btn.titleLabel?.font = .systemFont(ofSize: 17)
+                    }
                     
                     btn.isSelected = true
                     btn.titleLabel?.textColor = strongSelf.selTextColor
@@ -222,11 +228,16 @@ class SelectView: UIView {
                         
                         if toIndex[n] == true {
                             //UIView.animate(withDuration: 0, animations: {
-                            var p = strongSelf.arrowIV.center
-                            p.x = btn.centerX + btn.width/4 + 10
-                            p.y = btn.centerY
-                            strongSelf.arrowIV.center = p
+//                            var p = strongSelf.arrowIV.center
+//                            p.x = btn.centerX + btn.width/4 + 10
+//                            p.y = btn.centerY
+//                            strongSelf.arrowIV.center = p
                             //})
+                            strongSelf.arrowIV.snp.remakeConstraints({ (make) in
+                                make.size.equalTo(CGSize(width: 10, height: 7))
+                                make.right.equalTo(btn.snp_right).offset(-5)
+                                make.centerY.equalTo(btn.snp.centerY)
+                            })
                             
                             if strongSelf.tapTwoNum >= 1 {
                                 strongSelf.isTapTwo = true
@@ -289,11 +300,16 @@ class SelectView: UIView {
         if isFilter {
             if toIndex[btn.tag - 10] == true {
 //            UIView.animate(withDuration: 0.3, animations: {
-                var p = self.arrowIV.center
-                p.x = btn.centerX + btn.width/4 + 10
-                p.y = btn.centerY
-                self.arrowIV.center = p
+//                var p = self.arrowIV.center
+//                p.x = btn.centerX + btn.width/4 + 10
+//                p.y = btn.centerY
+//                self.arrowIV.center = p
 //            })
+                arrowIV.snp.remakeConstraints({ (make) in
+                    make.size.equalTo(CGSize(width: 10, height: 7))
+                    make.right.equalTo(btn.snp_right).offset(-5)
+                    make.centerY.equalTo(btn.snp.centerY)
+                })
             }
         }
         
