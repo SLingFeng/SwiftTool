@@ -20,7 +20,7 @@ enum AnimateType {
 }
 
 class ChatViewController: LFBaseViewController, UITableViewDelegate, UITableViewDataSource, UITextViewDelegate, LFSocketDelegate, PPStickerInputViewDelegate {
-//
+    //
     let toolBarHeight: CGFloat = 56
     let fitBlank: CGFloat = 15
     let SCREEN_WIDTH = UIScreen.main.bounds.size.width
@@ -35,6 +35,7 @@ class ChatViewController: LFBaseViewController, UITableViewDelegate, UITableView
     var mKeyBoardAnimateDuration: Double = 0.5
     var mKeyBoardHeight: CGFloat = 0
     
+    var photoGo = false
     var fisrtLoad = true
     var animateType = AnimateType.animate1 {
         didSet {
@@ -46,7 +47,7 @@ class ChatViewController: LFBaseViewController, UITableViewDelegate, UITableView
     var oldOffsetY: CGFloat = 0
     var isKeyboardShowed = false
     var isEmojiKeyboardShowed = false
-
+    
     let socket = LFSocket.shared
     
     let selImgSubject = PublishSubject<UIImage>()
@@ -77,7 +78,21 @@ class ChatViewController: LFBaseViewController, UITableViewDelegate, UITableView
         
         socket.addDelegate(self)
         
-        
+        let b = LFTool.isToDay()
+        if !b {
+        ChatVM.user_getChatNotice().drive(onNext: { (str) in
+            //公告
+            if !str.empty() {
+                _ = CT_MsgView(frame: kScreen, text: str)
+            }
+        }).disposed(by: dig)
+        }
+        // 添加键盘弹出消失监听
+        //        if fisrtLoad {
+        NotificationCenter.default.addObserver(self, selector: #selector(keyBoardWillShow(notification:)), name: UIResponder.keyboardWillShowNotification, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(keyBoardWillHide(notification:)), name: UIResponder.keyboardWillHideNotification, object: nil)
+        //        }
+        //        fisrtLoad = false
         
         self.view.backgroundColor = UIColor.white
         
@@ -100,16 +115,18 @@ class ChatViewController: LFBaseViewController, UITableViewDelegate, UITableView
         chatTableView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: fitBlank, right: 0)
         chatTableView.separatorStyle = .none
         chatTableView.register(ChatBaseCell.self, forCellReuseIdentifier: "chat")
+        chatTableView.register(ChatNoMoreCell.self, forCellReuseIdentifier: "cell")
+        
         // 点击列表使键盘消失
         let removeKeyBoardTap = UITapGestureRecognizer(target: self, action: #selector(tapRemoveBottomView(recognizer:)))
-//        self.view.addGestureRecognizer(removeKeyBoardTap)
+        //        self.view.addGestureRecognizer(removeKeyBoardTap)
         chatTableView.addGestureRecognizer(removeKeyBoardTap)
         self.view.addSubview(chatTableView)
-//        if #available(iOS 11.0, *) {
-//            chatTableView.contentInsetAdjustmentBehavior = .never
-//        } else {
-//            // Fallback on earlier versions
-//        }
+        //        if #available(iOS 11.0, *) {
+        //            chatTableView.contentInsetAdjustmentBehavior = .never
+        //        } else {
+        //            // Fallback on earlier versions
+        //        }
         
         // 底部工具栏界面
         toolBarView = PPStickerInputView()
@@ -118,19 +135,19 @@ class ChatViewController: LFBaseViewController, UITableViewDelegate, UITableView
         self.view.addSubview(toolBarView)
         
         // 添加约束
-//        toolBarView.snp.makeConstraints { (make) in
-//            make.left.equalTo(self.view.snp.left)
-//            make.right.equalTo(self.view.snp.right)
-//            make.height.equalTo(toolBarHeight)
-//            make.bottom.equalTo(-LFTool.Height_HomeBar())
-//        }
-//
-//        chatTableView.snp.makeConstraints { (make) in
-//            make.left.equalTo(self.view.snp.left)
-//            make.right.equalTo(self.view.snp.right)
-//            make.bottom.equalTo(toolBarView.snp.top)
-//            make.top.equalTo(0)
-//        }
+        //        toolBarView.snp.makeConstraints { (make) in
+        //            make.left.equalTo(self.view.snp.left)
+        //            make.right.equalTo(self.view.snp.right)
+        //            make.height.equalTo(toolBarHeight)
+        //            make.bottom.equalTo(-LFTool.Height_HomeBar())
+        //        }
+        //
+        //        chatTableView.snp.makeConstraints { (make) in
+        //            make.left.equalTo(self.view.snp.left)
+        //            make.right.equalTo(self.view.snp.right)
+        //            make.bottom.equalTo(toolBarView.snp.top)
+        //            make.top.equalTo(0)
+        //        }
         toolBarView.frame = toolBarViewFrame()
         chatTableView.frame = chatTableViewFrame()
         
@@ -138,9 +155,6 @@ class ChatViewController: LFBaseViewController, UITableViewDelegate, UITableView
         
         toolBarView.imageBtn.rx.tap.subscribe(onNext: {[weak self] (_) in
             if let strongSelf = self {
-//                strongSelf.toolBarView.textView.resignFirstResponder()
-//                strongSelf.view.endEditing(true)
-//                strongSelf.hideKeyboard()
                 strongSelf.showSheet()
             }
         }).disposed(by: dig)
@@ -148,14 +162,12 @@ class ChatViewController: LFBaseViewController, UITableViewDelegate, UITableView
         toolBarView.sendBtn.rx.tap.subscribe(onNext: {[weak self] (_) in
             if let strongSelf = self {
                 if !strongSelf.toolBarView.textView.text.empty() {
-//                    let s = NSAttributedString(string: strongSelf.toolBarView.textView.text!)
                     let m = LFSocketSendModel()
                     m.type = "say"
                     m.from_client_id = strongSelf.socket.model.client_id
                     m.content = strongSelf.toolBarView.textView.text
                     strongSelf.socket.send(m)
-
-//                    strongSelf.socket.send(["type" : "say", "from_client_id" : strongSelf.socket.model.client_id, "to_client_id" : "all/client_id", "content" : s])
+                    
                     strongSelf.toolBarView.textView.text = ""
                 }
             }
@@ -163,12 +175,9 @@ class ChatViewController: LFBaseViewController, UITableViewDelegate, UITableView
         
         selImgSubject.subscribe(onNext: {[weak self] (img) in
             if let strongSelf = self {
-                CT_VerifiedVM.upLoadImgMsg(api: Api.user_uploadImg(img: strongSelf.chatVM.chatImage!, name: "chatImage")).subscribe(onNext: { (str) in
-                    
-//                }, onError: <#T##((Error) -> Void)?##((Error) -> Void)?##(Error) -> Void#>, onCompleted: <#T##(() -> Void)?##(() -> Void)?##() -> Void#>, onDisposed: <#T##(() -> Void)?##(() -> Void)?##() -> Void#>)
+                CT_VerifiedVM.upLoadImgMsg(api: Api.user_uploadImg(img: strongSelf.chatVM.chatImage!, name: "chatImage")).subscribe(onNext: {[weak self] (str) in
                     if let strongSelf = self {
                         if !str.empty() {
-//                            strongSelf.socket.send(["type" : "say", "from_client_id" : strongSelf.socket.model.client_id, "to_client_id" : "all/client_id", "pic" : str, "content" : "", "face" : ""])
                             let m = LFSocketSendModel()
                             m.type = "say"
                             m.from_client_id = strongSelf.socket.model.client_id
@@ -176,14 +185,12 @@ class ChatViewController: LFBaseViewController, UITableViewDelegate, UITableView
                             strongSelf.socket.send(m)
                         }
                     }
+                    }, onError: {[weak self] (e) in
+                        self?.photoGo = false
+                    }, onCompleted: {[weak self] in
+                        self?.photoGo = false
                 }).disposed(by: strongSelf.dig)
                 
-//                let m = Message(incoming: false, image: img, avatar: GVUserDefaults.standard().image_path, name: GVUserDefaults.standard().nick_name)
-//                strongSelf.msgList.append(m)
-//                strongSelf.reloadTableView()
-//                let second =  MessageItem(image:img,user:strongSelf.me, date:Date(), mtype:.mine)
-//                strongSelf.Chats.append(second)
-//                strongSelf.reloadTableView()
             }
         }).disposed(by: dig)
         
@@ -195,14 +202,45 @@ class ChatViewController: LFBaseViewController, UITableViewDelegate, UITableView
         m.token = Environment().token!
         m.client_name = GVUserDefaults.standard().nick_name
         socket.send(m)
-//        socket.send(["type" : "login", "client_name" : GVUserDefaults.standard().nick_name, "room_id" : "1", "token" : Environment().token!])
+        //        socket.send(["type" : "login", "client_name" : GVUserDefaults.standard().nick_name, "room_id" : "1", "token" : Environment().token!])
         self.view.addSubview(snapshotBtn);
         
-        SLFHUD.showLoadingDelay(30) {[weak self] in
-            if self?.socket.socket.readyState != SRReadyState.CONNECTING && self?.socket.socket.readyState != SRReadyState.OPEN {
+        SLFHUD.showLoadingHint("连接中", delay: 30, completion: {[weak self] in
+            if self?.socket.socket?.readyState != SRReadyState.CONNECTING && self?.socket.socket?.readyState != SRReadyState.OPEN {
                 SLFHUD.showHint("网络出小差了，请耐心等待")
             }
-        }
+        })
+        
+        setItem()
+    }
+    
+    //item
+    func setItem() {
+        let btn2 = UIButton(frame: CGRect.init(x: 0, y: 0, width: 20, height: 20))
+        btn2.setImage(UIImage(named: "chat_icon_jilu"), for: .normal)
+        btn2.titleLabel?.font = .systemFont(ofSize: LFTool.scale(num: 16))
+        btn2.frame = CGRect.init(x: 0, y: 0, width: 40, height: 40)
+        
+        let btn3 = UIButton(frame: CGRect.init(x: 0, y: 0, width: 20, height: 20))
+        btn3.setImage(UIImage(named: "chat_icon_people"), for: .normal)
+        btn3.titleLabel?.font = .systemFont(ofSize: LFTool.scale(num: 16))
+        btn3.frame = CGRect.init(x: 0, y: 0, width: 40, height: 40)
+        
+        self.navigationItem.rightBarButtonItems = [UIBarButtonItem(customView: btn3), UIBarButtonItem(customView: btn2)]
+        
+        btn3.rx.tap.subscribe(onNext: {[weak self] (_) in
+            if let strongSelf = self {
+                strongSelf.navigationController?.pushViewController(ChatGroupPeopleViewController(), animated: true)
+            }
+        }).disposed(by: dig)
+        
+        btn2.rx.tap.subscribe(onNext: {[weak self] (_) in
+            if let strongSelf = self {
+                strongSelf.navigationController?.pushViewController(ChatHistroyViewController(), animated: true)
+            }
+        }).disposed(by: dig)
+        
+        
     }
     
     func toolBarViewFrame() -> CGRect {
@@ -219,21 +257,24 @@ class ChatViewController: LFBaseViewController, UITableViewDelegate, UITableView
         chatTableView.reloadData()
         animateType = .animate1
         lastDifY = 0
-        NotificationCenter.default.removeObserver(self)
-        socket.removeDelegate(self)
-
+        
+        if !photoGo {
+            socket.removeDelegate(self)
+            NotificationCenter.default.removeObserver(self)
+        }
     }
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         socket.addDelegate(self)
+
         
-        // 添加键盘弹出消失监听
-        if fisrtLoad {
-            NotificationCenter.default.addObserver(self, selector: #selector(keyBoardWillShow(notification:)), name: UIResponder.keyboardWillShowNotification, object: nil)
-            NotificationCenter.default.addObserver(self, selector: #selector(keyBoardWillHide(notification:)), name: UIResponder.keyboardWillHideNotification, object: nil)
-        }
-        fisrtLoad = false
+        //        // 添加键盘弹出消失监听
+        //        if fisrtLoad {
+        //            NotificationCenter.default.addObserver(self, selector: #selector(keyBoardWillShow(notification:)), name: UIResponder.keyboardWillShowNotification, object: nil)
+        //            NotificationCenter.default.addObserver(self, selector: #selector(keyBoardWillHide(notification:)), name: UIResponder.keyboardWillHideNotification, object: nil)
+        //        }
+        //        fisrtLoad = false
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -242,37 +283,50 @@ class ChatViewController: LFBaseViewController, UITableViewDelegate, UITableView
         v?.isHidden = true
         
         navigationController?.setNavigationBarHidden(false, animated: animated)
-        IQKeyboardManager.shared().isEnabled = false
     }
     
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         let v = UIApplication.shared.keyWindow?.viewWithTag(8901)
         v?.isHidden = false
-        IQKeyboardManager.shared().isEnabled = true
+        
+    }
+    
+    override func loadView() {
+        super.loadView()
+        IQKeyboardManager.shared().isEnabled = false
+        
     }
     
     deinit {
+        IQKeyboardManager.shared().isEnabled = true
+        
         socket.disConnect(type: .disConnectByUser)
+        
     }
     
     // MARK: tableViewDelegate
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return msgList.count
+        return msgList.count == 0 ? 0 : msgList.count + 1
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        if indexPath.row == 0 {
+            let cell = tableView.dequeueReusableCell(withIdentifier: "cell")!
+            
+            return cell
+        }
         let cell = ChatTextCell(style: .default, reuseIdentifier: "chat")
-        let message = msgList[indexPath.row]
+        let message = msgList[indexPath.row - 1]
         cell.setUpWithModel(message: message)
         
         cell.cellChange = {[weak cell] in
             cell?.setNeedsLayout()
-//            tableView.visibleCells.forEach({ (tc) in
-//                if tc == cell {
-                    tableView.reloadRows(at: [indexPath], with: .automatic)
-//                }
-//            })
+            //            tableView.visibleCells.forEach({ (tc) in
+            //                if tc == cell {
+            tableView.reloadRows(at: [indexPath], with: .automatic)
+            //                }
+            //            })
             
         }
         return cell
@@ -295,72 +349,65 @@ class ChatViewController: LFBaseViewController, UITableViewDelegate, UITableView
     func textView(_ textView: UITextView, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool {
         if text == "\n" {
             let msgText = textView.text.trimmingCharacters(in: .whitespaces)
-//            toolBarView.sendBtn.isEnabled = msgText.count > 0 ? true : false
+            //            toolBarView.sendBtn.isEnabled = msgText.count > 0 ? true : false
             if msgText.lengthOfBytes(using: .utf8) == 0 {
                 return true
             }
-//            if text != "" && text != "\n" {
-//                return true
-//            }
-//            if text == "\n" {
-//                return false
-//            }
-            //            let messageOut = Message(incoming: false, text: msgText, avatar: "newbeeee")
-            //            msgList.append(messageOut)
-            //            let messageIn = Message(incoming: true, text: msgText, avatar: "chris")
-            //            msgList.append(messageIn)
-//                        toolBarView.sendBtn.isEnabled = true
+            //            if text != "" && text != "\n" {
+            //                return true
+            //            }
+            //            if text == "\n" {
+            //                return false
+            //            }
             let m = LFSocketSendModel()
             m.type = "say"
             m.from_client_id = socket.model.client_id
             m.content = textView.text
             socket.send(m)
             textView.text = ""
-
+            
             return false
         }
-//        toolBarView.sendBtn.isEnabled = text.count > 0 ? true : false
+        //        toolBarView.sendBtn.isEnabled = text.count > 0 ? true : false
         return true
     }
     
     func textViewDidChange(_ textView: UITextView) {
-//        print(textView.text.empty())
-//        if textView.text.empty() {
-            toolBarView.sendBtn.isEnabled = !textView.text.empty()
-        toolBarView.sendBtn.alpha = textView.text.empty() ? 0.5 : 1
-//        }else {
-//            toolBarView.sendBtn.isEnabled = true
-////            toolBarView.sendBtn.isEnabled = true
-////            toolBarView.sendBtn.alpha = 1
-//        }
+//        toolBarView.sendBtn.isEnabled = !textView.text.empty()
+        toolBarView.sendBtn.isHidden = textView.text.empty()
+//        toolBarView.sendBtn.alpha = textView.text.empty() ? 0.5 : 1
+        
+        toolBarView.imageBtn.isHidden = !textView.text.empty()
+        toolBarView.emojiToggleButton.isHidden = !textView.text.empty()
     }
     //MARK:
     func stickerInputViewDidClickEmoji(_ emojiStr: String!, inputView: PPStickerInputView!) {
         if emojiStr.empty() {
             return
         }
-//        socket.send(["type" : "say", "from_client_id" : socket.model.client_id, "to_client_id" : "all/client_id", "content" : emojiStr])
+        //        socket.send(["type" : "say", "from_client_id" : socket.model.client_id, "to_client_id" : "all/client_id", "content" : emojiStr])
         let m = LFSocketSendModel()
         m.type = "say"
         m.from_client_id = socket.model.client_id
         m.face = emojiStr
         socket.send(m)
         inputView.textView.text = ""
+        scrollToBottom()
     }
     func stickerInputViewDidClickSendButton(_ inputView: PPStickerInputView!) {
-
+        
         let text = inputView.plainText
         if text?.count == 0 {
-//            toolBarView.sendBtn.isEnabled = true
+            //            toolBarView.sendBtn.isEnabled = true
             toolBarView.sendBtn.alpha = 0.5
             return
         }
-//        toolBarView.sendBtn.isEnabled = false
+        //        toolBarView.sendBtn.isEnabled = false
         toolBarView.sendBtn.alpha = 1
         
-//        let s = NSAttributedString(string: text!)
-//        LFLog(s)
-//        socket.send(["type" : "say", "from_client_id" : socket.model.client_id, "to_client_id" : "all/client_id", "content" : text!])
+        //        let s = NSAttributedString(string: text!)
+        //        LFLog(s)
+        //        socket.send(["type" : "say", "from_client_id" : socket.model.client_id, "to_client_id" : "all/client_id", "content" : text!])
         let m = LFSocketSendModel()
         m.type = "say"
         m.from_client_id = socket.model.client_id
@@ -379,10 +426,10 @@ class ChatViewController: LFBaseViewController, UITableViewDelegate, UITableView
         inputView.textView.becomeFirstResponder()
         // 得到键盘高度
         
-//        let keyBoardHeight = inputView.frame.size.height - 56
-//        mKeyBoardHeight = (keyBoardHeight - LFTool.Height_HomeBar())
-//
-//        showKeyboard()
+        //        let keyBoardHeight = inputView.frame.size.height - 56
+        //        mKeyBoardHeight = (keyBoardHeight - LFTool.Height_HomeBar())
+        //
+        //        showKeyboard()
     }
     
     // MARK: private
@@ -418,11 +465,11 @@ class ChatViewController: LFBaseViewController, UITableViewDelegate, UITableView
     
     func showKeyboard() {
         
-//        var selfFrame = self.view.frame
-//        let textViewHeight = isEmojiKeyboardShowed ? self.toolBarView.heightThatFits() : mKeyBoardHeight
+        //        var selfFrame = self.view.frame
+        //        let textViewHeight = isEmojiKeyboardShowed ? self.toolBarView.heightThatFits() : mKeyBoardHeight
         
         var animate: (()->Void) = {
-//            self.toolBarView.transform = CGAffineTransform(translationX: 0, y: -self.mKeyBoardHeight)
+            self.toolBarView.transform = CGAffineTransform(translationX: 0, y: -self.mKeyBoardHeight)
         }
         
         
@@ -435,44 +482,44 @@ class ChatViewController: LFBaseViewController, UITableViewDelegate, UITableView
             let distance2 = SCREEN_HEIGHT - toolBarHeight - 2 * fitBlank
             let difY = cellDistance - distance1
             
-//            NSLog("showKeyboard:%f--", self.view.transform.ty)
+            //            NSLog("showKeyboard:%f--", self.view.transform.ty)
             
-//            selfFrame.size.height = distance1
+            //            selfFrame.size.height = distance1
             
             if cellDistance <= distance1 {
                 animate = {
-//                    self.toolBarView.transform = CGAffineTransform(translationX: 0, y: -self.mKeyBoardHeight)
-                    var r = self.toolBarView.frame
-                    r.origin.y = kScreenH - self.mKeyBoardHeight
-                    self.toolBarView.frame = r
+                    self.toolBarView.transform = CGAffineTransform(translationX: 0, y: -self.mKeyBoardHeight)
+                    //                    var r = self.toolBarView.frame
+                    //                    r.origin.y = kScreenH - self.mKeyBoardHeight
+                    //                    self.toolBarView.frame = r
                 }
                 animateType = .animate1
             } else if distance1 < cellDistance && cellDistance <= distance2 {
                 animate = {
                     self.toolBarView.transform = CGAffineTransform(translationX: 0, y: -self.mKeyBoardHeight)
-//                    var r = self.toolBarView.frame
-//                    r.origin.y = kScreenH - self.mKeyBoardHeight - self.toolBarView.frame.height
-//                    self.toolBarView.frame = r
+                    //                    var r = self.toolBarView.frame
+                    //                    r.origin.y = kScreenH - self.mKeyBoardHeight - self.toolBarView.frame.height
+                    //                    self.toolBarView.frame = r
                     self.chatTableView.transform = CGAffineTransform(translationX: 0, y: -difY)
-//                    var r1 = self.chatTableView.frame
-//                    r1.size.height = r.origin.y
-//                    self.chatTableView.frame = r1
+                    //                    var r1 = self.chatTableView.frame
+                    //                    r1.size.height = r.origin.y
+                    //                    self.chatTableView.frame = r1
                     
-//                    var r2 = self.view.frame
-//                    r2.size.height = kScreenH - self.mKeyBoardHeight//LFTool.Height_NavBar()
-//                    self.view.frame = r2
+                    //                    var r2 = self.view.frame
+                    //                    r2.size.height = kScreenH - self.mKeyBoardHeight//LFTool.Height_NavBar()
+                    //                    self.view.frame = r2
                     
                     self.lastDifY = difY
                 }
                 animateType = .animate2
             } else {
                 animate = {
-//                    self.view.transform = CGAffineTransform.identity
+                    //                    self.view.transform = CGAffineTransform.identity
                     self.view.transform = CGAffineTransform(translationX: 0, y: -self.mKeyBoardHeight)
-//                    var r = self.view.frame
-//                    r.size.height = kScreenH - LFTool.Height_NavBar() - self.mKeyBoardHeight
-//                    self.view.frame = r
-//                    self.view.frame = selfFrame
+                    //                    var r = self.view.frame
+                    //                    r.size.height = kScreenH - LFTool.Height_NavBar() - self.mKeyBoardHeight
+                    //                    self.view.frame = r
+                    //                    self.view.frame = selfFrame
                 }
                 animateType = .animate3
             }
@@ -488,15 +535,20 @@ class ChatViewController: LFBaseViewController, UITableViewDelegate, UITableView
     
     func hideKeyboard() {
         
+        toolBarView.sendBtn.isHidden = toolBarView.textView.text.empty()
+        
+        toolBarView.imageBtn.isHidden = !toolBarView.textView.text.empty()
+        toolBarView.emojiToggleButton.isHidden = !toolBarView.textView.text.empty()
+        
         if toolBarView.textView.isFirstResponder {
             toolBarView.textView.resignFirstResponder()
             
             let options = UIView.AnimationOptions(rawValue: UInt((mUserInfo[UIResponder.keyboardAnimationCurveUserInfoKey] as! NSNumber).intValue << 16))
             
             var animate: (() -> Void) = {
-//                self.toolBarView.frame = CGRect(x: 0, y: kScreenH - LFTool.Height_HomeBar() - self.toolBarHeight, width: kScreenW, height: self.toolBarHeight)//self.toolBarViewFrame()
-//                self.chatTableView.frame = CGRect(x: 0, y: 0, width: kScreenW, height: kScreenH - LFTool.Height_HomeBar() - self.toolBarHeight)//self.chatTableViewFrame()
-//                self.view.frame = CGRect(x: 0, y: 0, width: kScreenW, height: kScreenH)
+                //                self.toolBarView.frame = CGRect(x: 0, y: kScreenH - LFTool.Height_HomeBar() - self.toolBarHeight, width: kScreenW, height: self.toolBarHeight)//self.toolBarViewFrame()
+                //                self.chatTableView.frame = CGRect(x: 0, y: 0, width: kScreenW, height: kScreenH - LFTool.Height_HomeBar() - self.toolBarHeight)//self.chatTableViewFrame()
+                //                self.view.frame = CGRect(x: 0, y: 0, width: kScreenW, height: kScreenH)
             }
             NSLog("hideKeyboard:%@--", self.toolBarView)
             // 返回 view 或 toolBarView 或 chatTableView 到原有状态
@@ -505,8 +557,8 @@ class ChatViewController: LFBaseViewController, UITableViewDelegate, UITableView
                 animate = {
                     self.toolBarView.transform = CGAffineTransform.identity
                     self.chatTableView.transform = CGAffineTransform.identity
-//                    self.toolBarView.frame = self.toolBarViewFrame()
-//                    self.chatTableView.frame = self.chatTableViewFrame()
+                    //                    self.toolBarView.frame = self.toolBarViewFrame()
+                    //                    self.chatTableView.frame = self.chatTableViewFrame()
                 }
             case .animate2:
                 animate = {
@@ -516,9 +568,9 @@ class ChatViewController: LFBaseViewController, UITableViewDelegate, UITableView
             case .animate3:
                 animate = {
                     self.view.transform = CGAffineTransform.identity
-//                    self.view.frame = CGRect(x: 0, y: 0, width: kScreenW, height: kScreenH)
+                    //                    self.view.frame = CGRect(x: 0, y: 0, width: kScreenW, height: kScreenH)
                 }
-//                break
+                //                break
             }
             
             UIView.animate(withDuration: mKeyBoardAnimateDuration, delay: 0, options: options, animations: animate, completion: { (finish) in
@@ -563,49 +615,44 @@ class ChatViewController: LFBaseViewController, UITableViewDelegate, UITableView
                 lastDifY += difY
                 let animate: (()->Void) = {
                     self.chatTableView.transform = CGAffineTransform(translationX: 0, y: -self.lastDifY)
-//                    var r1 = self.chatTableView.frame
-//                    r1.size.height = self.chatTableViewFrame().size.height - self.lastDifY
-//                    self.chatTableView.frame = r1
+                    //                    var r1 = self.chatTableView.frame
+                    //                    r1.size.height = self.chatTableViewFrame().size.height - self.lastDifY
+                    //                    self.chatTableView.frame = r1
                 }
                 UIView.animate(withDuration: mKeyBoardAnimateDuration, delay: 0, options: animateOption, animations: animate)
                 
             } else if lastDifY + difY > mKeyBoardHeight {
                 if lastDifY != mKeyBoardHeight {
-                     let animate: (()->Void) = {
+                    let animate: (()->Void) = {
                         self.chatTableView.transform = CGAffineTransform(translationX: 0, y: -self.mKeyBoardHeight)
-//                        var r1 = self.chatTableView.frame
-//                        r1.size.height = kScreenH - self.toolBarHeight - self.mKeyBoardHeight
-//                        self.chatTableView.frame = r1
+                        //                        var r1 = self.chatTableView.frame
+                        //                        r1.size.height = kScreenH - self.toolBarHeight - self.mKeyBoardHeight
+                        //                        self.chatTableView.frame = r1
                     }
                     UIView.animate(withDuration: mKeyBoardAnimateDuration, delay: 0, options: animateOption, animations: animate)
                     lastDifY = mKeyBoardHeight
                 }
                 scrollToBottom(animated: animated)
             }
+        }else {
+            //键盘未起，直接发图片
+            scrollToBottom(animated: animated)
         }
-//        LFLog("end lastDifY:\(lastDifY)")
+        //        LFLog("end lastDifY:\(lastDifY)")
     }
     
     // 滚动最后一条消息到列表界面底部
     func scrollToBottom(animated: Bool = true) {
         if msgList.count > 0 {
-//            CATransaction.begin() // 1
-//            CATransaction.setDisableActions(true) // 2 关闭layer隐式动画
-
-            chatTableView.scrollToRow(at: IndexPath(row: msgList.count - 1, section: 0), at: .bottom, animated: animated)
+            //            CATransaction.begin() // 1
+            //            CATransaction.setDisableActions(true) // 2 关闭layer隐式动画
             
-//            CATransaction.commit() // 3
+            chatTableView.scrollToRow(at: IndexPath(row: msgList.count, section: 0), at: .bottom, animated: animated)
+            
+            //            CATransaction.commit() // 3
         }
     }
     
-    // 清空消息
-//    @objc func clearMessage() {
-//        removeKeyBoard()
-//        msgList.removeAll()
-//        chatTableView.reloadData()
-//        animateType = .animate1
-//        lastDifY = 0
-//    }
     
     // 点击消息列表键盘消失
     @objc func tapRemoveBottomView(recognizer: UITapGestureRecognizer) {
@@ -616,20 +663,17 @@ class ChatViewController: LFBaseViewController, UITableViewDelegate, UITableView
     func removeKeyBoard() {
         if toolBarView.textView.isFirstResponder {
             toolBarView.textView.resignFirstResponder()
-//            toolBarView.transform = CGAffineTransform.identity
+            self.view.transform = CGAffineTransform.identity
             self.toolBarView.transform = CGAffineTransform.identity
             self.chatTableView.transform = CGAffineTransform.identity
-//            self.toolBarView.frame = self.toolBarViewFrame()
-//            self.chatTableView.frame = self.chatTableViewFrame()
         }
-
+        
     }
     
     //MARK: socket
     func lfSocketDidReceiveMessage(_ message: Any?) {
-        //        LFLog(message)
         
-        
+        SLFHUD.hide()
         if let data = message as? NSDictionary {
             if let model = BF_ChatDataModel.deserialize(from: data) {
                 switch model.type {
@@ -640,19 +684,15 @@ class ChatViewController: LFBaseViewController, UITableViewDelegate, UITableView
                     let id = data["client_id"] as! String
                     LFLog("login id \(id)")
                     socket.model.client_id = id
-                    
-                    //                case "login":
-                    //                    let id = data["client_id"] as! String
-                    //                    LFLog("login id \(id)")
-                //                    socket.model.client_id = id
                 case "say":
+                    
                     //                    {"type":"say","from_client_id":"7f0000010fa100000001","from_client_name":"lyl123456","to_client_id":"all","content":"\u5404\u4f4d\u597d","time":"2019-07-04 09:47:02"}
-//                    let from_client_id = data["from_client_id"] as! String
-//                    let name = (data["from_client_name"] as? String) ?? ""
-//                    let text = (data["content"] as? String) ?? ""
-//                    let time = (data["time"] as? String) ?? ""
+                    //                    let from_client_id = data["from_client_id"] as! String
+                    //                    let name = (data["from_client_name"] as? String) ?? ""
+                    //                    let text = (data["content"] as? String) ?? ""
+                    //                    let time = (data["time"] as? String) ?? ""
                     let who = model.from_client_id == socket.model.client_id ? false : true
-//                    let userImage = model.from_client_id == socket.model.client_id ? GVUserDefaults.standard().image_path : model
+                    //                    let userImage = model.from_client_id == socket.model.client_id ? GVUserDefaults.standard().image_path : model
                     //                    LFLog("sayid \(from_client_id)")
                     var m: Message?
                     if !model.content.empty() {
@@ -683,9 +723,9 @@ class ChatViewController: LFBaseViewController, UITableViewDelegate, UITableView
                             m.data.forEach { (model) in
                                 let who = model.from_user_id == GVUserDefaults.standard().uid ? false : true
                                 
-//                                let m = Message(incoming: who, text: model.content, avatar: model.image_path, name: model.nick_name)
-//                                msgList.insert(m, at: 0)
-//                                let who = model.from_client_id == socket.model.client_id ? false : true
+                                //                                let m = Message(incoming: who, text: model.content, avatar: model.image_path, name: model.nick_name)
+                                //                                msgList.insert(m, at: 0)
+                                //                                let who = model.from_client_id == socket.model.client_id ? false : true
                                 //                    let userImage = model.from_client_id == socket.model.client_id ? GVUserDefaults.standard().image_path : model
                                 //                    LFLog("sayid \(from_client_id)")
                                 var message: Message?
@@ -705,30 +745,17 @@ class ChatViewController: LFBaseViewController, UITableViewDelegate, UITableView
                                 if message != nil {
                                     message!.time = SLFCommonTools.timestamp(Double(model.create_time) ?? 0, formart: "YYYY-MM-dd hh:mm:ss")
                                     msgList.insert(message!, at: 0)
-//                                    msgList.append(message!)
-//                                    reloadTableView()
+                                    //                                    msgList.append(message!)
+                                    //                                    reloadTableView()
                                 }
                             }
                         }
-                        SLFHUD.hide()
                         reloadTableView(animated: false)
                     }
                 default:
                     break
                 }
             }
-            //{"code":0,"msg":"connected","data":{"client_id":"7f0000010fa000000001"}}//自己登录
-//            let my = data["msg"] as? String
-//            if my == "connected" {
-//                let id = (data["data"] as! NSDictionary)["client_id"] as! String
-//                socket.model.client_id = id
-//            }
-            //{"type":"login","client_id":"7f0000010fa700000002","client_name":"ch","time":"2019-07-03 18:25:20","client_list":{"7f0000010fa600000001":"ch","7f0000010fa600000002":"lf","7f0000010fa700000002":"ch"}}
-//            if let type = data["type"] as? String {
-//
-//
-//
-//            }
             
             
         }
@@ -745,13 +772,15 @@ class ChatViewController: LFBaseViewController, UITableViewDelegate, UITableView
     //MARK: - 图片
     func showSheet() {
         let ac = UIAlertController(title: nil, message: nil, preferredStyle: .actionSheet)
-        
+        photoGo = true
         if UIImagePickerController.isSourceTypeAvailable(.camera) {
             ac.addAction(UIAlertAction(title: "拍照", style: .default) { [weak self](_) in
+                
                 if let strongSelf = self {
+                    
                     UIImagePickerController.rx.createWithParent(strongSelf) { picker in
                         picker.sourceType = .camera
-                        //picker.allowsEditing = true
+                        //                        picker.allowsEditing = true
                         }
                         .flatMap { $0.rx.didFinishPickingMediaWithInfo }.map { info -> UIImage in
                             let img = info["UIImagePickerControllerOriginalImage"] as! UIImage
@@ -779,7 +808,7 @@ class ChatViewController: LFBaseViewController, UITableViewDelegate, UITableView
                     .flatMap { $0.rx.didFinishPickingMediaWithInfo }.map { info -> UIImage in
                         let img = info["UIImagePickerControllerOriginalImage"] as! UIImage
                         if let strongSelf = self {
-                            strongSelf.chatVM.chatImage = img.jpegData(compressionQuality: 0.5)
+                            strongSelf.chatVM.chatImage = img.jpegData(compressionQuality: 0.1)
                         }
                         return img
                     }
@@ -788,8 +817,6 @@ class ChatViewController: LFBaseViewController, UITableViewDelegate, UITableView
                             strongSelf.selImgSubject.onNext(img)
                         }
                     }).disposed(by: strongSelf.dig)
-                //                    .bind(to: strongSelf.selImgSubject)
-                //                    .disposed(by: strongSelf.dig)
             }
         })
         
@@ -800,37 +827,4 @@ class ChatViewController: LFBaseViewController, UITableViewDelegate, UITableView
             
         }
     }
-    
 }
-
-//class ChatModel: LFBaseModel {
-//    ///Optional()
-//    var face : String = ""
-//    
-//    ///Optional(2019-07-20 16:22:26)
-//    var time : String = ""
-//    
-//    ///Optional(7f0000010fa200000008)
-//    var from_client_id : String = ""
-//    
-//    ///Optional(all)
-//    var to_client_id : String = ""
-//    
-//    ///Optional(say)
-//    var type : String = ""
-//    
-//    ///Optional(http://cs.flyv888.com/upload/20190720/d7865df701f75a4a777720058f5bb018.jpg)
-//    var pic : String = ""
-//    
-//    ///Optional(http://cs.flyv888.com/upload/20190720/be6d9cf9a026ca086269203a00664d08.png)
-//    var image_path : String = ""
-//    
-//    ///Optional()
-//    var content : String = ""
-//    
-//    ///Optional(寓意深长的名字)
-//    var nick_name : String = ""
-//    
-//    ///Optional(lyl123456)
-//    var from_client_name : String = ""
-//}

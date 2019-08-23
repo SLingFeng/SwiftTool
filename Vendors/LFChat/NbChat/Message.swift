@@ -48,9 +48,9 @@ class Message {
         imageView!.layer.cornerRadius = 7.0
         imageView!.layer.masksToBounds = true
         imageView!.contentMode = .scaleAspectFit
-        imageView!.sd_setImage(with: imageUrl) {[weak self] (image, e, type, url) in
-            self?.image = image
-        }
+//        imageView!.sd_setImage(with: imageUrl) {[weak self] (image, e, type, url) in
+//            self?.image = image
+//        }
         self.avatar = avatar
         self.name = name
     }
