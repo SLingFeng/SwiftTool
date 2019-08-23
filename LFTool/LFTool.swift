@@ -380,7 +380,7 @@ class LFTool: NSObject {
     class func gender(_ str: String) -> String {
         switch str {
         case "0":
-            return "未知"
+            return "保密"
         case "1":
             return "男"
         case "2":
@@ -399,6 +399,33 @@ class LFTool: NSObject {
         }
         return str
     }
+    //MARK: 判断同一天
+    class func isToDay() -> Bool {
+        //http://www.hangge.com/blog/cache/detail_1423.html
+        var isToDay = false
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "yyyyMMdd"
+        
+        let date = UserDefaults.standard.value(forKey: "lfisToDay") as? String
+        
+        if date == nil {
+            
+            UserDefaults.standard.set(dateFormatter.string(from: Date()), forKey: "lfisToDay")
+        }else {
+            if let date = date {
+                //开始比较
+                if dateFormatter.string(from: Date()) == date {
+//                    print("它们是同一天")
+                    isToDay = true
+                }else {
+//                    print("它们不是同一天")
+                }
+            }
+        }
+        return isToDay
+    }
+
+    
 }
 
 //var str = "hangge.com"
