@@ -58,6 +58,10 @@ typedef enum : NSUInteger {
 @property (copy, nonatomic) void(^stateOnClickBlock)(void);
 
 @property (assign, nonatomic) MyTableViewStatus tState;
+//设置是否刷新后不到 顶部 yes不到
+@property (assign, nonatomic) BOOL isTB;
+
+@property (assign, nonatomic) CGSize lastContentSize;
 #pragma mark -
 /**
  设置头刷新（必须先调用

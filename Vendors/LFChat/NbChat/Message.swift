@@ -8,6 +8,11 @@
 
 import Foundation
 
+enum MessageType {
+    case chat
+    case announcement
+}
+
 class Message {
     ///true 对方 false 自己
     var incoming = true
@@ -17,6 +22,8 @@ class Message {
     var image: UIImage?
     var imageUrl: URL?
     var imageView: UIImageView?
+    var messageType: MessageType = .chat
+    
     
     var time: String = {
         let calender = Calendar(identifier: .gregorian)
@@ -55,5 +62,8 @@ class Message {
         self.name = name
     }
     
+    init() {
+        
+    }
     
 }

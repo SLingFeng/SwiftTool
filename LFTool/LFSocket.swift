@@ -70,7 +70,7 @@ class LFSocket: NSObject, SRWebSocketDelegate {
     }
     
     func webSocket(_ webSocket: SRWebSocket!, didReceiveMessage message: Any!) {
-        LFLog(message)
+//        LFLog(message)
             let data = LFSocket.dictionaryWithJsonString(message as? String)
             self.delegates.forEach { (delegate) in
                 if let dg = delegate as? LFSocketDelegate {

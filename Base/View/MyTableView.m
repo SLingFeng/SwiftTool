@@ -12,6 +12,7 @@
     NSMutableDictionary *_attributes;
 }
 
+
 @end
 
 @implementation MyTableView
@@ -308,6 +309,25 @@
 //    [self reloadEmptyDataSet];
 //}
 
-
+- (void)setContentSize:(CGSize)contentSize
+{
+    if (_isTB == YES) {
+        if (!CGSizeEqualToSize(self.contentSize, CGSizeZero))
+        {
+            if (contentSize.height > self.contentSize.height)
+            {
+                CGPoint offset = self.contentOffset;
+                offset.y = (contentSize.height - self.contentSize.height);
+                self.contentOffset = offset;
+            }
+        }
+    }
+    [super setContentSize:contentSize];
+//    if (!CGSizeEqualToSize(contentSize, CGSizeZero)) {
+//    if (contentSize.height != _lastContentSize.height) {
+//        contentSize = _lastContentSize;
+//    }
+//    }
+}
 
 @end

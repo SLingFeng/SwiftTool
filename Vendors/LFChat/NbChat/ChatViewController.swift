@@ -17,6 +17,7 @@ enum AnimateType {
     case animate1 // 键盘弹出的话不会遮挡消息
     case animate2 // 键盘弹出的话会遮挡消息，但最后一条消息距离输入框有一段距离
     case animate3 // 最后一条消息距离输入框在小范围内，这里设为 2 * fitBlank = 30
+    case animate4
 }
 
 class ChatViewController: LFBaseViewController, UITableViewDelegate, UITableViewDataSource, UITextViewDelegate, LFSocketDelegate, PPStickerInputViewDelegate {
@@ -78,15 +79,10 @@ class ChatViewController: LFBaseViewController, UITableViewDelegate, UITableView
         
         socket.addDelegate(self)
         
-        let b = LFTool.isToDay()
-        if !b {
-        ChatVM.user_getChatNotice().drive(onNext: { (str) in
-            //公告
-            if !str.empty() {
-                _ = CT_MsgView(frame: kScreen, text: str)
-            }
-        }).disposed(by: dig)
-        }
+//        let b = LFTool.isToDay()
+//        if !b {
+
+//        }
         // 添加键盘弹出消失监听
         //        if fisrtLoad {
         NotificationCenter.default.addObserver(self, selector: #selector(keyBoardWillShow(notification:)), name: UIResponder.keyboardWillShowNotification, object: nil)
@@ -100,7 +96,7 @@ class ChatViewController: LFBaseViewController, UITableViewDelegate, UITableView
         self.automaticallyAdjustsScrollViewInsets = false
         
         // 标题
-        self.setNavTitle("聊天广场")
+        self.setNavTitle("聊天广场(1)")
         
         // 聊天界面
         chatTableView = UITableView()
@@ -116,6 +112,7 @@ class ChatViewController: LFBaseViewController, UITableViewDelegate, UITableView
         chatTableView.separatorStyle = .none
         chatTableView.register(ChatBaseCell.self, forCellReuseIdentifier: "chat")
         chatTableView.register(ChatNoMoreCell.self, forCellReuseIdentifier: "cell")
+        chatTableView.register(ChatAnnouncementCell.self, forCellReuseIdentifier: "ChatAnnouncementCell")
         
         // 点击列表使键盘消失
         let removeKeyBoardTap = UITapGestureRecognizer(target: self, action: #selector(tapRemoveBottomView(recognizer:)))
@@ -161,6 +158,15 @@ class ChatViewController: LFBaseViewController, UITableViewDelegate, UITableView
         
         toolBarView.sendBtn.rx.tap.subscribe(onNext: {[weak self] (_) in
             if let strongSelf = self {
+//                #if DEBUG
+//                for i in 1..<501 {
+//                    let m = LFSocketSendModel()
+//                    m.type = "say"
+//                    m.from_client_id = strongSelf.socket.model.client_id
+//                    m.content = "\(i)"
+//                    strongSelf.socket.send(m)
+//                }
+//                #endif
                 if !strongSelf.toolBarView.textView.text.empty() {
                     let m = LFSocketSendModel()
                     m.type = "say"
@@ -212,6 +218,21 @@ class ChatViewController: LFBaseViewController, UITableViewDelegate, UITableView
         })
         
         setItem()
+        
+        ChatVM.user_getChatNotice().drive(onNext: {[weak self] (str) in
+            //公告
+            if !str.empty() {
+                //                _ = CT_MsgView(frame: kScreen, text: str)
+                if let strongSelf = self {
+                    let m = Message()
+                    m.messageType = .announcement
+                    m.text = str
+                    strongSelf.msgList.insert(m, at: 0)
+                    strongSelf.chatTableView.reloadData()
+                }
+                
+            }
+        }).disposed(by: dig)
     }
     
     //item
@@ -230,12 +251,14 @@ class ChatViewController: LFBaseViewController, UITableViewDelegate, UITableView
         
         btn3.rx.tap.subscribe(onNext: {[weak self] (_) in
             if let strongSelf = self {
+                strongSelf.photoGo = true
                 strongSelf.navigationController?.pushViewController(ChatGroupPeopleViewController(), animated: true)
             }
         }).disposed(by: dig)
         
         btn2.rx.tap.subscribe(onNext: {[weak self] (_) in
             if let strongSelf = self {
+                strongSelf.photoGo = true
                 strongSelf.navigationController?.pushViewController(ChatHistroyViewController(), animated: true)
             }
         }).disposed(by: dig)
@@ -259,6 +282,7 @@ class ChatViewController: LFBaseViewController, UITableViewDelegate, UITableView
         lastDifY = 0
         
         if !photoGo {
+            //销毁
             socket.removeDelegate(self)
             NotificationCenter.default.removeObserver(self)
         }
@@ -268,7 +292,9 @@ class ChatViewController: LFBaseViewController, UITableViewDelegate, UITableView
         super.viewDidAppear(animated)
         socket.addDelegate(self)
 
-        
+        if photoGo {
+            snapshotBtn.isHidden = true
+        }
         //        // 添加键盘弹出消失监听
         //        if fisrtLoad {
         //            NotificationCenter.default.addObserver(self, selector: #selector(keyBoardWillShow(notification:)), name: UIResponder.keyboardWillShowNotification, object: nil)
@@ -282,13 +308,15 @@ class ChatViewController: LFBaseViewController, UITableViewDelegate, UITableView
         let v = UIApplication.shared.keyWindow?.viewWithTag(8901)
         v?.isHidden = true
         
+        
         navigationController?.setNavigationBarHidden(false, animated: animated)
+        photoGo = false
     }
     
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         let v = UIApplication.shared.keyWindow?.viewWithTag(8901)
-        v?.isHidden = false
+        v?.isHidden = photoGo
         
     }
     
@@ -307,28 +335,37 @@ class ChatViewController: LFBaseViewController, UITableViewDelegate, UITableView
     
     // MARK: tableViewDelegate
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return msgList.count == 0 ? 0 : msgList.count + 1
+        return msgList.count == 0 ? 0 : msgList.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        if indexPath.row == 0 {
-            let cell = tableView.dequeueReusableCell(withIdentifier: "cell")!
+//        if indexPath.row == 0 {
+//            let cell = tableView.dequeueReusableCell(withIdentifier: "cell")!
+//
+//            return cell
+//        }
+        let message = msgList[indexPath.row]
+
+        if message.messageType == .announcement {
+            let cell = tableView.dequeueReusableCell(withIdentifier: "ChatAnnouncementCell") as! ChatAnnouncementCell
+            
+            cell.subLabel.text = message.text
             
             return cell
         }
+        
         let cell = ChatTextCell(style: .default, reuseIdentifier: "chat")
-        let message = msgList[indexPath.row - 1]
         cell.setUpWithModel(message: message)
         
-        cell.cellChange = {[weak cell] in
-            cell?.setNeedsLayout()
-            //            tableView.visibleCells.forEach({ (tc) in
-            //                if tc == cell {
-            tableView.reloadRows(at: [indexPath], with: .automatic)
-            //                }
-            //            })
-            
-        }
+//        cell.cellChange = {[weak cell] in
+//            cell?.setNeedsLayout()
+//            //            tableView.visibleCells.forEach({ (tc) in
+//            //                if tc == cell {
+//            tableView.reloadRows(at: [indexPath], with: .automatic)
+//            //                }
+//            //            })
+//
+//        }
         return cell
     }
     
@@ -337,9 +374,9 @@ class ChatViewController: LFBaseViewController, UITableViewDelegate, UITableView
             // 向上滑动
         } else if scrollView.contentOffset.y < oldOffsetY {
             // 向下滑动
-            if isKeyboardShowed {
-                hideKeyboard()
-            }
+//            if isKeyboardShowed {
+//                hideKeyboard()
+//            }
         }
         
         oldOffsetY = scrollView.contentOffset.y
@@ -359,13 +396,19 @@ class ChatViewController: LFBaseViewController, UITableViewDelegate, UITableView
             //            if text == "\n" {
             //                return false
             //            }
+            
+            let text = toolBarView.plainText
+            
             let m = LFSocketSendModel()
             m.type = "say"
             m.from_client_id = socket.model.client_id
-            m.content = textView.text
+            m.content = text ?? ""
             socket.send(m)
             textView.text = ""
             
+            toolBarView.sendBtn.isHidden = textView.text.empty()
+            toolBarView.imageBtn.isHidden = !textView.text.empty()
+            toolBarView.emojiToggleButton.isHidden = !textView.text.empty()
             return false
         }
         //        toolBarView.sendBtn.isEnabled = text.count > 0 ? true : false
@@ -382,17 +425,16 @@ class ChatViewController: LFBaseViewController, UITableViewDelegate, UITableView
     }
     //MARK:
     func stickerInputViewDidClickEmoji(_ emojiStr: String!, inputView: PPStickerInputView!) {
-        if emojiStr.empty() {
-            return
-        }
-        //        socket.send(["type" : "say", "from_client_id" : socket.model.client_id, "to_client_id" : "all/client_id", "content" : emojiStr])
-        let m = LFSocketSendModel()
-        m.type = "say"
-        m.from_client_id = socket.model.client_id
-        m.face = emojiStr
-        socket.send(m)
-        inputView.textView.text = ""
-        scrollToBottom()
+//        if emojiStr.empty() {
+//            return
+//        }
+//        let m = LFSocketSendModel()
+//        m.type = "say"
+//        m.from_client_id = socket.model.client_id
+//        m.face = emojiStr
+//        socket.send(m)
+//        inputView.textView.text = ""
+//        scrollToBottom()
     }
     func stickerInputViewDidClickSendButton(_ inputView: PPStickerInputView!) {
         
@@ -474,55 +516,56 @@ class ChatViewController: LFBaseViewController, UITableViewDelegate, UITableView
         
         
         if msgList.count > 0 {
-            let lastIndex = IndexPath(row: msgList.count - 1, section: 0)
-            let rectCellView = chatTableView.rectForRow(at: lastIndex)
-            let rect = self.view.convert(rectCellView, to: chatTableView.superview)
-            let cellDistance = rect.origin.y + rect.height
-            let distance1 = SCREEN_HEIGHT - mKeyBoardHeight - LFTool.Height_HomeBar()
-            let distance2 = SCREEN_HEIGHT - toolBarHeight - 2 * fitBlank
-            let difY = cellDistance - distance1
+//            let lastIndex = IndexPath(row: msgList.count - 1, section: 0)
+//            let rectCellView = chatTableView.rectForRow(at: lastIndex)
+//            let rect = self.view.convert(rectCellView, to: chatTableView.superview)
+//            let cellDistance = rect.origin.y + rect.height
+//            let distance1 = SCREEN_HEIGHT - mKeyBoardHeight - LFTool.Height_HomeBar()
+//            let distance2 = SCREEN_HEIGHT - toolBarHeight - 2 * fitBlank
+//            let difY = cellDistance - distance1
             
             //            NSLog("showKeyboard:%f--", self.view.transform.ty)
             
             //            selfFrame.size.height = distance1
             
-            if cellDistance <= distance1 {
+//            if cellDistance <= distance1 {
+//                animate = {
+//                    self.toolBarView.transform = CGAffineTransform(translationX: 0, y: -self.mKeyBoardHeight)
+//                    //                    var r = self.toolBarView.frame
+//                    //                    r.origin.y = kScreenH - self.mKeyBoardHeight
+//                    //                    self.toolBarView.frame = r
+//                }
+//                animateType = .animate1
+//            } else if distance1 < cellDistance && cellDistance <= distance2 {
                 animate = {
-                    self.toolBarView.transform = CGAffineTransform(translationX: 0, y: -self.mKeyBoardHeight)
-                    //                    var r = self.toolBarView.frame
-                    //                    r.origin.y = kScreenH - self.mKeyBoardHeight
-                    //                    self.toolBarView.frame = r
-                }
-                animateType = .animate1
-            } else if distance1 < cellDistance && cellDistance <= distance2 {
-                animate = {
-                    self.toolBarView.transform = CGAffineTransform(translationX: 0, y: -self.mKeyBoardHeight)
-                    //                    var r = self.toolBarView.frame
-                    //                    r.origin.y = kScreenH - self.mKeyBoardHeight - self.toolBarView.frame.height
-                    //                    self.toolBarView.frame = r
-                    self.chatTableView.transform = CGAffineTransform(translationX: 0, y: -difY)
-                    //                    var r1 = self.chatTableView.frame
-                    //                    r1.size.height = r.origin.y
-                    //                    self.chatTableView.frame = r1
-                    
+//                    self.toolBarView.transform = CGAffineTransform(translationX: 0, y: -self.mKeyBoardHeight)
+                                        var r = self.toolBarView.frame
+                                        r.origin.y = kScreenH - self.mKeyBoardHeight - self.toolBarView.frame.height - LFTool.Height_NavBar()
+                                        self.toolBarView.frame = r
+//                    self.chatTableView.transform = CGAffineTransform(tran/slationX: 0, y: -difY)
+                                        var r1 = self.chatTableView.frame
+                                        r1.size.height = r.origin.y
+                                        self.chatTableView.frame = r1
+
                     //                    var r2 = self.view.frame
                     //                    r2.size.height = kScreenH - self.mKeyBoardHeight//LFTool.Height_NavBar()
                     //                    self.view.frame = r2
-                    
-                    self.lastDifY = difY
+
+//                    self.lastDifY = difY
                 }
-                animateType = .animate2
-            } else {
-                animate = {
-                    //                    self.view.transform = CGAffineTransform.identity
-                    self.view.transform = CGAffineTransform(translationX: 0, y: -self.mKeyBoardHeight)
-                    //                    var r = self.view.frame
-                    //                    r.size.height = kScreenH - LFTool.Height_NavBar() - self.mKeyBoardHeight
-                    //                    self.view.frame = r
-                    //                    self.view.frame = selfFrame
-                }
-                animateType = .animate3
-            }
+//                animateType = .animate2
+            
+//            } else {
+//                animate = {
+//                    //                    self.view.transform = CGAffineTransform.identity
+//                    self.view.transform = CGAffineTransform(translationX: 0, y: -self.mKeyBoardHeight)
+//                    //                    var r = self.view.frame
+//                    //                    r.size.height = kScreenH - LFTool.Height_NavBar() - self.mKeyBoardHeight
+//                    //                    self.view.frame = r
+//                    //                    self.view.frame = selfFrame
+//                }
+//                animateType = .animate3
+//            }
         }
         let options = UIView.AnimationOptions(rawValue: UInt((mUserInfo[UIResponder.keyboardAnimationCurveUserInfoKey] as? NSNumber ?? 0).intValue << 16))
         animateOption = options
@@ -530,6 +573,7 @@ class ChatViewController: LFBaseViewController, UITableViewDelegate, UITableView
         UIView.animate(withDuration: mKeyBoardAnimateDuration, delay: 0, options: options, animations: animate) { (isFinished) in
             self.oldOffsetY = self.chatTableView.contentOffset.y
             self.isKeyboardShowed = true
+            self.scrollToBottom(animated: true)
         }
     }
     
@@ -552,26 +596,30 @@ class ChatViewController: LFBaseViewController, UITableViewDelegate, UITableView
             }
             NSLog("hideKeyboard:%@--", self.toolBarView)
             // 返回 view 或 toolBarView 或 chatTableView 到原有状态
-            switch animateType {
-            case .animate1:
+//            switch animateType {
+//            case .animate1:
+//                animate = {
+//                    self.toolBarView.transform = CGAffineTransform.identity
+//                    self.chatTableView.transform = CGAffineTransform.identity
+//                    //                    self.toolBarView.frame = self.toolBarViewFrame()
+//                    //                    self.chatTableView.frame = self.chatTableViewFrame()
+//                }
+//            case .animate2:
                 animate = {
                     self.toolBarView.transform = CGAffineTransform.identity
                     self.chatTableView.transform = CGAffineTransform.identity
-                    //                    self.toolBarView.frame = self.toolBarViewFrame()
-                    //                    self.chatTableView.frame = self.chatTableViewFrame()
+                    self.toolBarView.frame = self.toolBarViewFrame()
+                    self.chatTableView.frame = self.chatTableViewFrame()
                 }
-            case .animate2:
-                animate = {
-                    self.toolBarView.transform = CGAffineTransform.identity
-                    self.chatTableView.transform = CGAffineTransform.identity
-                }
-            case .animate3:
-                animate = {
-                    self.view.transform = CGAffineTransform.identity
-                    //                    self.view.frame = CGRect(x: 0, y: 0, width: kScreenW, height: kScreenH)
-                }
-                //                break
-            }
+//            case .animate3:
+//                animate = {
+//                    self.view.transform = CGAffineTransform.identity
+//                    //                    self.view.frame = CGRect(x: 0, y: 0, width: kScreenW, height: kScreenH)
+//                }
+//                //                break
+//            case .animate4:
+//                break
+//            }
             
             UIView.animate(withDuration: mKeyBoardAnimateDuration, delay: 0, options: options, animations: animate, completion: { (finish) in
                 if finish {
@@ -589,55 +637,59 @@ class ChatViewController: LFBaseViewController, UITableViewDelegate, UITableView
         chatTableView.layoutIfNeeded()
         
         // 得到最后一条消息在view中的位置
-        let lastIndex = IndexPath(row: msgList.count - 1, section: 0)
-        let rectCellView = chatTableView.rectForRow(at: lastIndex)
-        let rect = chatTableView.convert(rectCellView, to: chatTableView.superview)
-        let cellDistance = rect.origin.y + rect.height
-        let distance1 = SCREEN_HEIGHT - toolBarHeight - mKeyBoardHeight - LFTool.Height_HomeBar() - LFTool.Height_NavBar()
+//        let lastIndex = IndexPath(row: msgList.count - 1, section: 0)
+//        let rectCellView = chatTableView.rectForRow(at: lastIndex)
+//        let rect = chatTableView.convert(rectCellView, to: chatTableView.superview)
+//        let cellDistance = rect.origin.y + rect.height
+//        let distance1 = SCREEN_HEIGHT - toolBarHeight - mKeyBoardHeight - LFTool.Height_HomeBar() - LFTool.Height_NavBar()
+//
+//        // 计算键盘可能遮住的消息的长度
+//        let difY = cellDistance - distance1
         
-        // 计算键盘可能遮住的消息的长度
-        let difY = cellDistance - distance1
-        
-        LFLog("lastDifY:\(lastDifY)-difY:\(difY)-cellDistance:\(cellDistance)-distance1:\(distance1)-to:\(lastDifY + difY)")
-        
-        if animateType == .animate3 {
-            // 处于情况三时，由于之前的约束（聊天界面在输入栏上方），并且
-            // 是整个界面一起上滑，所以约束依旧成立，只需把聊天界面最后
-            // 一条消息滚动到聊天界面底部即可
-            scrollToBottom()
-        } else if (animateType == .animate1 || animateType == .animate2) && difY > 0{
-            // 在情况一和情况二中，如果聊天界面上滑的总距离小于键盘高度，则可以继续上滑
-            // 一旦聊天界面上滑的总距离 lastDifY + difY 将要超过键盘高度，则上滑总距离设为键盘高度
-            // 此时执行 trans 动画
-            // 一旦聊天界面上滑总距离为键盘高度，则变为情况三的情况，把聊天界面最后
-            // 一条消息滚动到聊天界面底部即可
-            if lastDifY + difY < mKeyBoardHeight {
-                lastDifY += difY
-                let animate: (()->Void) = {
-                    self.chatTableView.transform = CGAffineTransform(translationX: 0, y: -self.lastDifY)
-                    //                    var r1 = self.chatTableView.frame
-                    //                    r1.size.height = self.chatTableViewFrame().size.height - self.lastDifY
-                    //                    self.chatTableView.frame = r1
-                }
-                UIView.animate(withDuration: mKeyBoardAnimateDuration, delay: 0, options: animateOption, animations: animate)
-                
-            } else if lastDifY + difY > mKeyBoardHeight {
-                if lastDifY != mKeyBoardHeight {
-                    let animate: (()->Void) = {
-                        self.chatTableView.transform = CGAffineTransform(translationX: 0, y: -self.mKeyBoardHeight)
-                        //                        var r1 = self.chatTableView.frame
-                        //                        r1.size.height = kScreenH - self.toolBarHeight - self.mKeyBoardHeight
-                        //                        self.chatTableView.frame = r1
-                    }
-                    UIView.animate(withDuration: mKeyBoardAnimateDuration, delay: 0, options: animateOption, animations: animate)
-                    lastDifY = mKeyBoardHeight
-                }
-                scrollToBottom(animated: animated)
-            }
-        }else {
-            //键盘未起，直接发图片
-            scrollToBottom(animated: animated)
-        }
+//        LFLog("lastDifY:\(lastDifY)-difY:\(difY)-cellDistance:\(cellDistance)-distance1:\(distance1)-to:\(lastDifY + difY)")
+        scrollToBottom(animated: animated)
+//        if animateType == .animate3 {
+//            // 处于情况三时，由于之前的约束（聊天界面在输入栏上方），并且
+//            // 是整个界面一起上滑，所以约束依旧成立，只需把聊天界面最后
+//            // 一条消息滚动到聊天界面底部即可
+//            scrollToBottom()
+//        } else if (animateType == .animate1 || animateType == .animate2) && difY > 0{
+//            // 在情况一和情况二中，如果聊天界面上滑的总距离小于键盘高度，则可以继续上滑
+//            // 一旦聊天界面上滑的总距离 lastDifY + difY 将要超过键盘高度，则上滑总距离设为键盘高度
+//            // 此时执行 trans 动画
+//            // 一旦聊天界面上滑总距离为键盘高度，则变为情况三的情况，把聊天界面最后
+//            // 一条消息滚动到聊天界面底部即可
+//            if lastDifY + difY < mKeyBoardHeight {
+//                lastDifY += difY
+//                let animate: (()->Void) = {
+//                    self.chatTableView.transform = CGAffineTransform(translationX: 0, y: -self.lastDifY)
+//                    //                    var r1 = self.chatTableView.frame
+//                    //                    r1.size.height = self.chatTableViewFrame().size.height - self.lastDifY
+//                    //                    self.chatTableView.frame = r1
+//                }
+//                UIView.animate(withDuration: mKeyBoardAnimateDuration, delay: 0, options: animateOption, animations: animate)
+//
+//            } else if lastDifY + difY > mKeyBoardHeight {
+//                if lastDifY != mKeyBoardHeight {
+//                    let animate: (()->Void) = {
+//                        self.chatTableView.transform = CGAffineTransform(translationX: 0, y: -self.mKeyBoardHeight)
+//                        //                        var r1 = self.chatTableView.frame
+//                        //                        r1.size.height = kScreenH - self.toolBarHeight - self.mKeyBoardHeight
+//                        //                        self.chatTableView.frame = r1
+//                    }
+//                    UIView.animate(withDuration: mKeyBoardAnimateDuration, delay: 0, options: animateOption, animations: animate)
+//                    lastDifY = mKeyBoardHeight
+//                }
+//                scrollToBottom(animated: animated)
+//            }
+//        }else {
+//            //键盘未起，直接发图片
+//
+//            scrollToBottom(animated: animated)
+//            self.view.transform = CGAffineTransform.identity
+//            self.toolBarView.transform = CGAffineTransform.identity
+//            self.chatTableView.transform = CGAffineTransform.identity
+//        }
         //        LFLog("end lastDifY:\(lastDifY)")
     }
     
@@ -647,7 +699,7 @@ class ChatViewController: LFBaseViewController, UITableViewDelegate, UITableView
             //            CATransaction.begin() // 1
             //            CATransaction.setDisableActions(true) // 2 关闭layer隐式动画
             
-            chatTableView.scrollToRow(at: IndexPath(row: msgList.count, section: 0), at: .bottom, animated: animated)
+            chatTableView.scrollToRow(at: IndexPath(row: msgList.count - 1, section: 0), at: .bottom, animated: animated)
             
             //            CATransaction.commit() // 3
         }
@@ -673,7 +725,7 @@ class ChatViewController: LFBaseViewController, UITableViewDelegate, UITableView
     //MARK: socket
     func lfSocketDidReceiveMessage(_ message: Any?) {
         
-        SLFHUD.hide()
+        
         if let data = message as? NSDictionary {
             if let model = BF_ChatDataModel.deserialize(from: data) {
                 switch model.type {
@@ -683,7 +735,11 @@ class ChatViewController: LFBaseViewController, UITableViewDelegate, UITableView
                 case "connect":
                     let id = data["client_id"] as! String
                     LFLog("login id \(id)")
+                    if let num = data["total"] as? Int {
+                        self.setNavTitle("聊天广场(\(num))")
+                    }
                     socket.model.client_id = id
+                    SLFHUD.hide()
                 case "say":
                     
                     //                    {"type":"say","from_client_id":"7f0000010fa100000001","from_client_name":"lyl123456","to_client_id":"all","content":"\u5404\u4f4d\u597d","time":"2019-07-04 09:47:02"}
@@ -752,6 +808,14 @@ class ChatViewController: LFBaseViewController, UITableViewDelegate, UITableView
                         }
                         reloadTableView(animated: false)
                     }
+                    SLFHUD.hide()
+                case "login":
+//                    ({"type":"login","client_id":"7f0000010fa200000001","client_name":"hqtzc0","nick_name":"\u54c8\u54c8\u54c8\u54c81","image_path":"http:\/\/cs.flyv888.com\/upload\/20190820\/b6d82c901177a7bdbd51546728477ce0.jpg","total":3,"time":"2019-08-23 18:09:33"})
+                    if let num = data["total"] as? Int {
+                        self.setNavTitle("聊天广场(\(num))")
+                    }
+                    
+                    
                 default:
                     break
                 }
@@ -773,6 +837,7 @@ class ChatViewController: LFBaseViewController, UITableViewDelegate, UITableView
     func showSheet() {
         let ac = UIAlertController(title: nil, message: nil, preferredStyle: .actionSheet)
         photoGo = true
+        animateType = .animate4
         if UIImagePickerController.isSourceTypeAvailable(.camera) {
             ac.addAction(UIAlertAction(title: "拍照", style: .default) { [weak self](_) in
                 
