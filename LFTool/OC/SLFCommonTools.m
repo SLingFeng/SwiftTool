@@ -1846,4 +1846,22 @@ static SLFCommonTools * tools = nil;
     return [NSString stringWithUTF8String:[oldStr cStringUsingEncoding:enc]];
 }
 
++ (NSArray<NSTextCheckingResult *> *)findAllAtInText:(NSString *)text
+{
+    // 找到文本中所有的@
+    NSString *string = text;
+    NSRegularExpression *regex = [NSRegularExpression regularExpressionWithPattern:@"@[\\u4e00-\\u9fa5\\w\\-\\_]+ " options:NSRegularExpressionCaseInsensitive error:nil];
+    NSArray *matches = [regex matchesInString:string options:NSMatchingReportProgress range:NSMakeRange(0, [string length])];
+    return matches;
+}
+
++ (NSArray<NSTextCheckingResult *> *)findAllAtInAText:(NSAttributedString *)text
+{
+    // 找到文本中所有的@
+    NSString *string = text.string;
+    NSRegularExpression *regex = [NSRegularExpression regularExpressionWithPattern:@"@[\\u4e00-\\u9fa5\\w\\-\\_]+ " options:NSRegularExpressionCaseInsensitive error:nil];
+    NSArray *matches = [regex matchesInString:string options:NSMatchingReportProgress range:NSMakeRange(0, [string length])];
+    return matches;
+}
+
 @end

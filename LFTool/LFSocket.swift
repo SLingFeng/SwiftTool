@@ -446,13 +446,17 @@ class LFSocketModel: NSObject {
     
     var userIcon = ""
     
+    var name = ""
 }
 
 class LFSocketSendModel: NSObject, HandyJSON {
     
     var type: String?// "say"
     var from_client_id: String?// strongSelf.socket.model.client_id
+    var from_client_name: String?
+    var at_user: String = ""
     var to_client_id = "1"//String?// "all/client_id"
+    var to_client_name: String?
     var pic: String = ""
     var content: String = ""
     var face: String = ""

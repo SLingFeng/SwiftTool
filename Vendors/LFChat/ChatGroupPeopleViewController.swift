@@ -24,7 +24,7 @@ class ChatGroupPeopleViewController: LFBaseTableViewController {
 
         self.tableView.register(ChatGroupPeopleTableViewCell.self, forCellReuseIdentifier: "ChatGroupPeopleTableViewCell")
         
-        ChatVM.user_getChatUserList().drive(onNext: {[weak self] (data) in
+        ChatVM.user_getChatUserList([:]).drive(onNext: {[weak self] (data) in
             if let strongSelf = self {
                 strongSelf.data = data
             }

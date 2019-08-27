@@ -537,6 +537,10 @@
 
 +(CGFloat)scale:(CGFloat)num;
 
++ (NSArray<NSTextCheckingResult *> *)findAllAtInText:(NSString *)text;
+
++ (NSArray<NSTextCheckingResult *> *)findAllAtInAText:(NSAttributedString *)text;
+
 @end
 
 

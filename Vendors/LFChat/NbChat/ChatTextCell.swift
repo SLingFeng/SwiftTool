@@ -95,9 +95,9 @@ class ChatTextCell: ChatBaseCell, SDPhotoBrowserDelegate {
                     make.top.equalTo(avatarImageView).offset(30)
                     make.bottom.equalTo(-20)
                     if message.incoming {
-                        make.left.equalTo(avatarImageView.snp.right).offset(20)
+                        make.left.equalTo(avatarImageView.snp.right).offset(10)
                     } else {
-                        make.right.equalTo(avatarImageView.snp.left).offset(-20)
+                        make.right.equalTo(avatarImageView.snp.left).offset(-10)
                     }
                 }
 //                setNeedsLayout()
@@ -120,9 +120,9 @@ class ChatTextCell: ChatBaseCell, SDPhotoBrowserDelegate {
 //                            make.width.lessThanOrEqualTo(220)
                             make.bottom.equalTo(-20)
                             if message.incoming {
-                                make.left.equalTo(strongSelf.avatarImageView.snp.right).offset(20)
+                                make.left.equalTo(strongSelf.avatarImageView.snp.right).offset(10)
                             } else {
-                                make.right.equalTo(strongSelf.avatarImageView.snp.left).offset(-20)
+                                make.right.equalTo(strongSelf.avatarImageView.snp.left).offset(-10)
                             }
 //                            strongSelf.setNeedsLayout()
                         }

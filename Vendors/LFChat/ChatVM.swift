@@ -138,10 +138,10 @@ class ChatVM: LFBaseVM {
         }).asDriver(onErrorJustReturn: "")
     }
     
-    class func user_getChatUserList() -> Driver<[BF_ChatUserListDataModel]> {
+    class func user_getChatUserList(_ par: [String : String]) -> Driver<[BF_ChatUserListDataModel]> {
         
         return Observable<[BF_ChatUserListDataModel]>.create({ (ob) -> Disposable in
-            let x = apiRequsetArray(Api.user_getChatUserList, no: true).asObservable().subscribe(onNext: { (model) in
+            let x = apiRequsetArray(Api.user_getChatUserList(par), no: true).asObservable().subscribe(onNext: { (model) in
                 if model.code == 0 {
                     if let m = BF_ChatUserListModel.deserialize(from: ["data" : model.data]) {
                         m.data.sort(by: { (m, m1) -> Bool in
@@ -165,5 +165,119 @@ class ChatVM: LFBaseVM {
         }).asDriver(onErrorJustReturn: [])
     }
     
+    //搜索聊天人
+    var keyStr = ""
     
+    //表格数据序列
+    var tableSearchData = BehaviorRelay<[BF_ChatUserListDataModel]>(value: [])
+    
+//    public var searchKeyword:PublishSubject<String?>
+//    public var selectedViewModel: Driver<CT_SelectTradeInfoDataModel>
+    
+    init(inputSearch: (
+        headerRefresh: Driver<Void>,
+//        footerRefresh: Driver<Void>,
+        searchKeyword: Driver<String?>,
+        par: [String : String]),
+         disposeBag:DisposeBag) {
+//        self.searchKeyword = PublishSubject<String?>()
+//        self.selectedViewModel = Driver.empty()
+        
+        super.init()
+        var p = inputSearch.par
+        self.keyStr = p["search"]!
+        let keywordRequest = inputSearch.searchKeyword
+            //            .startWith(p["trade_code"])
+//            .throttle(0.3)
+            .distinctUntilChanged({ $0 == $1})
+            .flatMapLatest { (query) -> Driver<[BF_ChatUserListDataModel]> in
+                self.tableData.accept([])
+                self.keyStr = query!.empty() ? "" : query!
+                self.page = 1
+                p["page"] = "\(self.page)"
+                p["search"] = self.keyStr
+                return ChatVM.user_getChatUserList(p).asDriver(onErrorJustReturn: [])
+        }
+        
+        //下拉结果序列
+        let headerRefreshData = inputSearch.headerRefresh
+            .startWith(()) //初始化时会先自动加载一次数据
+            .flatMapLatest({_ -> SharedSequence<DriverSharingStrategy, [BF_ChatUserListDataModel]> in
+                self.page = 1
+                p["page"] = "\(self.page)"
+                p["search"] = ""
+                self.keyStr = ""
+                return ChatVM.user_getChatUserList(p)
+            })
+        
+        //上拉结果序列
+        //        let footerRefreshData = input.footerRefresh
+        //            .flatMapLatest{ _ -> Driver<[CT_SelectTradeInfoDataModel]> in  //也可考虑使用flatMapFirst
+        //                self.page += 1
+        //                p["page"] = "\(self.page)"
+        //                p["trade_code"] = self.keyStr
+        //                return CT_SearchTradeInfoVM.trade_selectTradeInfo(p).asDriver(onErrorJustReturn: [])
+        //        }
+        //, footerRefreshData.asObservable()
+        let request = Observable.of(keywordRequest.asObservable(), headerRefreshData.asObservable()).merge().share(replay: 1)
+        
+        let response = request.flatMap { repositories -> Observable<[BF_ChatUserListDataModel]> in
+            request
+                .do(onError: { _error in
+                    //                    self.error.onNext(_error)
+                }).catchError({ error -> Observable<[BF_ChatUserListDataModel]> in
+                    Observable.empty()
+                })
+            
+            }.share(replay: 1)
+        //整合数据
+        Observable.combineLatest(request, headerRefreshData.asObservable(), response, tableSearchData.asObservable()) {request, headerRefreshData, response, elements in
+            
+            if self.page == 1 && self.keyStr.empty() {
+                return headerRefreshData
+//            }else if self.page == 1 && self.keyStr.empty() == false {
+                
+            }
+            return request
+//            return elements + response
+            }.sample(response)
+            .bind(to: tableSearchData)
+            .disposed(by: disposeBag)
+        
+        //        下拉刷新时，直接将查询到的结果替换原数据
+        //        headerRefreshData.drive(onNext: { items in
+        //            self.tableData.accept(items)
+        //        }).disposed(by: disposeBag)
+        
+        //上拉加载时，将查询到的结果拼接到原数据底部
+        //        footerRefreshData.drive(onNext: { items in
+        //            self.tableData.accept(self.tableData.value + items )
+        //        }).disposed(by:
+        //            disposeBag)
+        
+        //        self.selectedViewModel = self.tableData.asDriver().f
+        //            .flatMapLatest{ repo -> Driver<CT_SelectTradeInfoDataModel> in
+        //            return Driver.just(repo)
+        //        }
+        //        生成停止尾部刷新状态序列
+        //        self.endFooterRefreshing = footerRefreshData.map{ _ in true }
+        
+        //生成停止头部刷新状态序列
+        self.endHeaderRefreshing = headerRefreshData.map{ _ in true }
+        
+        
+        //        let w = Driver.of(keywordRequest, footerRefreshData).merge()
+        self.status = request.asDriver(onErrorJustReturn: []).map { (a) in
+            if a.count == 0 {
+                return MyTableViewStatusImage
+            }else {
+                return MyTableViewStatusNormal
+            }
+        }
+        
+        self.footerStatus = request.asDriver(onErrorJustReturn: []).map({a -> Int in
+            return a.count == 0 ? 1 : 0
+        })
+        
+    }
 }

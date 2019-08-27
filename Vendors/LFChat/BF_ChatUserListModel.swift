@@ -25,6 +25,8 @@ class BF_ChatUserListDataModel: HandyJSON {
 
     ///Optional(hqtzc0)
     var client_name : String = ""
+    
+    var client_id: String = ""
 
     ///Optional(1)
     var room_id : String = ""

@@ -32,6 +32,8 @@ class ChatViewController: LFBaseViewController, UITableViewDelegate, UITableView
     
     var msgList = [Message]()
     
+    var atArray = [BF_ChatUserListDataModel]()
+    
     var mUserInfo: Dictionary<AnyHashable, Any>!
     var mKeyBoardAnimateDuration: Double = 0.5
     var mKeyBoardHeight: CGFloat = 0
@@ -49,6 +51,8 @@ class ChatViewController: LFBaseViewController, UITableViewDelegate, UITableView
     var isKeyboardShowed = false
     var isEmojiKeyboardShowed = false
     
+    var currentIsInBottom = true
+    
     let socket = LFSocket.shared
     
     let selImgSubject = PublishSubject<UIImage>()
@@ -58,7 +62,7 @@ class ChatViewController: LFBaseViewController, UITableViewDelegate, UITableView
     
     //截屏
     lazy var snapshotBtn : DragButton = {
-        var snapshotBtn = DragButton(frame: CGRect(x: kScreenW - 50, y: kScreenH - 280, width: 50, height: 50))
+        var snapshotBtn = DragButton(frame: CGRect(x: kScreenW - 50, y: kScreenH/2 - 50, width: 50, height: 50))
         snapshotBtn.setImage(UIImage(named: "home_icon_screenshot"), for: .normal)
         snapshotBtn.clickClosure = {
             [weak self]
@@ -167,15 +171,7 @@ class ChatViewController: LFBaseViewController, UITableViewDelegate, UITableView
 //                    strongSelf.socket.send(m)
 //                }
 //                #endif
-                if !strongSelf.toolBarView.textView.text.empty() {
-                    let m = LFSocketSendModel()
-                    m.type = "say"
-                    m.from_client_id = strongSelf.socket.model.client_id
-                    m.content = strongSelf.toolBarView.textView.text
-                    strongSelf.socket.send(m)
-                    
-                    strongSelf.toolBarView.textView.text = ""
-                }
+                strongSelf.sendSay()
             }
         }).disposed(by: dig)
         
@@ -369,6 +365,27 @@ class ChatViewController: LFBaseViewController, UITableViewDelegate, UITableView
         return cell
     }
     
+    func sendSay() {
+        if !toolBarView.plainText.empty() {
+            let m = LFSocketSendModel()
+            m.type = "say"
+            m.from_client_id = socket.model.client_id
+            m.content = toolBarView.plainText
+            
+            if atArray.count > 0 {
+                atArray.forEach { (at) in
+                    m.at_user += m.at_user.empty() ? at.client_id : (at.client_id + ",")
+                }
+            }
+            
+            socket.send(m)
+            
+            toolBarView.textView.text = ""
+            atArray.removeAll()
+            self.currentIsInBottom = true
+        }
+    }
+    
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
         if scrollView.contentOffset.y > oldOffsetY {
             // 向上滑动
@@ -380,13 +397,102 @@ class ChatViewController: LFBaseViewController, UITableViewDelegate, UITableView
         }
         
         oldOffsetY = scrollView.contentOffset.y
+        
+        let height = scrollView.frame.size.height;
+        let contentOffsetY = scrollView.contentOffset.y;
+        let bottomOffset = scrollView.contentSize.height - contentOffsetY;
+        if (bottomOffset <= height) {
+            //在最底部
+            self.currentIsInBottom = true;
+        }else {
+            self.currentIsInBottom = false;
+        }
+        
     }
     
     // MARK: textViewDelegate
     func textView(_ textView: UITextView, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool {
+        
+        if text == "@" && photoGo {
+            return false
+        }
+        
+        if text == "@" && photoGo == false {
+            photoGo = true
+            hideKeyboard()
+            
+            var indexx = toolBarView.textView.text.count
+
+            if toolBarView.textView.isFirstResponder {
+                indexx = toolBarView.textView.selectedRange.location + toolBarView.textView.selectedRange.length
+                toolBarView.textView.resignFirstResponder()
+            }
+            
+            let vc = ChatGroupPeopleSearchViewController()
+            self.navigationController?.pushViewController(vc, animated: true)
+            vc.seletItem = {[weak self] m in
+                LFLog(m)
+                if let strongSelf = self {
+                    let textView = strongSelf.toolBarView.textView
+                    let insertStr = String(format: "@%@ ", m.nick_name)
+                    let str = NSMutableString(string: textView!.text)
+                    str.insert(insertStr, at: indexx)
+                    textView!.text = str as String
+                    textView!.selectedRange = NSMakeRange(indexx + insertStr.count, 0)
+                    strongSelf.atArray.append(m)
+                }
+                
+            }
+            return false
+        }
+        
+        if (text == "") {
+            let selectRange = textView.selectedRange
+            if selectRange.length > 0 {
+                //用户长按选择文本时不处理
+                return true
+            }
+            
+            // 判断删除的是一个@中间的字符就整体删除
+            let astr = textView.attributedText?.mutableCopy() as! NSMutableAttributedString
+            
+            if let matches = SLFCommonTools.findAllAt(inAText: astr) {
+            
+            var inAt = false
+            var index = range.location
+            for match in matches {
+                guard let match = match as? NSTextCheckingResult else {
+                    continue
+                }
+                let newRange = NSRange(location: match.range.location + 1, length: match.range.length - 1)
+                if NSLocationInRange(range.location, newRange) {
+                    inAt = true
+                    index = match.range.location
+                    if let subRange = Range<String.Index>(match.range, in: astr.string ) {
+                        let s = astr.string.nsRange(from: subRange)
+////                        str!.replaceSubrange(subRange, with: [])
+                        astr.mutableString.replaceOccurrences(of: astr.string, with: "", options: [.init(rawValue: 0)], range: s)
+                        //查找被删除的@名字
+                        delATName(name: astr.string)
+                    }
+    
+                    break
+                }
+            }
+            
+            if inAt {
+                textView.attributedText = astr
+                toolBarView.refreshTextUI()
+                textView.selectedRange = NSRange(location: index, length: 0)
+//                toolBarView.sendBtn.isEnabled = !textView.text.empty()
+                toolBarView.sendBtn.alpha = textView.text.empty() ? 0.5 : 1
+                return false
+            }
+            }
+        }
+        //判断是回车键就发送出去
         if text == "\n" {
             let msgText = textView.text.trimmingCharacters(in: .whitespaces)
-            //            toolBarView.sendBtn.isEnabled = msgText.count > 0 ? true : false
             if msgText.lengthOfBytes(using: .utf8) == 0 {
                 return true
             }
@@ -397,32 +503,91 @@ class ChatViewController: LFBaseViewController, UITableViewDelegate, UITableView
             //                return false
             //            }
             
-            let text = toolBarView.plainText
-            
-            let m = LFSocketSendModel()
-            m.type = "say"
-            m.from_client_id = socket.model.client_id
-            m.content = text ?? ""
-            socket.send(m)
-            textView.text = ""
-            
-            toolBarView.sendBtn.isHidden = textView.text.empty()
-            toolBarView.imageBtn.isHidden = !textView.text.empty()
-            toolBarView.emojiToggleButton.isHidden = !textView.text.empty()
+            sendSay()
+            //7f0000010fa600000012 5s
+            //7f0000010fa000000007 7
+//            toolBarView.sendBtn.isHidden = textView.text.empty()
+//            toolBarView.imageBtn.isHidden = !textView.text.empty()
+//            toolBarView.emojiToggleButton.isHidden = !textView.text.empty()
             return false
         }
         //        toolBarView.sendBtn.isEnabled = text.count > 0 ? true : false
         return true
     }
-    
+    //查找被删除的@名字
+    func delATName(name: String) {
+        let name = name[1,name.count - 1]
+        
+        for i in 0..<atArray.count {
+            let m = atArray[i]
+            if m.nick_name == name {
+                atArray.remove(at: i)
+            }
+        }
+        
+    }
     func textViewDidChange(_ textView: UITextView) {
 //        toolBarView.sendBtn.isEnabled = !textView.text.empty()
-        toolBarView.sendBtn.isHidden = textView.text.empty()
-//        toolBarView.sendBtn.alpha = textView.text.empty() ? 0.5 : 1
+//        toolBarView.sendBtn.isHidden = textView.text.empty()
+        toolBarView.sendBtn.alpha = textView.text.empty() ? 0.5 : 1
         
-        toolBarView.imageBtn.isHidden = !textView.text.empty()
-        toolBarView.emojiToggleButton.isHidden = !textView.text.empty()
+//        toolBarView.imageBtn.isHidden = !textView.text.empty()
+//        toolBarView.emojiToggleButton.isHidden = !textView.text.empty()
+        
+        
+//        let selectedRange = textView.markedTextRange
+//        var newText: String? = nil
+//        if let selectedRange = selectedRange {
+//            newText = textView.text(in: selectedRange)
+//        }
+//
+//        if (newText?.count ?? 0) < 1 {
+//            // 高亮输入框中的@
+//            let range = textView.selectedRange
+//
+//            let string = NSMutableAttributedString(string: textView.text ?? "")
+//            string.addAttribute(.foregroundColor, value: UIColor.black, range: NSRange(location: 0, length: string.string.count))
+//
+//            if let matches = SLFCommonTools.findAllAt(inText: textView.text!) {
+//
+//                for match in matches {
+//                    guard let match = match as? NSTextCheckingResult else {
+//                        continue
+//                    }
+//                    string.addAttribute(.foregroundColor, value: UIColor.red, range: NSRange(location: match.range.location, length: match.range.length - 1))
+//                }
+//
+//                textView.attributedText = string
+//
+//            }
+//            textView.selectedRange = range
+//
+//        }
     }
+    
+    func textViewDidChangeSelection(_ textView: UITextView) {
+        // 光标不能点落在@词中间
+        let range = textView.selectedRange
+        if range.length > 0 {
+            // 选择文本时可以
+            return
+        }
+        
+        if let matches = SLFCommonTools.findAllAt(inText: textView.text!) {
+            
+            for match in matches {
+                guard let match = match as? NSTextCheckingResult else {
+                    continue
+                }
+                let newRange = NSRange(location: match.range.location + 1, length: match.range.length - 1)
+                if NSLocationInRange(range.location, newRange) {
+                    textView.selectedRange = NSRange(location: match.range.location + match.range.length, length: 0)
+                    break
+                }
+            }
+        }
+    }
+    
     //MARK:
     func stickerInputViewDidClickEmoji(_ emojiStr: String!, inputView: PPStickerInputView!) {
 //        if emojiStr.empty() {
@@ -456,6 +621,8 @@ class ChatViewController: LFBaseViewController, UITableViewDelegate, UITableView
         m.face = text!
         socket.send(m)
         inputView.textView.text = ""
+        atArray.removeAll()
+        self.currentIsInBottom = true
     }
     
     func stickerInputViewDidChange(_ inputView: PPStickerInputView!) {
@@ -579,10 +746,10 @@ class ChatViewController: LFBaseViewController, UITableViewDelegate, UITableView
     
     func hideKeyboard() {
         
-        toolBarView.sendBtn.isHidden = toolBarView.textView.text.empty()
-        
-        toolBarView.imageBtn.isHidden = !toolBarView.textView.text.empty()
-        toolBarView.emojiToggleButton.isHidden = !toolBarView.textView.text.empty()
+//        toolBarView.sendBtn.isHidden = toolBarView.textView.text.empty()
+//
+//        toolBarView.imageBtn.isHidden = !toolBarView.textView.text.empty()
+//        toolBarView.emojiToggleButton.isHidden = !toolBarView.textView.text.empty()
         
         if toolBarView.textView.isFirstResponder {
             toolBarView.textView.resignFirstResponder()
@@ -695,6 +862,9 @@ class ChatViewController: LFBaseViewController, UITableViewDelegate, UITableView
     
     // 滚动最后一条消息到列表界面底部
     func scrollToBottom(animated: Bool = true) {
+        if self.currentIsInBottom == false {
+            return
+        }
         if msgList.count > 0 {
             //            CATransaction.begin() // 1
             //            CATransaction.setDisableActions(true) // 2 关闭layer隐式动画
@@ -729,8 +899,15 @@ class ChatViewController: LFBaseViewController, UITableViewDelegate, UITableView
         if let data = message as? NSDictionary {
             if let model = BF_ChatDataModel.deserialize(from: data) {
                 switch model.type {
+                case "at":
+                    LFLog(model)
+                    
+                    let view = ChatBeAtView(frame: .init(x: kScreenW - 130, y: kScreenH - 250, width: 130, height: 34))
+                    view.titleLabel.text = model.from_client_name
+                    self.view.addSubview(view)
+                    
                 case "ping":
-                    //socket.send(["type":"pong"])
+                    socket.send(["type":"pong"])
                     return
                 case "connect":
                     let id = data["client_id"] as! String
@@ -739,6 +916,7 @@ class ChatViewController: LFBaseViewController, UITableViewDelegate, UITableView
                         self.setNavTitle("聊天广场(\(num))")
                     }
                     socket.model.client_id = id
+//                    socket.model.name = data["client_name"] as! String
                     SLFHUD.hide()
                 case "say":
                     
@@ -823,10 +1001,6 @@ class ChatViewController: LFBaseViewController, UITableViewDelegate, UITableView
             
             
         }
-        
-        
-        
-        
     }
     
     func lfSocketDidFailWithError(_ error: Error?) {
