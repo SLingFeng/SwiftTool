@@ -7,10 +7,10 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "BaseTextField.h"
-#import "TKButton.h"
-#import "TKInputAngleTableViewCell.h"
-#import "FSTextView.h"
+//#import "BaseTextField.h"
+//#import "TKButton.h"
+//#import "TKInputAngleTableViewCell.h"
+//#import "FSTextView.h"
 
 NS_ASSUME_NONNULL_BEGIN
 @class TKInputAngleTableViewCell;
@@ -36,7 +36,7 @@ cell的状态
  41:
  
  //我的-设置
- 
+ 5
  
  */
 
@@ -51,25 +51,27 @@ cell的状态
 
 @property (nonatomic, assign) CGFloat rightSpace;
 
+@property (nonatomic, assign) CGFloat cellHeight;
+
 #pragma mark - 输入cell
 
-
-@property (nonatomic, copy) NSString *placeholder;
-
-
-@property (nonatomic, copy) void(^textFieldChange)(BaseTextField *tf);
-//用户输入文字保存起来
-@property (nonatomic, copy) NSString *userEnterText;
-
-@property (assign, nonatomic) NSInteger enterNumber;
-
-@property (nonatomic) UIKeyboardType keyboardType;
-
-@property(nonatomic) NSTextAlignment tfTextAlignment;
-
-
-
-@property (nonatomic, retain) FSTextView *textView;
+//
+//@property (nonatomic, copy) NSString *placeholder;
+//
+//
+//@property (nonatomic, copy) void(^textFieldChange)(BaseTextField *tf);
+////用户输入文字保存起来
+//@property (nonatomic, copy) NSString *userEnterText;
+//
+//@property (assign, nonatomic) NSInteger enterNumber;
+//
+//@property (nonatomic) UIKeyboardType keyboardType;
+//
+//@property(nonatomic) NSTextAlignment tfTextAlignment;
+//
+//
+//
+//@property (nonatomic, retain) FSTextView *textView;
 
 
 
@@ -92,6 +94,8 @@ cell的状态
 @property (nonatomic, retain) UIView *customView;
 
 #pragma mark -
+
+@property (nonatomic, copy) NSString *leftImageName;
 
 //@property (nonatomic, copy) void(^FSTextViewHandler)(FSTextView *textView);
 
