@@ -34,6 +34,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, retain) UILabel *subLabel;
 @property (nonatomic, retain) UIImageView *arrowIV;
 
+@property (nonatomic, retain) UIImageView *rightIV;
 @property (nonatomic, retain) TKInputModel *model;
 
 @end
@@ -50,5 +51,11 @@ NS_ASSUME_NONNULL_BEGIN
 //
 //@end
 
+@interface InputSwitchTableViewCell : UITableViewCell
+
+@property (nonatomic, retain) UILabel *titleLabel;
+@property (nonatomic, retain) UISwitch *sh;
+@property (nonatomic, retain) TKInputModel *model;
+@end
 
 NS_ASSUME_NONNULL_END

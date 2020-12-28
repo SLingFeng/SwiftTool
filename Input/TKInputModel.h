@@ -73,7 +73,9 @@ cell的状态
 //
 //@property (nonatomic, retain) FSTextView *textView;
 
-
+#pragma mark - 群设置
+//no关 yes开
+@property (nonatomic, assign) BOOL switchOn;
 
 #pragma mark - 我的-设置
 
@@ -84,7 +86,7 @@ cell的状态
 @property (nonatomic, retain) UIColor *rightTextColor;
 
 ///右边箭头显示，默认NO显示
-@property (nonatomic, assign) BOOL rightIVHidden;
+@property (nonatomic, assign) BOOL arrowHidden;
 
 @property (nonatomic, copy) void(^switchChange)(UISwitch *sh);
 
@@ -94,8 +96,11 @@ cell的状态
 @property (nonatomic, retain) UIView *customView;
 
 #pragma mark -
-
+//@property (nonatomic, assign) BOOL rightIVHidden;
+///只显示右边图片
 @property (nonatomic, copy) NSString *leftImageName;
+///CGSizeMake(15, 15)
+@property (nonatomic, assign) CGSize leftImageSize;
 
 //@property (nonatomic, copy) void(^FSTextViewHandler)(FSTextView *textView);
 

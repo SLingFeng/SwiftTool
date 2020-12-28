@@ -16,6 +16,7 @@
     if (self) {
         self.maxLeftSpace = 0;
         self.cellHeight = 60;
+        self.leftImageSize = CGSizeMake(15, 15);
 //        self.tfTextAlignment = NSTextAlignmentLeft;
     }
     return self;

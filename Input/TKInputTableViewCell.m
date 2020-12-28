@@ -186,6 +186,9 @@
         self.subLabel.textAlignment = 2;
         self.subLabel.numberOfLines = 2;
         
+        self.rightIV = [[UIImageView alloc] init];
+        [self.contentView addSubview:self.rightIV];
+        
         self.arrowIV = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"arrow_d"]];
         [self.contentView addSubview:self.arrowIV];
         
@@ -202,7 +205,13 @@
         }];
         
         [self.subLabel mas_makeConstraints:^(MASConstraintMaker *make) {
-            make.right.equalTo(self.arrowIV.mas_right).offset(-6).priorityMedium();
+            make.right.equalTo(self.arrowIV.mas_left).offset(-6).priorityMedium();
+            make.centerY.offset(0);
+            make.left.equalTo(self.titleLabel.mas_right).offset(10);
+        }];
+        
+        [self.rightIV mas_makeConstraints:^(MASConstraintMaker *make) {
+            make.right.equalTo(self.arrowIV.mas_left).offset(-6).priorityMedium();
             make.centerY.offset(0);
             make.left.equalTo(self.titleLabel.mas_right).offset(10);
         }];
@@ -232,11 +241,29 @@
         make.centerY.offset(0);
     }];
     
-    self.arrowIV.hidden = _model.rightIVHidden;
+    self.arrowIV.hidden = _model.arrowHidden;
     if (_model.rightSpace > 0) {
         [self.subLabel mas_updateConstraints:^(MASConstraintMaker *make) {
             make.right.equalTo(self.contentView.mas_right).offset(-model.rightSpace);
 //            make.width.mas_lessThanOrEqualTo(kScreenW - model.maxLeftSpace - model.rightSpace - self.titleLabel.frame.size.width - 5);
+        }];
+    }
+    
+    if (kStringIsEmpty(_model.leftImageName)) {
+        self.rightIV.hidden = 1;
+        self.subLabel.hidden = 0;
+    }else {
+        self.rightIV.hidden = 0;
+        self.subLabel.hidden = 1;
+        self.rightIV.image = [UIImage imageNamed:_model.leftImageName];
+        [self.rightIV mas_updateConstraints:^(MASConstraintMaker *make) {
+            make.size.mas_equalTo(model.leftImageSize);
+            if (model.rightSpace > 0) {
+                make.right.equalTo(self.contentView.mas_right).offset(-model.rightSpace);
+            }else {
+                make.right.equalTo(self.arrowIV.mas_left).offset(-6);
+            }
+
         }];
     }
     
@@ -320,3 +347,66 @@
 //}
 //
 //@end
+
+@implementation InputSwitchTableViewCell
+
+- (instancetype)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier {
+    if (self = [super initWithStyle:style reuseIdentifier:reuseIdentifier]) {
+        
+//        self.leftIV = [[UIImageView alloc] init];
+//        [self.contentView addSubview:self.leftIV];
+        
+        self.titleLabel = [[UILabel alloc] init];
+        self.titleLabel.textColor = UIColor.blackColor;
+        self.titleLabel.font = [UIFont systemFontOfSize:(16)];
+        [self.contentView addSubview:self.titleLabel];
+        
+        self.sh = [[UISwitch alloc] init];
+        [self.contentView addSubview:self.sh];
+        [self.sh addTarget:self action:@selector(switchClick:) forControlEvents:(UIControlEventValueChanged)];
+        self.sh.onTintColor = [UIColor colorWithHexString:@"22aec1"];
+        
+        [self.titleLabel mas_makeConstraints:^(MASConstraintMaker *make) {
+//            make.left.equalTo(self.leftIV.mas_right).offset(11);
+            make.left.offset(15);
+            make.centerY.offset(0);
+        }];
+        
+        [self.sh mas_makeConstraints:^(MASConstraintMaker *make) {
+            make.right.offset(-15);
+            make.centerY.offset(0);
+        }];
+        
+        
+    }
+    return self;
+}
+
+- (void)setModel:(TKInputModel *)model {
+    _model = model;
+    self.titleLabel.text = model.title;
+    self.sh.on = model.switchOn;
+    
+//    [self.titleLabel mas_remakeConstraints:^(MASConstraintMaker *make) {
+//        make.width.mas_equalTo([self.titleLabel.text sizeWithFont:self.titleLabel.font maxSize:CGSizeMake(200, 30)]);
+//        make.left.offset(15);
+//        make.centerY.offset(0);
+//    }];
+    
+//    self.arrowIV.hidden = _model.rightIVHidden;
+//    if (_model.rightSpace > 0) {
+//        [self.subLabel mas_updateConstraints:^(MASConstraintMaker *make) {
+//            make.right.equalTo(self.contentView.mas_right).offset(-model.rightSpace);
+////            make.width.mas_lessThanOrEqualTo(kScreenW - model.maxLeftSpace - model.rightSpace - self.titleLabel.frame.size.width - 5);
+//        }];
+//    }
+    
+}
+
+- (void)switchClick:(UISwitch *)sh {
+    if (self.model.switchChange) {
+        self.model.switchChange(sh);
+    }
+}
+
+@end
